@@ -30,7 +30,7 @@
                             <h2 class="font-inter font-bold text-lg">Email</h2>
                             <div class="flex flex-col gap-y-2">
                                 <div class="flex flex-row gap-y-2.5 px-5 py-4 border border-black rounded-lg">
-                                    <h3 class="font-inter text-base">jane@gmail.com</h3>
+                                    <h3 class="font-inter text-base">janeemail@gmail.com</h3>
                                 </div>
                             </div>
                         </div>
