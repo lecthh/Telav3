@@ -106,7 +106,7 @@
         </div>
 
         <!-- RIGHT HALF -->
-        <div class="flex flex-col px-[30px] py-[100px] flex-grow h-[942px] bg-[rgba(214,159,251,0.1)]">
+        <div class="flex flex-col px-[30px] py-[100px] flex-grow bg-[rgba(214,159,251,0.1)]">
             <div class="flex flex-col gap-y-4">
                 <div class="flex flex-row justify-between items-center">
                     <h2 class="font-gilroy font-bold text-2xl">EchoPoint Productions</h1>
