@@ -4,15 +4,16 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-    @font-face {
-        font-family: 'Gilroy';
-        src: url('../../public/fonts/Gilroy-Bold.ttf');
-        font-weight: bold;
-    }
-    @font-face {
-        font-family: 'Gilroy';
-        src: url('../../public/fonts/Gilroy-Regular.ttf');
-        font-weight: normal;
-    }
+
+@font-face {
+    font-family: 'Gilroy';
+    src: url('../../public/fonts/Gilroy-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Gilroy';
+    src: url('../../public/fonts/Gilroy-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal  ;
 }

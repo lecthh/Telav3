@@ -12,6 +12,13 @@
 
 <body>
     @livewire('navigation-bar')
+    <div class="flex gap-x-20 p-[200px] bg-white/10">
+        <div class="flex flex-col gap-y-6">
+            <div class="flex flex-col gap-y-3">
+                <h1 class="font-gilroy font-bold text-5xl w-[447px]">Bring Your Apparel Designs to Life</h1>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

@@ -10,6 +10,7 @@
             <a href="">@include('svgs.bell')</a>
             <a href="">@include('svgs.basket')</a>
         </div>
+        <!-- if user logged in, change to user name -->
         <a href="">Login/Sign Up</a>
         @livewire('button', ['text' => 'Order Now'])
     </div>

@@ -16,7 +16,8 @@ export default {
       },
       fontFamily: {
         'inter': ['Inter', 'sans-serif'],
-      }
+        'gilroy': ['Gilroy', 'sans-serif'],
+      },
     },
   },
   plugins: [],
