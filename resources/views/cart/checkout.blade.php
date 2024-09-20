@@ -158,7 +158,7 @@
                                 <h2 class="font-inter font-bold text-lg">Jersey</h2>                                
                             </div>  
                             <div class="flex flex-row justify-between">
-                                <h2 class="font-inter text-lg">Production Type test:</h2>
+                                <h2 class="font-inter text-lg">Production Type:</h2>
                                 <h2 class="font-inter font-bold text-lg">Sublimation</h2>                                
                             </div>
                             <div class="flex flex-row justify-between">
