@@ -22,7 +22,7 @@
         <div class="flex flex-col gap-y-[60px]">
             <div class="flex flex-col gap-y-4">
                 <div class="flex flex-row gap-y-4 items-center justify-between">
-                    <h2 class="font-gilroy font-bold text-2xl">EchoPoint Productions</h1>
+                    <h2 class="font-gilroy font-bold text-2xl">EchoPoint Productions</h2>
                     <a href="">@include('svgs.chevron')</a>
                 </div> 
                 <hr class ="mt-4">  

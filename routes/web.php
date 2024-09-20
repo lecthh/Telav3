@@ -13,3 +13,7 @@ Route::get('/cart', function () {
 Route::get('/checkout', function () {
     return view('cart.checkout');
 });
+
+Route::get('/confirmation', function () {
+    return view('cart.confirmation');
+});
