@@ -17,3 +17,15 @@ Route::get('/checkout', function () {
 Route::get('/confirmation', function () {
     return view('cart.confirmation');
 });
+
+Route::get('/profile-basics', function () {
+    return view('customer.profile-basics');
+});
+
+Route::get('/profile-orders', function () {
+    return view('customer.profile-orders');
+});
+
+Route::get('/profile-reviews', function () {
+    return view('customer.profile-reviews');
+});
