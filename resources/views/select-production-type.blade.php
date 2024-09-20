@@ -14,10 +14,10 @@
     @livewire('navigation-bar')
     <div class="container mx-auto p-8 items-start">
         <div class="container text-start flex flex-col w-35 gap-y-4">
-            <div class="flex justify-start mb-7 mt-10">
+            <div class="flex justify-start mb-8 mt-10">
                 <div class="flex gap-5">
-                    <div class="w-16 h-16 flex items-center justify-center text-black text-xl font-gilroy font-bold bg-cGreen rounded-full">1</div>
-                    <div class="w-16 h-16 flex items-center justify-center bg-cGrey bg-opacity-70 text-xl text-cDarkGrey font-gilroy font-bold rounded-full">2</div>
+                    <div class="w-16 h-16 flex items-center justify-center text-cDarkGrey text-xl font-gilroy font-bold bg-cGrey rounded-full">1</div>
+                    <div class="w-16 h-16 flex items-center justify-center bg-cGreen bg-opacity-70 text-xl text-black font-gilroy font-bold rounded-full">2</div>
                     <div class="w-16 h-16 flex items-center justify-center bg-cGrey bg-opacity-70 text-xl text-cDarkGrey font-gilroy font-bold rounded-full">3</div>
                     <div class="w-16 h-16 flex items-center justify-center bg-cGrey bg-opacity-70 text-xl text-cDarkGrey font-gilroy font-bold rounded-full">4</div>
                     <div class="w-16 h-16 flex items-center justify-center bg-cGrey bg-opacity-70 text-xl text-cDarkGrey font-gilroy font-bold rounded-full">5</div>
