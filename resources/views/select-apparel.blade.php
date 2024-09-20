@@ -10,9 +10,10 @@
     @vite('resources/css/app.css')
 </head>
 
-<body class="font-inter bg-white">
+<body class="font-inter bg-white flex flex-col min-h-screen">
     @livewire('navigation-bar')
-    <div class="container mx-auto p-8 items-start">
+
+    <div class="container mx-auto p-8 items-start flex-grow">
         <div class="container text-start flex flex-col w-35 gap-y-4">
             <div class="flex justify-start mb-7 mt-10">
                 <div class="flex gap-5">
@@ -30,7 +31,6 @@
                 </p>
             </div>
         </div>
-
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 justify-center items-center mt-16" id="apparel-options">
             <div class="apparel-item border-2 bg-[#F3F3F3] border-gray-300 p-4 rounded-lg text-center hover:shadow-lg transition cursor-pointer" data-value="Jersey">
                 <img src="{{ asset('images/apparelCategory/jersey.png') }}" alt="Jersey" class="mx-auto mb-4">
@@ -49,16 +49,17 @@
                 <p class="text-lg font-semibold">Hoodie</p>
             </div>
         </div>
+
         <form id="apparel-form" action="{{ route('select-apparel-post') }}" method="POST">
             @csrf
             <input type="hidden" name="selected_apparel" id="selected_apparel" value="">
             <div class="text-left mt-16">
-                @livewire('button', ['text' => 'Continue'] )
+                @livewire('button', ['text' => 'Continue'])
             </div>
         </form>
-
     </div>
 
+    @livewire('footer')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const apparelItems = document.querySelectorAll('.apparel-item');

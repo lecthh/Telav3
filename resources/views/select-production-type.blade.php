@@ -10,9 +10,9 @@
     @vite('resources/css/app.css')
 </head>
 
-<body class="font-inter bg-white">
+<body class="font-inter bg-white flex flex-col min-h-screen">
     @livewire('navigation-bar')
-    <div class="container mx-auto p-8 items-start">
+    <div class="container mx-auto p-8 items-start flex-grow">
         <div class="container text-start flex flex-col w-35 gap-y-4">
             <div class="flex justify-start mb-8 mt-10">
                 <div class="flex gap-5">
@@ -80,7 +80,7 @@
             });
         });
     </script>
-
+    @livewire('footer')
 </body>
 
 </html>
