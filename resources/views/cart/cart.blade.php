@@ -38,27 +38,27 @@
                         </div>
                         <div class="flex flex-col gap-y-2 flex-grow">
                             <div class="flex flex-row justify-between">
-                                <h3 class="font-inter text-lg">Apparel Selected:</h3>
-                                <h3 class="font-inter font-bold text-lg">Jersey</h3>                                
+                                <h2 class="font-inter text-lg">Apparel Selected:</h2>
+                                <h2 class="font-inter font-bold text-lg">Jersey</h2>                                
                             </div>
                             <div class="flex flex-row justify-between">
-                                <h3 class="font-inter text-lg">Production Type:</h3>
-                                <h3 class="font-inter font-bold text-lg">Sublimation</h3>                                
+                                <h2 class="font-inter text-lg">Production Type:</h2>
+                                <h2 class="font-inter font-bold text-lg">Sublimation</h2>                                
                             </div>
                             <div class="flex flex-row justify-between">
-                                <h3 class="font-inter text-lg">Order Type:</h3>
-                                <h3 class="font-inter font-bold text-lg">Bulk</h3>                                
+                                <h2 class="font-inter text-lg">Order Type:</h2>
+                                <h2 class="font-inter font-bold text-lg">Bulk</h2>                                
                             </div>
                             <div class="flex flex-row justify-between">
-                                <h3 class="font-inter text-lg">Customization:</h3>
-                                <h3 class="font-inter font-bold text-lg">Personalized</h3>                                
+                                <h2 class="font-inter text-lg">Customization:</h2>
+                                <h2 class="font-inter font-bold text-lg">Personalized</h2>                                
                             </div>                                                        
                         </div>
                     </div>
                     <div class="flex flex-col gap-y-1 ml-auto items-end">
-                        <h3 class="font-gilroy font-bold text-2xl text-cPrimary">4996 PHP</h3>
-                        <div class="flex flex-row gap-y-2 5">
-                            <h3 class="font-gilroy font-bold text-base text-cAccent">remove</h3>
+                        <h2 class="font-gilroy font-bold text-2xl text-cPrimary">4996 PHP</h2>
+                        <div class="flex flex-row gap-y-2.5">
+                            <h2 class="font-gilroy font-bold text-base text-cAccent">remove</h2>
                         </div>
                     </div>                                          
                 </div>
@@ -75,27 +75,27 @@
                         </div>
                         <div class="flex flex-col gap-y-2 flex-grow">
                             <div class="flex flex-row justify-between">
-                                <h3 class="font-inter text-lg">Apparel Selected:</h3>
-                                <h3 class="font-inter font-bold text-lg">Jersey</h3>                                
+                                <h2 class="font-inter text-lg">Apparel Selected:</h2>
+                                <h2 class="font-inter font-bold text-lg">Jersey</h2>                                
                             </div>
                             <div class="flex flex-row justify-between">
-                                <h3 class="font-inter text-lg">Production Type:</h3>
-                                <h3 class="font-inter font-bold text-lg">Sublimation</h3>                                
+                                <h2 class="font-inter text-lg">Production Type:</h2>
+                                <h2 class="font-inter font-bold text-lg">Sublimation</h2>                                
                             </div>
                             <div class="flex flex-row justify-between">
-                                <h3 class="font-inter text-lg">Order Type:</h3>
-                                <h3 class="font-inter font-bold text-lg">Bulk</h3>                                
+                                <h2 class="font-inter text-lg">Order Type:</h2>
+                                <h2 class="font-inter font-bold text-lg">Bulk</h2>                                
                             </div>
                             <div class="flex flex-row justify-between">
-                                <h3 class="font-inter text-lg">Customization:</h3>
-                                <h3 class="font-inter font-bold text-lg">Personalized</h3>                                
+                                <h2 class="font-inter text-lg">Customization:</h2>
+                                <h2 class="font-inter font-bold text-lg">Personalized</h2>                                
                             </div>                                                        
                         </div>
                     </div>
                     <div class="flex flex-col gap-y-1 ml-auto items-end">
-                        <h3 class="font-gilroy font-bold text-2xl text-cPrimary">4996 PHP</h3>
+                        <h2 class="font-gilroy font-bold text-2xl text-cPrimary">4996 PHP</h2>
                         <div class="flex flex-row gap-y-2 5">
-                            <h3 class="font-gilroy font-bold text-base text-cAccent">remove</h3>
+                            <h2 class="font-gilroy font-bold text-base text-cAccent">remove</h2>
                         </div>
                     </div>                                          
                 </div>
@@ -105,8 +105,8 @@
         </div> 
         
         <div class="flex flex-row justify-between">
-            <h3 class="font-gilroy font-bold text-[30px]">Total</h3>
-            <h3 class="font-gilroy font-bold text-[30px]">10000 PHP</h3>
+            <h2 class="font-gilroy font-bold text-[30px]">Total</h2>
+            <h2 class="font-gilroy font-bold text-[30px]">10000 PHP</h2>
         </div>
 
         <div class="flex flex-col gap-y-2.5">
