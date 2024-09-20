@@ -17,8 +17,8 @@
             <div class="flex justify-start mb-8 mt-10">
                 <div class="flex gap-5">
                     <div class="w-16 h-16 flex items-center justify-center text-cDarkGrey text-xl font-gilroy font-bold bg-cGrey rounded-full">1</div>
-                    <div class="w-16 h-16 flex items-center justify-center bg-cGreen bg-opacity-70 text-xl text-black font-gilroy font-bold rounded-full">2</div>
-                    <div class="w-16 h-16 flex items-center justify-center bg-cGrey bg-opacity-70 text-xl text-cDarkGrey font-gilroy font-bold rounded-full">3</div>
+                    <div class="w-16 h-16 flex items-center justify-center bg-cGrey bg-opacity-70 text-xl text-cDarkGrey font-gilroy font-bold rounded-full">2</div>
+                    <div class="w-16 h-16 flex items-center justify-center bg-cGreen bg-opacity-70 text-xl text-blackfont-gilroy font-bold rounded-full">3</div>
                     <div class="w-16 h-16 flex items-center justify-center bg-cGrey bg-opacity-70 text-xl text-cDarkGrey font-gilroy font-bold rounded-full">4</div>
                     <div class="w-16 h-16 flex items-center  justify-center bg-cGrey bg-opacity-70 text-xl text-cDarkGrey font-gilroy font-bold rounded-full">5</div>
                 </div>
@@ -56,7 +56,7 @@
             <form id="production-form" action="{{ route('select-production-type-post') }}" method="POST">
                 @csrf
                 <input type="hidden" name="production_type" id="production_type" value="">
-                <input type="hidden" name="apparel" id="apparel" value="{{ $apparel }}">
+
                 <div class="text-left">
                     @livewire('button', ['text' => 'Continue'])
                 </div>

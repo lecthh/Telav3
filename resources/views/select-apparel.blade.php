@@ -32,20 +32,20 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 justify-center items-center mt-16" id="apparel-options">
-            <div class="apparel-item border-2 border-gray-300 p-4 rounded-lg text-center hover:shadow-lg transition cursor-pointer" data-value="Jersey">
-                <img src="{{ asset('images/jersey.png') }}" alt="Jersey" class="mx-auto mb-4">
+            <div class="apparel-item border-2 bg-[#F3F3F3] border-gray-300 p-4 rounded-lg text-center hover:shadow-lg transition cursor-pointer" data-value="Jersey">
+                <img src="{{ asset('images/apparelCategory/jersey.png') }}" alt="Jersey" class="mx-auto mb-4">
                 <p class="text-lg font-semibold">Jersey</p>
             </div>
-            <div class="apparel-item border-2 border-gray-300 p-4 rounded-lg text-center hover:shadow-lg transition cursor-pointer" data-value="Polo Shirt">
-                <img src="{{ asset('images/poloshirt.png') }}" alt="Polo Shirt" class="mx-auto mb-4">
+            <div class="apparel-item border-2 bg-[#F3F3F3] border-gray-300 p-4 rounded-lg text-center hover:shadow-lg transition cursor-pointer" data-value="Polo Shirt">
+                <img src="{{ asset('images/apparelCategory/poloshirt.png') }}" alt="Polo Shirt" class="mx-auto mb-4">
                 <p class="text-lg font-semibold">Polo Shirt</p>
             </div>
-            <div class="apparel-item border-2 border-gray-300 p-4 rounded-lg text-center hover:shadow-lg transition cursor-pointer" data-value="T-Shirt">
-                <img src="{{ asset('images/tshirt.png') }}" alt="T-Shirt" class="mx-auto mb-4">
+            <div class="apparel-item border-2 bg-[#F3F3F3] border-gray-300 p-4 rounded-lg text-center hover:shadow-lg transition cursor-pointer" data-value="T-Shirt">
+                <img src="{{ asset('images/apparelCategory/tshirt.png') }}" alt="T-Shirt" class="mx-auto mb-4">
                 <p class="text-lg font-semibold">T-Shirt</p>
             </div>
-            <div class="apparel-item border-2 border-gray-300 p-4 rounded-lg text-center hover:shadow-lg transition cursor-pointer" data-value="Hoodie">
-                <img src="{{ asset('images/hoodie.png') }}" alt="Hoodie" class="mx-auto mb-4">
+            <div class="apparel-item border-2 bg-[#F3F3F3] border-gray-300 p-4 rounded-lg text-center hover:shadow-lg transition cursor-pointer" data-value="Hoodie">
+                <img src="{{ asset('images/apparelCategory/hoodie.png') }}" alt="Hoodie" class="mx-auto mb-4">
                 <p class="text-lg font-semibold">Hoodie</p>
             </div>
         </div>

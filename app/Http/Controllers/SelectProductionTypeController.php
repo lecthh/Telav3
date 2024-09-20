@@ -13,7 +13,8 @@ class SelectProductionTypeController extends Controller
 
     public function selectProductionTypePost(Request $request)
     {
-        $productionType = $request->input('productionType');
-        return view('select-production-type', ['productionType' => $productionType]);
+        $productionType = $request->input('production_type');
+        $apparel = $request->input('apparel');
+        return redirect()->route('select-production-company', ['apparel' => $apparel, 'productionType' => $productionType]);
     }
 }
