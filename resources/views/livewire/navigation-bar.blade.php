@@ -1,4 +1,4 @@
-<nav class="flex px-[100px] py-3.5 justify-between items-center bg-white font-inter from-cNot-black border border-b border-[#424242]/20">
+<nav class="flex px-[100px] py-3.5 justify-between items-center bg-white text-[18px] font-inter from-cNot-black border border-b border-[#424242]/20">
     <div class="flex gap-x-6 items-center">
         <a href="">@include('svgs.logo')</a>
         <a href="">Home</a>
