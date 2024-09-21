@@ -15,6 +15,9 @@ class SelectProductionCompanyController extends Controller
     public function selectProductionCompanyPost(Request $request)
     {
         $productionCompany = $request->input('production_company');
-        return view('select-production-company', ['productionCompany' => $productionCompany]);
+        $apparel = $request->input('apparel');
+        $productionType = $request->input('productionType');
+
+        return redirect()->route('customization', ['apparel' => $apparel, 'productionType' => $productionType, 'productionCompany' => $productionCompany]);
     }
 }
