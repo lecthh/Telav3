@@ -47,17 +47,17 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 justify-center items-center mt-16" id="production-options">
             <div class="production-item border-2 bg-[#F3F3F3] border-gray-300 p-4 rounded-lg text-center hover:shadow-lg transition cursor-pointer"
                 data-value="Sublimation">
-                <img src="{{ asset('images/productionType/sublimation.png') }}" alt="Sublimation" class="mx-auto mb-4">
+                <img src="{{ asset('imgs/productionType/sublimation.png') }}" alt="Sublimation" class="mx-auto mb-4">
                 <p class="text-lg font-semibold">Sublimation</p>
             </div>
             <div class="production-item border-2 bg-[#F3F3F3] border-gray-300 p-4 rounded-lg text-center hover:shadow-lg transition cursor-pointer"
                 data-value="Heat Transfer">
-                <img src="{{ asset('images/productionType/heat.png') }}" alt="Heat Transfer" class="mx-auto mb-4">
+                <img src="{{ asset('imgs/productionType/heat.png') }}" alt="Heat Transfer" class="mx-auto mb-4">
                 <p class="text-lg font-semibold">Heat Transfer</p>
             </div>
             <div class="production-item border-2 bg-[#F3F3F3] border-gray-300 p-4 rounded-lg text-center hover:shadow-lg transition cursor-pointer"
                 data-value="Embroidery">
-                <img src="{{ asset('images/productionType/embroidery.png') }}" alt="Embroidery" class="mx-auto mb-4">
+                <img src="{{ asset('imgs/productionType/embroidery.png') }}" alt="Embroidery" class="mx-auto mb-4">
                 <p class="text-lg font-semibold">Embroidery</p>
             </div>
         </div>
@@ -81,12 +81,12 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const productionItems = document.querySelectorAll('.production-item');
             const selectedProductionInput = document.getElementById('production_type');
 
             productionItems.forEach(item => {
-                item.addEventListener('click', function () {
+                item.addEventListener('click', function() {
                     productionItems.forEach(i => i.classList.remove('border-purple-500'));
                     productionItems.forEach(i => i.classList.add('border-gray-300'));
                     this.classList.add('border-purple-500');
