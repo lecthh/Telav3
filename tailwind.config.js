@@ -21,7 +21,41 @@ export default {
         'inter': ['Inter', 'sans-serif'],
         'gilroy': ['Gilroy', 'sans-serif'],
       },
+      animation: {
+        'fade-in': 'fade-in 0.6s ease-in',
+        "fade-in-up": "fade-in-up 0.6s ease-in-out",
+        "float": "float 1s ease-in-out",
+      },
+      keyframes: {
+        'fade-in': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        "fade-in-up": {
+          "0%": {
+            "opacity": "0",
+            "transform": "translateY(20px)"
+          },
+          "100%": {
+            "opacity": "1",
+            "transform": "translateY(0)"
+          }
+        },
+        "float": {
+          "0%": {
+            "transform": "translateY(0)"
+          },
+          "50%": {
+            "transform": "translateY(-10px)"
+          },
+          "100%": {
+            "transform": "translateY(0)"
+          }
+        }
+      },
     },
   },
-  plugins: [],
+  plugins: [
+    require("tailwindcss-animate"),
+  ],
 }
