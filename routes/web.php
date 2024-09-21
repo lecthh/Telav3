@@ -10,6 +10,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// FRONTEND CART FOLDER ROUTES
 Route::get('/cart', function () {
     return view('cart.cart');
 });
@@ -22,6 +23,7 @@ Route::get('/confirmation', function () {
     return view('cart.confirmation');
 });
 
+// FRONTEND CUSTOMER PROFILE FOLDER ROUTES
 Route::get('/profile-basics', function () {
     return view('customer.profile-basics');
 });
@@ -34,6 +36,7 @@ Route::get('/profile-reviews', function () {
     return view('customer.profile-reviews');
 });
 
+//PLACING AN ORDER ROUTES
 Route::get('/select-apparel', [SelectAparrelController::class, 'selectApparel'])->name('select-apparel');
 Route::post('/select-apparel', [SelectAparrelController::class, 'selectApparelPost'])->name('select-apparel-post');
 
