@@ -30,6 +30,34 @@
                     <h1 class="font-inter font-bold text-2xl">Reviews</h1>
                 </div>                                
             </div>
+
+            <div class="flex flex-col gap-y-6 w-[600px]">
+                <div class="flex flex-col gap-y-4">
+                    <h2 class="font-inter font-bold text-lg">Display Name</h2>
+                    <div class="flex flex-row gap-x-2.5 px-5 py-4 border border-black rounded-lg">
+                        <h3 class="font-inter text-base">Jane</h3>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-y-4">
+                    <h2 class="font-inter font-bold text-lg">Email</h2>
+                    <div class="flex flex-row gap-x-2.5 px-5 py-4 border border-black rounded-lg">
+                        <h3 class="font-inter text-base">jane@gmail.com</h3>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-y-4">
+                    <h2 class="font-inter font-bold text-lg">Mobile no.</h2>
+                    <div class="flex flex-row gap-x-2.5 px-5 py-4 border border-black rounded-lg">
+                        <h3 class="font-inter text-base">Jane</h3>
+                    </div>
+                </div>                                
+            </div>
+
+            <div class="flex flex-row gap-x-3 h-[50px]">
+                <div class="flex flex-col gap-y-2.5">
+                    @livewire('button', ['text' => 'Save'])
+                </div>
+            </div>
+
         </div>
 
         <div class="flex flex-col gap-y-6"></div>
