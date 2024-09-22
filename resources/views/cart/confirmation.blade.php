@@ -11,7 +11,7 @@
 </head>
 
 <body>
-    @livewire('navigation-bar')
+    @include('layout.nav')
     <div class="flex flex-col gap-y-[60px] px-[200px] py-[100px]">
         <div class="flex flex-col gap-y-[50px] px-[50px] py-[60px]">
             <a href="">@include('svgs.check')</a>

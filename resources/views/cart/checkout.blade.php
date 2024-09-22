@@ -11,7 +11,7 @@
 </head>
 
 <body>
-    @livewire('navigation-bar')
+    @include('layout.nav')
     <div class="flex flex-row gap-y-2.5">
         <!-- LEFT HALF -->
         <div class="flex flex-col gap-y-[60px] px-[200px] py-[100px] w-[900px] h-[942]">
