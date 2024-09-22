@@ -36,9 +36,9 @@ class GoogleAuth extends Controller
                 'name' => $googleUser->name,
                 'email' => $googleUser->email,
                 'password' => bcrypt('random_password'),
+                'email_verified_at' => now(),
             ]);
         }
-
         Auth::login($user);
 
         return redirect()->route('home');
