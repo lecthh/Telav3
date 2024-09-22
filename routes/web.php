@@ -2,15 +2,18 @@
 
 use App\Http\Controllers\Review;
 use App\Http\Controllers\Customization;
+use App\Http\Controllers\GoogleAuth;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SelectAparrelController;
 use App\Http\Controllers\SelectProductionCompanyController;
 use App\Http\Controllers\SelectProductionTypeController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Laravel\Socialite\Facades\Socialite;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('home');
 
 // FRONTEND BECOME A PARTNER ROUTES
 
@@ -42,6 +45,9 @@ Route::get('/confirmation', function () {
 Route::get('/profile-basics', [ProfileController::class, 'profileBasics'])->name('customer.profile.basics');
 Route::get('/profile-orders', [ProfileController::class, 'profileOrders'])->name('customer.profile.orders');
 Route::get('/profile-reviews', [ProfileController::class, 'profileReviews'])->name('customer.profile.reviews');
+
+Route::get('/auth/google/redirect', [GoogleAuth::class, 'redirectToGoogle'])->name('google.redirect');
+Route::get('/auth/google/callback', [GoogleAuth::class, 'handleGoogleCallback'])->name('google.callback');
 
 
 // Route::get('/select-apparel', [SelectAparrelController::class, 'selectApparel'])->name('select-apparel');
