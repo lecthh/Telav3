@@ -7,14 +7,19 @@ use Illuminate\Http\Request;
 class SelectProductionCompanyController extends Controller
 {
 
-    public function selectProductionCompany($apparel, $productionType)
+    public function selectProductionCompany()
     {
-        return view('select-production-company', ['apparel' => $apparel, 'productionType' => $productionType]);
+        return view('customer.place-order.select-production-company');
     }
 
-    public function selectProductionCompanyPost(Request $request)
-    {
-        $productionCompany = $request->input('production_company');
-        return view('select-production-company', ['productionCompany' => $productionCompany]);
-    }
+    // public function selectProductionCompany($apparel, $productionType)
+    // {
+    //     return view('select-production-company', ['apparel' => $apparel, 'productionType' => $productionType]);
+    // }
+
+    // public function selectProductionCompanyPost(Request $request)
+    // {
+    //     $productionCompany = $request->input('production_company');
+    //     return view('select-production-company', ['productionCompany' => $productionCompany]);
+    // }
 }

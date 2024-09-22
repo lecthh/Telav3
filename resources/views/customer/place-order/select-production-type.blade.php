@@ -16,20 +16,15 @@
 <body class="flex flex-col h-screen justify-between">
     <div class="font-inter bg-white flex flex-col px-[200px] py-[100px] gap-y-[60px]">
         <div class="flex flex-col gap-y-10">
-            <ul class="flex gap-x-4 font-gilroy font-bold text-2xl">
-                <li><a href="" class="flex flex-col w-16 h-16 p-6 rounded-full bg-cGrey text-cDarkGrey items-center justify-center">1</a></li>
-                <li><a href="" class="flex flex-col w-16 h-16 p-6 rounded-full bg-cGreen items-center justify-center">2</a></li>
-                <li><a href="" class="flex flex-col w-16 h-16 p-6 rounded-full bg-cGrey text-cDarkGrey items-center justify-center">3</a></li>
-                <li><a href="" class="flex flex-col w-16 h-16 p-6 rounded-full bg-cGrey text-cDarkGrey items-center justify-center">4</a></li>
-                <li><a href="" class="flex flex-col w-16 h-16 p-6 rounded-full bg-cGrey text-cDarkGrey items-center justify-center">5</a></li>
-            </ul>
+            @include('customer.place-order.steps')
             <div class="flex flex-col gap-y-3">
                 <h1 class="font-gilroy font-bold text-5xl w-[447px]">Choose Production Type</h1>
                 <p class="font-inter text-base w-[447px]">Next, decide how you want your design to come to life. You can choose from methods like screen printing or embroidery—whatever best fits your vision!</p>
             </div>
         </div>
         @livewire('production-type')
-        <div class="flex justify-start">
+        <div class="flex justify-start gap-x-3">
+            @livewire('button', ['style' => 'greyed', 'text' => 'Back'])
             @livewire('button', ['text' => 'Continue'])
         </div>
     </div>
