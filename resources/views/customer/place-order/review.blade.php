@@ -38,7 +38,9 @@
                     </div>
                 </div>
             </div>
+
             <hr class="border-cPrimary">
+
             <div class="flex flex-col gap-y-3 text-lg">
                 <div class="flex justify-between">
                     <h3>Apparel Selected:</h3>
@@ -57,11 +59,19 @@
                     <h3 class="font-bold">Personalized</h3>
                 </div>
             </div>
+
             <hr class="border-cPrimary">
-            
+            <div class="flex gap-x-10">
+                <div class="flex border w-[168px] h-[132px] rounded-md border-cPrimary bg-cAccent"></div>
+                <div class="flex border w-[168px] h-[132px] rounded-md border-cPrimary bg-cAccent"></div>
+            </div>
+            <div class="flex flex-col gap-y-3">
+                <h3 class="text-lg font-bold">Description</h3>
+                <h5 class="text-base">Please provide your design customization details, including preferred colors, patterns, artwork, logos, text, and any specific instructions for placement or modifications to the apparel...</h5>
+            </div>
             <div class="flex justify-start gap-x-3">
                 @livewire('button', ['style' => 'greyed', 'text' => 'Back'])
-                @livewire('button', ['text' => 'Continue'])
+                @livewire('button', ['text' => 'Add Item to Cart'])
             </div>
         </div>
     </div>
