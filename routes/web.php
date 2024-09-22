@@ -17,9 +17,15 @@ Route::get('/', function () {
 
 // FRONTEND BECOME A PARTNER ROUTES
 
-Route::get('/partner-production', function () {
-    return view('partner.partner-production');
+Route::get('/partner-registration', function () {
+    return view('partner.partner-registration');
 });
+
+Route::get('/partner-confirmation', function () {
+    return view('partner.partner-confirmation');
+});
+
+
 
 
 Route::get('/select-apparel', [SelectAparrelController::class, 'selectApparel'])->name('customer.place-order.select-apparel');
