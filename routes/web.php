@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Review;
 use App\Http\Controllers\Customization;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SelectAparrelController;
 use App\Http\Controllers\SelectProductionCompanyController;
 use App\Http\Controllers\SelectProductionTypeController;
@@ -16,6 +17,8 @@ Route::get('/select-production-type', [SelectProductionTypeController::class, 's
 Route::get('/select-production-company', [SelectProductionCompanyController::class, 'selectProductionCompany'])->name('customer.place-order.select-production-company');
 Route::get('/customization', [Customization::class, 'customization'])->name('customer.place-order.customization');
 Route::get('/review', [Review::class, 'review'])->name('customer.place-order.review');
+
+Route::get('/profile', [ProfileController::class, 'profile'])->name('customer.profile.profile');
 
 // Route::get('/select-apparel', [SelectAparrelController::class, 'selectApparel'])->name('select-apparel');
 // Route::post('/select-apparel', [SelectAparrelController::class, 'selectApparelPost'])->name('select-apparel-post');
