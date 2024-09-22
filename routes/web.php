@@ -17,6 +17,12 @@ Route::get('/partner-registration', function () {
     return view('partner.partner-registration');
 });
 
+Route::get('/partner-confirmation', function () {
+    return view('partner.partner-confirmation');
+});
+
+
+
 
 Route::get('/select-apparel', [SelectAparrelController::class, 'selectApparel'])->name('customer.place-order.select-apparel');
 Route::get('/select-production-type', [SelectProductionTypeController::class, 'selectProductionType'])->name('customer.place-order.select-production-type');

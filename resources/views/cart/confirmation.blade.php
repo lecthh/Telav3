@@ -20,7 +20,7 @@
                     <h2 class="font-gilroy font-bold text-3xl">Thanks for your payment</h2>
                     <h2 class="font-inter text-lg">Your request has been received.</h2>
                 </div>
-                <hr>
+                <hr class="border-t-1 border-cSecondary w-full my-4">
                 <div class="flex flex-col gap-y-3">
                     <div class="flex flex-row justify-between">
                         <h2 class="font-inter text-lg">Order Number:</h2>
