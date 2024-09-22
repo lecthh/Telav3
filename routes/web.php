@@ -25,7 +25,7 @@ Route::get('/select-production-company', [SelectProductionCompanyController::cla
 Route::get('/customization', [Customization::class, 'customization'])->name('customer.place-order.customization');
 Route::get('/review', [Review::class, 'review'])->name('customer.place-order.review');
 
-Route::get('/profile', [ProfileController::class, 'profile'])->name('customer.profile.profile');
+
 // FRONTEND CART FOLDER ROUTES
 Route::get('/cart', function () {
     return view('cart.cart');
@@ -39,18 +39,9 @@ Route::get('/confirmation', function () {
     return view('cart.confirmation');
 });
 
-// FRONTEND CUSTOMER PROFILE FOLDER ROUTES
-Route::get('/profile-basics', function () {
-    return view('customer.profile-basics');
-});
-
-Route::get('/profile-orders', function () {
-    return view('customer.profile-orders');
-});
-
-Route::get('/profile-reviews', function () {
-    return view('customer.profile-reviews');
-});
+Route::get('/profile-basics', [ProfileController::class, 'profileBasics'])->name('customer.profile.basics');
+Route::get('/profile-orders', [ProfileController::class, 'profileOrders'])->name('customer.profile.orders');
+Route::get('/profile-reviews', [ProfileController::class, 'profileReviews'])->name('customer.profile.reviews');
 
 
 // Route::get('/select-apparel', [SelectAparrelController::class, 'selectApparel'])->name('select-apparel');
