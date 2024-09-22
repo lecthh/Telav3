@@ -88,6 +88,7 @@
                                 </div>
                             </div>
                             <br>
+                            <br>
                             <div class="flex flex-col gap-y-6 flex-grow">
                                 <div class="flex flex-col gap-y-4">
                                     <h2 class="font-inter font-bold text-lg">Company name</h2>
@@ -163,6 +164,11 @@
                         <div id="designer-registration" style="display: none;">
                             
 
+
+
+
+
+
                         </div>
 
 
@@ -171,7 +177,7 @@
 
 
 
-
+                        
                     </div>
                 </div>
 
