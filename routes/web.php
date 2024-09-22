@@ -13,8 +13,8 @@ Route::get('/', function () {
 
 // FRONTEND BECOME A PARTNER ROUTES
 
-Route::get('/partner-production', function () {
-    return view('partner.partner-production');
+Route::get('/partner-registration', function () {
+    return view('partner.partner-registration');
 });
 
 
