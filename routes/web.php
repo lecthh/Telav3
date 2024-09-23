@@ -23,8 +23,8 @@ Route::get('/partner-confirmation', [PartnerRegistration::class, 'partnerConfirm
 
 
 Route::get('/select-apparel', [SelectAparrelController::class, 'selectApparel'])->name('customer.place-order.select-apparel');
-Route::get('/select-production-type', [SelectProductionTypeController::class, 'selectProductionType'])->name('customer.place-order.select-production-type');
-Route::get('/select-production-company', [SelectProductionCompanyController::class, 'selectProductionCompany'])->name('customer.place-order.select-production-company');
+Route::get('/select-production-type/{apparel}', [SelectProductionTypeController::class, 'selectProductionType'])->name('customer.place-order.select-production-type');
+Route::get('/select-production-company/{apparel}/{productionType}', [SelectProductionCompanyController::class, 'selectProductionCompany'])->name('customer.place-order.select-production-company');
 Route::get('/customization', [Customization::class, 'customization'])->name('customer.place-order.customization');
 Route::get('/review', [Review::class, 'review'])->name('customer.place-order.review');
 

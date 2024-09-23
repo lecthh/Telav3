@@ -16,22 +16,42 @@ class ApparelType extends Component
     public $img;
 
     public $apparelTypes;
-    
-    public function create() {
+    public $selectedApparelType;
+    public $currentStep = 1;
+
+    public function create()
+    {
         ApparelTypeModel::create([
             'name' => $this->name,
             'img' => $this->img,
         ]);
     }
 
-    public function mount() {
+    public function mount()
+    {
         $this->apparelTypes = ApparelTypeModel::all();
+        $this->selectedApparelType = null;
+    }
+
+    public function selectApparelType($apparelTypeId)
+    {
+        $this->selectedApparelType = $apparelTypeId;
+    }
+
+    public function submit()
+    {
+        if ($this->selectedApparelType) {
+            return redirect()->route('customer.place-order.select-production-type', ['apparel' => $this->selectedApparelType]);
+        } else {
+            session()->flash('error', 'Please select an apparel type');
+        }
     }
 
     public function render()
     {
         return view('livewire.apparel-type', [
             'apparelTypes' => $this->apparelTypes,
+            'currentStep' => $this->currentStep,
         ]);
     }
 }
