@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('company_name');
             $table->string('company_logo')->nullable();
             $table->json('production_type');
-            $table->json('apparel_type')->nullable();
+            $table->json('apparel_type');
             $table->string('address');
             $table->string('phone');
             $table->float('avg_rating');
