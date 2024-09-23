@@ -23,7 +23,7 @@
                 <p class="font-inter text-base">Select a trusted production company to bring your custom apparel to life.</p>
             </div>
         </div>
-        <div class="flex flex-col gap-y-6">
+        <div class="flex flex-col gap-y-6 animate-fade-in">
             <div class="flex justify-start">
                 @livewire('include.base-price-filter')
             </div>

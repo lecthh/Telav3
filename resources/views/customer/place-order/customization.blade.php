@@ -17,12 +17,12 @@
         @csrf
         <div class="flex flex-col gap-y-10">
             @include('customer.place-order.steps')
-            <div class="flex flex-col gap-y-3">
+            <div class="flex flex-col gap-y-3 animate-fade-in">
                 <h1 class="font-gilroy font-bold text-5xl">Customize Your Apparel</h1>
                 <p class="font-inter text-base">Now it's time to get creative! Add your unique design, choose your colors, and make any other custom adjustments to create something truly one-of-a-kind.</p>
             </div>
         </div>
-        <div class="flex flex-col gap-y-10 font-inter">
+        <div class="flex flex-col gap-y-10 font-inter animate-fade-in">
             <div class="flex flex-col gap-y-4">
                 <h3 class="text-lg font-bold">Description</h3>
                 <div class="flex flex-col gap-y-2" x-data="{ charCount: 0, maxChars: 500 }">

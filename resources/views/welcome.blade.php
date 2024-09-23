@@ -15,7 +15,7 @@
 @include('layout.nav')
 
 <body>
-    <div class="flex gap-x-20 p-[200px] bg-white/10 items-center justify-between animate-fade-in">
+    <div class="relative flex gap-x-20 p-[200px] bg-white/10 items-center justify-between animate-fade-in">
         <div class="flex flex-col gap-y-6">
             <div class="flex flex-col gap-y-3">
                 <h1 class="font-gilroy font-bold text-5xl w-[447px]">Bring Your Apparel Designs to Life</h1>
@@ -28,7 +28,7 @@
             </div>
         </div>
         <div class="flex flex-col gap-y-6">
-            <img class="absolute h-[632px] left-2/4 top-20" src="{{ asset('imgs/hero/hero1.png') }}" alt="">
+            <img class="absolute h-[632px] left-2/4 top-[1px]" src="{{ asset('imgs/hero/hero1.png') }}" alt="">
         </div>
     </div>
     <div class="flex gap-x-20 p-[200px] bg-cSecondary items-center animate-fade-in-up">
