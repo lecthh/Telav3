@@ -3,6 +3,7 @@
 use App\Http\Controllers\Review;
 use App\Http\Controllers\Customization;
 use App\Http\Controllers\GoogleAuth;
+use App\Http\Controllers\PartnerRegistration;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SelectAparrelController;
 use App\Http\Controllers\SelectProductionCompanyController;
@@ -16,15 +17,8 @@ Route::get('/', function () {
 })->name('home');
 
 // FRONTEND BECOME A PARTNER ROUTES
-
-Route::get('/partner-registration', function () {
-    return view('partner.partner-registration');
-});
-
-Route::get('/partner-confirmation', function () {
-    return view('partner.partner-confirmation');
-});
-
+Route::get('/partner-registration', [PartnerRegistration::class, 'partnerRegistration'])->name('partner-registration');
+Route::get('/partner-confirmation', [PartnerRegistration::class, 'partnerConfirmation'])->name('partner-confirmation');
 
 
 

@@ -69,6 +69,7 @@ class DatabaseSeeder extends Seeder
                 'address' => '1234 Main St, City, State, 12345',
                 'phone' => '123-456-7890',
                 'avg_rating' => 4.5,
+                'apparel_type' => json_encode([1, 2, 3, 4]),
                 'review_count' => 10,
             ],
             [
@@ -78,6 +79,7 @@ class DatabaseSeeder extends Seeder
                 'address' => '1234 Main St, City, State, 12345',
                 'phone' => '123-456-7890',
                 'avg_rating' => 4.5,
+                'apparel_type' => json_encode([1, 2, 3, 4]),
                 'review_count' => 10,
             ],
             [
@@ -87,6 +89,7 @@ class DatabaseSeeder extends Seeder
                 'address' => '1234 Main St, City, State, 12345',
                 'phone' => '123-456-7890',
                 'avg_rating' => 4.2,
+                'apparel_type' => json_encode([1, 2, 3, 4]),
                 'review_count' => 4,
             ],
             [
@@ -95,6 +98,7 @@ class DatabaseSeeder extends Seeder
                 'production_type' => json_encode([1, 2, 3]),
                 'address' => '1234 Main St, City, State, 12345',
                 'phone' => '123-456-7890',
+                'apparel_type' => json_encode([1, 2, 3, 4]),
                 'avg_rating' => 3,
                 'review_count' => 8,
             ],
@@ -105,6 +109,7 @@ class DatabaseSeeder extends Seeder
                 'address' => '1234 Main St, City, State, 12345',
                 'phone' => '123-456-7890',
                 'avg_rating' => 4.5,
+                'apparel_type' => json_encode([1, 2, 3, 4]),
                 'review_count' => 10,
             ],
             [
@@ -114,6 +119,7 @@ class DatabaseSeeder extends Seeder
                 'address' => '1234 Main St, City, State, 12345',
                 'phone' => '123-456-7890',
                 'avg_rating' => 3,
+                'apparel_type' => json_encode([1, 2, 3, 4]),
                 'review_count' => 8,
             ],
             [
@@ -123,6 +129,7 @@ class DatabaseSeeder extends Seeder
                 'address' => '1234 Main St, City, State, 12345',
                 'phone' => '123-456-7890',
                 'avg_rating' => 4.5,
+                'apparel_type' => json_encode([1, 2, 3, 4]),
                 'review_count' => 10,
             ],
             [
@@ -132,6 +139,7 @@ class DatabaseSeeder extends Seeder
                 'address' => '1234 Main St, City, State, 12345',
                 'phone' => '123-456-7890',
                 'avg_rating' => 4.2,
+                'apparel_type' => json_encode([1, 2, 3, 4]),
                 'review_count' => 4,
             ],
         ]);
