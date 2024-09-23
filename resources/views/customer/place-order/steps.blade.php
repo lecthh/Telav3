@@ -46,7 +46,7 @@
     <!-- Step 5 -->
     <li>
         <a wire:navigate
-            href="{{ $currentStep >= 5 ? route('customer.place-order.review') : '#' }}"
+            href="{{ $currentStep >= 5 ? route('customer.place-order.review', ['apparel' => $apparel, 'productionType' => $productionType, 'company' => $company]) : '#' }}"
             class="flex flex-col w-16 h-16 p-6 rounded-full items-center justify-center 
                   {{ $currentStep >= 5 ? (Route::is('customer.place-order.review') ? 'bg-cGreen text-black' : 'bg-cGrey text-cDarkGrey') : 'bg-cGrey text-gray-400 cursor-not-allowed' }}"
             {{ $currentStep >= 5 ? '' : 'onclick="return false;"' }}>
