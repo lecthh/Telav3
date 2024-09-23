@@ -19,7 +19,7 @@
                 Continue with Email
             </div>
             <span class="text-sm">or</span>
-            <a wire:navigate href=" {{route('google.redirect') }} " class="flex w-full rounded-md px-6 py-[14px] gap-x-3 bg-white border border-black text-black text-base items-center justify-center">
+            <a href="{{ route('google.redirect') }}" class="flex w-full rounded-md px-6 py-[14px] gap-x-3 bg-white border border-black text-black text-base items-center justify-center">
                 @include('svgs.google')
                 Continue with Google
             </a>

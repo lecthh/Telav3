@@ -6,19 +6,20 @@
     </div>
     <div class="flex gap-x-6 items-center" x-data="{ isOpen: false }">
         <div class="flex gap-x-3">
-            <a href="">@include('svgs.inbox-empty')</a>
-            <a href="" @click.prevent="isOpen = !isOpen">@include('svgs.bell')</a>
-            <a href="">@include('svgs.basket')</a>
+            <button href="">@include('svgs.inbox-empty')</button>
+            <button href="" @click.prevent="isOpen = !isOpen">@include('svgs.bell')</button>
+            <button href="">@include('svgs.basket')</button>
         </div>
-        <div x-show="isOpen" @click.away="isOpen = false" class="absolute top-16 animate-fade-in" x-cloak>
+        <button x-show="isOpen" @click.away="isOpen = false" class="absolute top-16 animate-fade-in" x-cloak>
             @livewire('modal-notification')
-        </div>
+        </button>
         <!-- if user logged in, change to user name -->
         @if(Auth::check())
             <a href="">{{ Auth::user()->name }}</a>
         @else
-            <a href="{{ route('google.redirect') }}">Login/Sign Up</a>
+            <button onclick="Livewire.dispatch('openModal', { component: 'modal-login' })" href="">Login/Sign Up</button>
         @endif
         @livewire('button', ['text' => 'Order Now'])
     </div>
 </nav>
+@livewire('wire-elements-modal')

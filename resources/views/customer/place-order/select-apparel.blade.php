@@ -11,9 +11,9 @@
         rel="stylesheet">
     @vite('resources/css/app.css')
 </head>
-@include('layout.nav')
 
 <body class="flex flex-col h-screen justify-between">
+    @include('layout.nav')
     <div class="font-inter bg-white flex flex-col px-[200px] py-[100px] gap-y-[60px] animate-fade-in">
         <div class="flex flex-col gap-y-10">
             @include('customer.place-order.steps', ['currentStep' => $currentStep])

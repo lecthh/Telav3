@@ -40,6 +40,7 @@
             </div>
         </div>
     </div>
+    @livewire('modal-login')
 </body>
 @include('layout.footer')
 </html>
