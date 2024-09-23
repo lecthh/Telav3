@@ -10,46 +10,35 @@
     @vite('resources/css/app.css')
 </head>
 
-<body>
+<body class="flex flex-col h-screen justify-between">
     @include('layout.nav')
     <div class="flex flex-col gap-y-[60px] px-[200px] py-[100px]">
         <div class="flex flex-col gap-y-5">
-            <div class="flex flex-col gap-y-3">
+            <div class="flex flex-col gap-y-3 pb-[20px]">
                 <h1 class="font-gilroy font-bold text-5xl">Profile Page</h1>
             </div>
 
-            <!-- GAP-X-5 NOT GIVING SPACING FOR SOME REASON -->
-            <div class="flex flex-row gap-x-5 ">
-                <div class="flex flex-row gap-x-[60px] py-3">
-                    <h1 class="font-inter font-bold text-2xl text-cPrimary">Basics</h1>
-                </div>
-                <div class="flex flex-row gap-x-[60px] py-3">
-                    <h1 class="font-inter font-bold text-2xl">Orders</h1>
-                </div>
-                <div class="flex flex-row gap-x-[60px] py-3">
-                    <h1 class="font-inter font-bold text-2xl">Reviews</h1>
-                </div>                                
+            <div class="flex mb-4 gap-x-[20px]">
+                <a href="{{ route('customer.profile.basics') }}" class="font-inter text-[24px] font-bold text-cPrimary underline underline-offset-8 transition-colors duration-200 hover:text-purple-700">Basics</a>
+                <a href="{{ route('customer.profile.orders') }}" class="font-inter text-[24px] font-bold text-black transition-colors duration-200 hover:underline underline-offset-8 hover:text-cPrimary">Order</a>
+                <a href="{{ route('customer.profile.reviews') }}" class="font-inter text-[24px] font-bold text-black transition-colors duration-200 hover:underline underline-offset-8 hover:text-cPrimary">Reviews</a>
             </div>
 
-            <div class="flex flex-col gap-y-6 w-[600px]">
-                <div class="flex flex-col gap-y-4">
-                    <h2 class="font-inter font-bold text-lg">Display Name</h2>
-                    <div class="flex flex-row gap-x-2.5 px-5 py-4 border border-black rounded-lg">
-                        <h3 class="font-inter text-base">Jane</h3>
+            <div class="flex flex-col mb-[30px] gap-y-6 w-[600px]">
+                <form action="" method="POST" class="space-y-7">
+                    @csrf
+                    <div>
+                        <h2 class="font-inter font-bold text-lg pb-[16px]">Display Name</h2>
+                        <input type="text" id="display_name" name="display_name" class="w-full p-3 border border-black rounded-md" value="Jane">
                     </div>
-                </div>
-                <div class="flex flex-col gap-y-4">
-                    <h2 class="font-inter font-bold text-lg">Email</h2>
-                    <div class="flex flex-row gap-x-2.5 px-5 py-4 border border-black rounded-lg">
-                        <h3 class="font-inter text-base">jane@gmail.com</h3>
+                    <div>
+                        <h2 class="font-inter font-bold text-lg pb-[16px]">Email</h2>
+                        <input type="email" id="email" name="email" class="w-full p-3 border border-black rounded-md" value="jane@gmail.com">
                     </div>
-                </div>
-                <div class="flex flex-col gap-y-4">
-                    <h2 class="font-inter font-bold text-lg">Mobile no.</h2>
-                    <div class="flex flex-row gap-x-2.5 px-5 py-4 border border-black rounded-lg">
-                        <h3 class="font-inter text-base">Jane</h3>
+                    <div>
+                        <h2 class="font-inter font-bold text-lg pb-[16px]">Mobile no.</h2>
+                        <input type="tel" id="mobile_no" name="mobile_no" class="w-full p-3 border border-black rounded-md" value="+63 054 4802 094">
                     </div>
-                </div>                                
             </div>
 
             <div class="flex flex-row gap-x-3 h-[50px]">
@@ -58,10 +47,11 @@
                 </div>
             </div>
 
+            </form>
         </div>
-
-        <div class="flex flex-col gap-y-6"></div>
+    </div>
 </body>
 
+@include('layout.footer')
 
 </html>
