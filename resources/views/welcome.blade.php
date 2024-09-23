@@ -42,5 +42,4 @@
     </div>
 </body>
 @include('layout.footer')
-@include('customer.modal-login')
 </html>

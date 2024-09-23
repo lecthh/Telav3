@@ -14,7 +14,7 @@
 @include('layout.nav')
 
 <body class="flex flex-col h-screen justify-between">
-    <div class="font-inter bg-white flex flex-col px-[200px] py-[100px] gap-y-[60px]">
+    <div class="font-inter bg-white flex flex-col px-[200px] py-[100px] gap-y-[60px] animate-fade-in">
         <div class="flex flex-col gap-y-10">
             @include('customer.place-order.steps', ['currentStep' => $currentStep])
             <div class="flex flex-col gap-y-3">

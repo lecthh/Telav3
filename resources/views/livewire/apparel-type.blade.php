@@ -2,7 +2,7 @@
     <ul class="flex gap-x-6">
         @foreach($apparelTypes as $apparelType)
         <li
-            class="flex flex-col gap-y-4 p-6 rounded-lg bg-cGrey items-center justify-center transition ease-in-out hover:shadow-lg cursor-pointer
+            class="flex flex-col gap-y-4 p-6 rounded-lg bg-cGrey items-center justify-center transition ease-in-out hover:shadow-lg hover:animate-fade-in-up cursor-pointer
             {{ $selectedApparelType === $apparelType->id ? 'border-2 border-purple-500' : 'border-gray-300' }}"
             wire:click="selectApparelType({{ $apparelType->id }})">
             <img class="" src="{{ asset($apparelType->img) }}" alt="">

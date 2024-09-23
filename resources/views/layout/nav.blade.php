@@ -14,7 +14,11 @@
             @livewire('modal-notification')
         </div>
         <!-- if user logged in, change to user name -->
-        <a href="">Login/Sign Up</a>
+        @if(Auth::check())
+            <a href="">{{ Auth::user()->name }}</a>
+        @else
+            <a href="{{ route('google.redirect') }}">Login/Sign Up</a>
+        @endif
         @livewire('button', ['text' => 'Order Now'])
     </div>
 </nav>
