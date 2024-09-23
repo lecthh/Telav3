@@ -12,9 +12,11 @@
 
     <!-- Step 2 -->
     <li>
-        <a href="{{ $currentStep >= 2 ? route('customer.place-order.select-production-type', ['apparel' => $apparel]) : '#' }}"
+        <a wire:navigate
+            href="{{ $currentStep >= 2 ? route('customer.place-order.select-production-type', ['apparel' => $apparel]) : '#' }}"
             class="flex flex-col w-16 h-16 p-6 rounded-full items-center justify-center 
-           {{ $currentStep >= 2 ? 'bg-cGreen text-black' : 'bg-cGrey text-cDarkGrey cursor-not-allowed' }}">
+                  {{ $currentStep === 2 ? 'bg-cGreen text-black' : ($currentStep > 2 ? 'bg-cGrey text-cDarkGrey' : 'bg-cGrey text-gray-400 cursor-not-allowed') }}"
+            {{ $currentStep >= 2 ? '' : 'onclick="return false;"' }}>
             2
         </a>
     </li>
@@ -22,7 +24,7 @@
     <!-- Step 3 -->
     <li>
         <a wire:navigate
-            href="{{ $currentStep >= 3 ? route('customer.place-order.select-production-company') : '#' }}"
+            href="{{ $currentStep >= 3 ? route('customer.place-order.select-production-company', ['apparel' => $apparel, 'productionType' => $productionType]) : '#' }}"
             class="flex flex-col w-16 h-16 p-6 rounded-full items-center justify-center 
                   {{ $currentStep >= 3 ? (Route::is('customer.place-order.select-production-company') ? 'bg-cGreen text-black' : 'bg-cGrey text-cDarkGrey') : 'bg-cGrey text-gray-400 cursor-not-allowed' }}"
             {{ $currentStep >= 3 ? '' : 'onclick="return false;"' }}>

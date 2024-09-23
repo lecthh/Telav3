@@ -28,12 +28,8 @@
                 @livewire('include.base-price-filter')
             </div>
             <div class="flex gap-y-6">
-                @livewire('production-company-card')
+                @livewire('production-company-card', ['apparel' => $apparel, 'productionType' => $productionType])
             </div>
-        </div>
-        <div class="flex justify-start gap-x-3">
-            @livewire('button', ['style' => 'greyed', 'text' => 'Back'])
-            @livewire('button', ['text' => 'Continue'])
         </div>
     </div>
 </body>
