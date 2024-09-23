@@ -10,7 +10,7 @@ class SelectProductionCompanyController extends Controller
     public function selectProductionCompany($apparel, $productionType)
     {
         $currentStep = 3;
-        return view('customer.place-order.select-production-company', compact('apparel', 'productionType'));
+        return view('customer.place-order.select-production-company', compact('apparel', 'productionType', 'currentStep'));
     }
 
     public function selectProductionCompanyPost(Request $request)

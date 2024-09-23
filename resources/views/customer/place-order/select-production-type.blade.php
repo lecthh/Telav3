@@ -22,11 +22,8 @@
                 <p class="font-inter text-base w-[447px]">Next, decide how you want your design to come to life. You can choose from methods like screen printing or embroidery—whatever best fits your vision!</p>
             </div>
         </div>
-        @livewire('production-type')
-        <div class="flex justify-start gap-x-3">
-            @livewire('button', ['style' => 'greyed', 'text' => 'Back'])
-            @livewire('button', ['text' => 'Continue'])
-        </div>
+        @livewire('production-type', ['apparel' => $apparel])
+
     </div>
     @include('layout.footer')
 </body>
