@@ -6,8 +6,9 @@ use Illuminate\Http\Request;
 
 class Customization extends Controller
 {
-    public function customization()
+    public function customization($apparel, $productionType, $company)
     {
-        return view('customer.place-order.customization');
+        $currentStep = 4;
+        return view('customer.place-order.customization', compact('apparel', 'productionType', 'company', 'currentStep'));
     }
 }
