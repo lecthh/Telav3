@@ -17,7 +17,7 @@
     <div class="font-inter bg-white flex flex-col px-[200px] py-[100px] gap-y-[60px]">
         <div class="flex flex-col gap-y-10">
             @include('customer.place-order.steps')
-            <div class="flex flex-col gap-y-3">
+            <div class="flex flex-col gap-y-3 animate-fade-in">
                 <h1 class="font-gilroy font-bold text-5xl w-[447px]">Choose Production Type</h1>
                 <p class="font-inter text-base w-[447px]">Next, decide how you want your design to come to life. You can choose from methods like screen printing or embroidery—whatever best fits your vision!</p>
             </div>

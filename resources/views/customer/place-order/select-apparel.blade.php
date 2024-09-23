@@ -16,7 +16,7 @@
     <div class="font-inter bg-white flex flex-col px-[200px] py-[100px] gap-y-[60px]">
         <div class="flex flex-col gap-y-10">
             @include('customer.place-order.steps')
-            <div class="flex flex-col gap-y-3">
+            <div class="flex flex-col gap-y-3 animate-fade-in delay-800">
                 <h1 class="font-gilroy font-bold text-5xl w-[447px]">Choose an Apparel</h1>
                 <p class="font-inter text-base w-[447px]">Start by picking your favorite type and style of apparel. Whether it's a t-shirt, hoodie, or jersey, we've got plenty of options to suit your needs!</p>
             </div>

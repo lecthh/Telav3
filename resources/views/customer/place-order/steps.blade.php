@@ -1,4 +1,4 @@
-<ul class="flex gap-x-4 font-gilroy font-bold text-2xl">
+<ul class="flex gap-x-4 font-gilroy font-bold text-2xl animate-fade-in-up">
     <li>
         <a wire:navigate href="{{ route('customer.place-order.select-apparel') }}" class="flex flex-col w-16 h-16 p-6 rounded-full items-center justify-center {{ Route::is('customer.place-order.select-apparel') ? 'bg-cGreen text-black' : 'bg-cGrey text-cDarkGrey' }}">
             1

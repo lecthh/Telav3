@@ -2,7 +2,7 @@
     @foreach($productionCompanies->chunk(5) as $chunk)
     <div class="flex gap-x-4 justify-start">
         @foreach($chunk as $productionCompany)
-        <div class="flex flex-col gap-y-4 p-4 rounded-md bg-[#F4F4F4]">
+        <div class="flex flex-col gap-y-4 p-4 rounded-md bg-[#F4F4F4] hover:animate-vertical-bounce hover:drop-shadow-md cursor-pointer">
             <div class="flex flex-col gap-y-3 w-[168px]">
                 <img class="object-cover" src="{{ asset($productionCompany->company_logo) }}" alt="{{ $productionCompany->company_name }}">
             </div>
