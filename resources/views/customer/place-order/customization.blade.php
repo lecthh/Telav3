@@ -71,8 +71,11 @@
         </div>
 
         <div class="flex justify-start gap-x-3">
-            @livewire('button', ['style' => 'greyed', 'text' => 'Back'])
-            <button type="submit" class="bg-cPrimary text-white px-6 py-2 rounded-xl">Continue</button>
+            <a href="{{ route('customer.place-order.select-production-company', ['apparel' => $apparel, 'productionType' => $productionType]) }}"
+                class="flex bg-[#9CA3AF] bg-opacity-20 text-opacity-50 rounded-xl text-black gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-gray-600">
+                Back
+            </a>
+            @livewire('button', ['text' => 'Continue'])
         </div>
     </form>
     @include('layout.footer')
@@ -83,15 +86,13 @@
         const uploadButton = document.getElementById('uploadButton');
         const previewContainer = document.getElementById('previewContainer');
 
-        // Open file dialog when the upload button is clicked
         uploadButton.addEventListener('click', function() {
             mediaInput.click();
         });
 
-        // Handle file selection and update previews
         mediaInput.addEventListener('change', function(event) {
             const files = event.target.files;
-            previewContainer.innerHTML = ''; // Clear previous previews
+            previewContainer.innerHTML = '';
 
             Array.from(files).forEach(file => {
                 if (file.type.startsWith('image/')) {

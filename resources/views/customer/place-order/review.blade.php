@@ -66,7 +66,7 @@
             <hr class="border-cPrimary">
             <div class="flex gap-x-10">
                 @foreach ($customization['media'] as $media)
-                <div class="flex border w-[168px] h-[132px] rounded-md border-cPrimary bg-cAccent">
+                <div class="flex border w-[168px] h-[132px] rounded-md border-cPrimary bg-white">
                     <img src="{{ asset('storage/' . $media) }}" alt="Design" class="object-cover w-full h-full rounded-md">
                 </div>
                 @endforeach
