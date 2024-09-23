@@ -12,7 +12,7 @@
 </head>
 @include('layout.nav')
 
-<body class="flex flex-col h-screen justify-between">
+<body class="flex flex-col h-screen justify-between animate-fade-in">
     <form method="POST" action="{{ route('customer.place-order.customization-post', ['apparel' => $apparel, 'productionType' => $productionType, 'company' => $company]) }}" enctype="multipart/form-data" class="font-inter bg-white flex flex-col px-[200px] py-[100px] gap-y-[60px]">
         @csrf
         <div class="flex flex-col gap-y-10">
@@ -46,11 +46,11 @@
                 <h3 class="text-lg font-bold">Order Type</h3>
                 <fieldset class="flex flex-col gap-y-2">
                     <label class="flex items-center gap-x-2">
-                        <input id="bulk" type="radio" name="order_type" value="bulk" class="border border-black w-4 h-4 rounded-full" />
+                        <input id="bulk" type="radio" name="order_type" value="bulk" class="border border-black w-4 h-4 p-1 py-1 rounded-full checked:bg-cPrimary checked:hover:bg-cPrimary checked:active:bg-cPrimary checked:focus:bg-cPrimary focus:bbg-cPrimary focus:outline-none focus:ring-1 focus:ring-cPrimary focus:bg-cPrimary " />
                         Bulk Order (Min. of 10 pcs.)
                     </label>
                     <label class="flex items-center gap-x-2">
-                        <input id="single" type="radio" name="order_type" value="single" class="border border-black w-4 h-4 rounded-full" />
+                        <input id="single" type="radio" name="order_type" value="single" class="border border-black w-4 h-4 p-1 py-1 rounded-full checked:bg-cPrimary checked:hover:bg-cPrimary checked:active:bg-cPrimary checked:focus:bg-cPrimary focus:bbg-cPrimary focus:outline-none focus:ring-1 focus:ring-cPrimary focus:bg-cPrimary " />
                         Single Order
                     </label>
                 </fieldset>
@@ -59,11 +59,11 @@
                 <h3 class="text-lg font-bold">Customization</h3>
                 <fieldset class="flex flex-col gap-y-2">
                     <label class="flex items-center gap-x-2">
-                        <input id="standard" type="radio" name="custom_type" value="standard" class="border border-black w-4 h-4 rounded-full" />
+                        <input id="standard" type="radio" name="custom_type" value="standard" class="border border-black w-4 h-4 p-1 py-1 rounded-full checked:bg-cPrimary checked:hover:bg-cPrimary checked:active:bg-cPrimary checked:focus:bg-cPrimary focus:bbg-cPrimary focus:outline-none focus:ring-1 focus:ring-cPrimary focus:bg-cPrimary " />
                         Standard Customization
                     </label>
                     <label class="flex items-center gap-x-2">
-                        <input id="personalized" type="radio" name="custom_type" value="personalized" class="border border-black w-4 h-4 rounded-full" />
+                        <input id="personalized" type="radio" name="custom_type" value="personalized" class="border border-black w-4 h-4 p-1 py-1 rounded-full checked:bg-cPrimary checked:hover:bg-cPrimary checked:active:bg-cPrimary checked:focus:bg-cPrimary focus:bbg-cPrimary focus:outline-none focus:ring-1 focus:ring-cPrimary focus:bg-cPrimary" />
                         Personalized Customization
                     </label>
                 </fieldset>

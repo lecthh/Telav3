@@ -1,4 +1,4 @@
-<ul class="flex gap-x-4 font-gilroy font-bold text-2xl">
+<ul class="flex gap-x-4 font-gilroy font-bold text-2xl animate-fade-in-up">
     <!-- Step 1 -->
     <li>
         <a wire:navigate
