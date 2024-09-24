@@ -6,9 +6,10 @@ use Illuminate\Http\Request;
 
 class SelectProductionTypeController extends Controller
 {
-    public function selectProductionType()
+    public function selectProductionType($apparel)
     {
-        return view('customer.place-order.select-production-type');
+        $currentStep = 2;
+        return view('customer.place-order.select-production-type', compact('currentStep', 'apparel'));
     }
     // public function selectProductionType($apparel)
     // {

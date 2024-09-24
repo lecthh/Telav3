@@ -17,23 +17,19 @@
 <body class="flex flex-col h-screen justify-between">
     <div class="font-inter bg-white flex flex-col px-[200px] py-[100px] gap-y-[60px]">
         <div class="flex flex-col gap-y-10">
-            @include('customer.place-order.steps')
+            @include('customer.place-order.steps', ['currentStep' => $currentStep])
             <div class="flex flex-col gap-y-3">
                 <h1 class="font-gilroy font-bold text-5xl">Choose a Production Company</h1>
                 <p class="font-inter text-base">Select a trusted production company to bring your custom apparel to life.</p>
             </div>
         </div>
-        <div class="flex flex-col gap-y-6">
+        <div class="flex flex-col gap-y-6 animate-fade-in">
             <div class="flex justify-start">
                 @livewire('include.base-price-filter')
             </div>
             <div class="flex gap-y-6">
-                @livewire('production-company-card')
+                @livewire('production-company-card', ['apparel' => $apparel, 'productionType' => $productionType])
             </div>
-        </div>
-        <div class="flex justify-start gap-x-3">
-            @livewire('button', ['style' => 'greyed', 'text' => 'Back'])
-            @livewire('button', ['text' => 'Continue'])
         </div>
     </div>
 </body>

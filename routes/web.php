@@ -2,33 +2,33 @@
 
 use App\Http\Controllers\Review;
 use App\Http\Controllers\Customization;
+use App\Http\Controllers\GoogleAuth;
+use App\Http\Controllers\PartnerRegistration;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SelectAparrelController;
 use App\Http\Controllers\SelectProductionCompanyController;
 use App\Http\Controllers\SelectProductionTypeController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Laravel\Socialite\Facades\Socialite;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('home');
 
 // FRONTEND BECOME A PARTNER ROUTES
-
-Route::get('/partner-registration', function () {
-    return view('partner.partner-registration');
-});
-
-Route::get('/partner-confirmation', function () {
-    return view('partner.partner-confirmation');
-});
-
+Route::get('/partner-registration', [PartnerRegistration::class, 'partnerRegistration'])->name('partner-registration');
+Route::get('/partner-confirmation', [PartnerRegistration::class, 'partnerConfirmation'])->name('partner-confirmation');
 
 
 
 Route::get('/select-apparel', [SelectAparrelController::class, 'selectApparel'])->name('customer.place-order.select-apparel');
-Route::get('/select-production-type', [SelectProductionTypeController::class, 'selectProductionType'])->name('customer.place-order.select-production-type');
-Route::get('/select-production-company', [SelectProductionCompanyController::class, 'selectProductionCompany'])->name('customer.place-order.select-production-company');
-Route::get('/customization', [Customization::class, 'customization'])->name('customer.place-order.customization');
-Route::get('/review', [Review::class, 'review'])->name('customer.place-order.review');
+Route::get('/select-production-type/{apparel}', [SelectProductionTypeController::class, 'selectProductionType'])->name('customer.place-order.select-production-type');
+Route::get('/select-production-company/{apparel}/{productionType}', [SelectProductionCompanyController::class, 'selectProductionCompany'])->name('customer.place-order.select-production-company');
+Route::get('/customization/{apparel}/{productionType}/{company}', [Customization::class, 'customization'])->name('customer.place-order.customization');
+Route::post('/customization/{apparel}/{productionType}/{company}', [Customization::class, 'storeCustomization'])->name('customer.place-order.customization-post');
+Route::get('/review/{apparel}/{productionType}/{company}', [Review::class, 'review'])->name('customer.place-order.review');
+
 
 // FRONTEND CART FOLDER ROUTES
 Route::get('/cart', function () {
@@ -43,18 +43,12 @@ Route::get('/confirmation', function () {
     return view('cart.confirmation');
 });
 
-// FRONTEND CUSTOMER PROFILE FOLDER ROUTES
-Route::get('/profile-basics', function () {
-    return view('customer.profile-basics');
-});
+Route::get('/profile-basics', [ProfileController::class, 'showProfileDetails'])->name('customer.profile.basics');
+Route::get('/profile-orders', [ProfileController::class, 'profileOrders'])->name('customer.profile.orders');
+Route::get('/profile-reviews', [ProfileController::class, 'profileReviews'])->name('customer.profile.reviews');
 
-Route::get('/profile-orders', function () {
-    return view('customer.profile-orders');
-});
-
-Route::get('/profile-reviews', function () {
-    return view('customer.profile-reviews');
-});
+Route::get('/auth/google/redirect', [GoogleAuth::class, 'redirectToGoogle'])->name('google.redirect');
+Route::get('/auth/google/callback', [GoogleAuth::class, 'handleGoogleCallback'])->name('google.callback');
 
 
 // Route::get('/select-apparel', [SelectAparrelController::class, 'selectApparel'])->name('select-apparel');

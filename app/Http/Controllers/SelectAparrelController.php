@@ -8,7 +8,7 @@ class SelectAparrelController extends Controller
 {
     public function selectApparel()
     {
-        return view('customer.place-order.select-apparel');
+        $currentStep = 1;
+        return view('customer.place-order.select-apparel', compact('currentStep'));
     }
-    
 }

@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('production_companies', function (Blueprint $table) {
             $table->id();
-            $table->string('company_name');
-            $table->string('company_logo');
+            $table->string('company_name')->unique();
+            $table->string('company_logo')->nullable();
+            $table->string('email')->unique();
             $table->json('production_type');
+            $table->json('apparel_type');
             $table->string('address');
             $table->string('phone');
             $table->float('avg_rating');
