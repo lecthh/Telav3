@@ -1,4 +1,4 @@
-<div class="flex flex-col gap-y-[60px] w-[612px] px-[50px] pt-[52px] pb-[100px] rounded-md bg-white drop-shadow-md justify-center">
+<div class="flex flex-col gap-y-[60px] w-fill px-[50px] pt-[52px] pb-[100px] rounded-md bg-white drop-shadow-md justify-center">
     <div class="flex flex-col gap-y-8">
         <div class="flex justify-end">@include('svgs.delete')</div>
         <div class="flex flex-col gap-y-8 justify-center items-center">

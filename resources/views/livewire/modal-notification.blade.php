@@ -1,4 +1,4 @@
-<div class="absolute z-50 flex h-[708px] w-[472px] flex-col gap-y-10 rounded-md bg-white px-6 py-7 drop-shadow-md" x-show="isOpen" x-cloak x-data="{ selected: 'all' }">
+<div class="absolute z-50 top-8 left-[-52px] flex h-[708px] w-[472px] flex-col gap-y-10 rounded-md bg-white px-6 py-7 drop-shadow-md" x-show="isOpen" x-cloak x-data="{ selected: 'all' }">
     <div class="flex justify-between">
         <h3 class="font-gilroy text-2xl font-bold">Notifications</h3>
         @include('svgs.delete')

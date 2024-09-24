@@ -15,7 +15,7 @@
         </button>
         <!-- if user logged in, change to user name -->
         @if(Auth::check())
-            <a href="">{{ Auth::user()->name }}</a>
+            <a wire:navifate href="{{ route('customer.profile.basics') }}">{{ Auth::user()->name }}</a>
         @else
             <button onclick="Livewire.dispatch('openModal', { component: 'modal-login' })" href="">Login/Sign Up</button>
         @endif
