@@ -17,9 +17,9 @@
             <div class="flex flex-col gap-y-5">
                 <h1 class="font-gilroy font-bold text-5xl">Profile Page</h1>
                 <ul class="flex gap-x-5">
-                    <li><a href="{{ route('customer.profile.basics') }}" class="font-inter text-[24px] font-bold text-cPrimary underline underline-offset-8 transition-colors duration-200 hover:text-purple-700">Basics</a></li>
-                    <li><a href="{{ route('customer.profile.orders') }}" class="font-inter text-[24px] font-bold text-black transition-colors duration-200 hover:underline underline-offset-8 hover:text-cPrimary">Order</a></li>
-                    <li><a href="{{ route('customer.profile.reviews') }}" class="font-inter text-[24px] font-bold text-black transition-colors duration-200 hover:underline underline-offset-8 hover:text-cPrimary">Reviews</a></li>
+                    <li><a wire:navigate href="{{ route('customer.profile.basics') }}" class="font-inter text-[24px] font-bold text-cPrimary underline underline-offset-8 transition-colors duration-200 hover:text-purple-700">Basics</a></li>
+                    <li><a wire:navigate href="{{ route('customer.profile.orders') }}" class="font-inter text-[24px] font-bold text-black transition-colors duration-200 hover:underline underline-offset-8 hover:text-cPrimary">Order</a></li>
+                    <li><a wire:navigate href="{{ route('customer.profile.reviews') }}" class="font-inter text-[24px] font-bold text-black transition-colors duration-200 hover:underline underline-offset-8 hover:text-cPrimary">Reviews</a></li>
                 </ul>
             </div>
 
