@@ -12,7 +12,7 @@
 
 <body class="flex flex-col h-screen justify-start">
     @include('layout.nav')
-    <div class="flex flex-col gap-y-[60px] px-[200px] py-[100px] animate-fade-in">
+    <div class="flex flex-col gap-y-[60px] px-[200px] py-[100px] h-full animate-fade-in">
         <div class="flex flex-col gap-y-5">
             <div class="flex flex-col gap-y-5">
                 <h1 class="font-gilroy font-bold text-5xl">Profile Page</h1>
@@ -24,29 +24,8 @@
             </div>
 
             <div class="flex flex-col mb-[30px] gap-y-6 w-[600px]">
-                <form action="" method="POST" class="space-y-7">
-                    @csrf
-                    <div>
-                        <h2 class="font-inter font-bold text-lg pb-[16px]">Display Name</h2>
-                        <input type="text" id="display_name" name="display_name" class="w-full p-3 border border-black rounded-md" value="Jane">
-                    </div>
-                    <div>
-                        <h2 class="font-inter font-bold text-lg pb-[16px]">Email</h2>
-                        <input type="email" id="email" name="email" class="w-full p-3 border border-black rounded-md" value="jane@gmail.com">
-                    </div>
-                    <div>
-                        <h2 class="font-inter font-bold text-lg pb-[16px]">Mobile no.</h2>
-                        <input type="tel" id="mobile_no" name="mobile_no" class="w-full p-3 border border-black rounded-md" value="+63 054 4802 094">
-                    </div>
+                @livewire('update-profile')
             </div>
-
-            <div class="flex flex-row gap-x-3 h-[50px]">
-                <div class="flex flex-col gap-y-2.5">
-                    @livewire('button', ['text' => 'Save'])
-                </div>
-            </div>
-
-            </form>
         </div>
     </div>
 </body>

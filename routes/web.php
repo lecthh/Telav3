@@ -43,7 +43,7 @@ Route::get('/confirmation', function () {
     return view('cart.confirmation');
 });
 
-Route::get('/profile-basics', [ProfileController::class, 'profileBasics'])->name('customer.profile.basics');
+Route::get('/profile-basics', [ProfileController::class, 'showProfileDetails'])->name('customer.profile.basics');
 Route::get('/profile-orders', [ProfileController::class, 'profileOrders'])->name('customer.profile.orders');
 Route::get('/profile-reviews', [ProfileController::class, 'profileReviews'])->name('customer.profile.reviews');
 
