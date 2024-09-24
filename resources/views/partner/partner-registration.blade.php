@@ -50,6 +50,7 @@
             </div>
         </div>
     </div>
+    @include('layout.footer')
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
