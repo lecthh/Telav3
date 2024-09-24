@@ -12,9 +12,9 @@
 
 <body>
     @include('layout.nav')
-    <div class="flex flex-row">
+    <div class="flex flex-row animate-fade-in">
         <!-- LEFT HALF -->
-        <div class="flex flex-col gap-y-[60px] px-[200px] py-[100px] w-[1200px]">
+        <div class="flex flex-col gap-y-[60px] px-[200px] py-[100px] w-[1200px] justify-start">
             <div class="flex flex-col gap-y-5">
                 <div class="flex flex-col gap-y-3">
                     <h1 class="font-gilroy font-bold text-5xl">Profile Page</h1>

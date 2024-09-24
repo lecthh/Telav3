@@ -16,13 +16,12 @@
     <div class="font-inter bg-white flex flex-col px-[200px] py-[100px] gap-y-[60px]">
         <div class="flex flex-col gap-y-10">
             @include('customer.place-order.steps')
-            <div class="flex flex-col gap-y-3">
+            <div class="flex flex-col gap-y-3 animate-fade-in">
                 <h1 class="font-gilroy font-bold text-5xl">Review Your Order</h1>
                 <p class="font-inter text-base">Before adding your item to the cart, take a moment to review your order to ensure everything is just the way you want it.</p>
             </div>
         </div>
-
-        <div class="flex flex-col gap-y-10 font-inter">
+        <div class="flex flex-col gap-y-10 font-inter animate-fade-in">
             <div class="flex flex-col gap-y-3">
                 <div class="flex flex-col gap-y-3">
                     <h3 class="font-bold">Production Company</h3>

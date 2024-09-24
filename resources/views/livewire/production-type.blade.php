@@ -2,7 +2,7 @@
     <ul class="flex gap-x-6">
         @foreach($productionTypes as $productionType)
         <li
-            class="flex flex-col gap-y-4 p-6 rounded-lg bg-cGrey items-center justify-center transition ease-in-out hover:shadow-lg cursor-pointer
+            class="flex flex-col gap-y-4 p-6 rounded-lg bg-cGrey items-center justify-center transition ease-in-out hover:shadow-lg hover:animate-fade-in-up cursor-pointer
             {{ $selectedProductionType === $productionType->id ? 'border-2 border-purple-500' : 'border-gray-300' }}"
             wire:click="selectProductionType({{ $productionType->id }})">
             <img class="" src="{{ asset($productionType->img) }}" alt="">

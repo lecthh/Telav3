@@ -25,6 +25,7 @@ export default {
         'fade-in': 'fade-in 0.6s ease-in',
         "fade-in-up": "fade-in-up 0.6s ease-in-out",
         "float": "float 1s ease-in-out",
+        "vertical-bounce": "vertical-bounce 0.6s ease-in-out"
       },
       keyframes: {
         'fade-in': {
@@ -50,6 +51,14 @@ export default {
           },
           "100%": {
             "transform": "translateY(0)"
+          }
+        },
+        "vertical-bounce": {
+          "0%, 100%": {
+            "transform": "translateY(0)"
+          },
+          "50%": {
+            "transform": "translateY(-20px)"
           }
         }
       },
