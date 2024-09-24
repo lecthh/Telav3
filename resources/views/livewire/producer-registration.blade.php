@@ -26,6 +26,7 @@
                 @error('production_type') <span class="text-red-500">Production Type Is Required</span> @enderror
             </div>
         </div>
+        <br>
 
         <div class="flex flex-col gap-y-6">
             <div class="flex flex-col gap-y-4">
@@ -43,6 +44,7 @@
                 @error('apparel_type') <span class="text-red-500">Apparel Types are Required</span> @enderror
             </div>
         </div>
+        <br>
 
         <div class="flex flex-col gap-y-6 flex-grow">
             <div class="flex flex-col gap-y-4">
