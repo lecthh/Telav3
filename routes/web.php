@@ -28,6 +28,7 @@ Route::get('/select-production-company/{apparel}/{productionType}', [SelectProdu
 Route::get('/customization/{apparel}/{productionType}/{company}', [Customization::class, 'customization'])->name('customer.place-order.customization');
 Route::post('/customization/{apparel}/{productionType}/{company}', [Customization::class, 'storeCustomization'])->name('customer.place-order.customization-post');
 Route::get('/review/{apparel}/{productionType}/{company}', [Review::class, 'review'])->name('customer.place-order.review');
+Route::post('/review', [Review::class, 'storeReview'])->name('customer.place-order.review-post');
 
 
 // FRONTEND CART FOLDER ROUTES

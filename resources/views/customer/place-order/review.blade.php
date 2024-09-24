@@ -76,6 +76,7 @@
                 <h5 class="text-base">{{ $customization['description'] }}</h5>
             </div>
             <div class=" flex justify-start gap-x-3">
+
                 @livewire('button', ['style' => 'greyed', 'text' => 'Back'])
                 @livewire('button', ['text' => 'Add Item to Cart'])
             </div>
