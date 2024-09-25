@@ -25,6 +25,8 @@ return new class extends Migration
             $table->foreignId('apparel_type_id')->constrained('apparel_types')->onDelete('cascade');
             $table->foreignId('production_type')->constrained('production_types')->onDelete('cascade');
             $table->foreignId('productionCompany')->constrained('production_companies')->onDelete('cascade');
+            $table->string('customization');
+            $table->string('orderType');
             $table->integer('quantity')->default(1);
             $table->json('images')->nullable();
             $table->decimal('price', 10, 2);

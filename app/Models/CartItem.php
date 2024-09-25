@@ -10,12 +10,15 @@ class CartItem extends Model
     use HasFactory;
 
     protected $fillable = [
+
         'cart_id',
         'apparel_type_id',
         'production_type',
         'quantity',
         'productionCompany',
         'price',
+        'customization',
+        'orderType',
     ];
 
     public function cart()
@@ -36,5 +39,10 @@ class CartItem extends Model
     public function productionType()
     {
         return $this->belongsTo(ProductionType::class, 'production_type');
+    }
+
+    public function cartItemImages()
+    {
+        return $this->hasMany(CartItemImages::class, 'cart_item_id', 'cart_item_id');
     }
 }
