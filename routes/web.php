@@ -11,6 +11,7 @@ use App\Http\Controllers\SelectAparrelController;
 use App\Http\Controllers\SelectProductionCompanyController;
 use App\Http\Controllers\SelectProductionTypeController;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -22,7 +23,10 @@ Route::get('/', function () {
 Route::get('/partner-registration', [PartnerRegistration::class, 'partnerRegistration'])->name('partner-registration');
 Route::get('/partner-confirmation', [PartnerRegistration::class, 'partnerConfirmation'])->name('partner-confirmation');
 
-
+//frontend partner dashboard
+Route::get('/printer-dashboard', function() {
+    return view('partner.printer.dashboard');
+});
 
 Route::get('/select-apparel', [SelectAparrelController::class, 'selectApparel'])->name('customer.place-order.select-apparel');
 Route::get('/select-production-type/{apparel}', [SelectProductionTypeController::class, 'selectProductionType'])->name('customer.place-order.select-production-type');
