@@ -36,7 +36,4 @@ class CheckoutController extends Controller
     
         return redirect()->route('customer.checkout')->with('success', 'Cart item removed successfully.');
     }
-    
-    
-    
 }

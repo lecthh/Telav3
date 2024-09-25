@@ -31,7 +31,7 @@
                 @livewire('production-company-card', ['apparel' => $apparel, 'productionType' => $productionType])
             </div>
         </div>
-    </div>
+    </div>  
 </body>
 @include('layout.footer')
 

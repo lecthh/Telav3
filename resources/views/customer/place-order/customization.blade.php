@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     @vite('resources/css/app.css')
-    <script src="https://unpkg.com/alpinejs" defer></script>
 </head>
 @include('layout.nav')
 
@@ -75,7 +74,9 @@
                 class="flex bg-[#9CA3AF] bg-opacity-20 text-opacity-50 rounded-xl text-black gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-gray-600">
                 Back
             </a>
-            @livewire('button', ['text' => 'Continue'])
+            <button type="submit" class="flex bg-cPrimary rounded-xl text-white text-[18px] gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]">
+                Continue
+            </button>
         </div>
     </form>
     @include('layout.footer')
