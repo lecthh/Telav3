@@ -81,11 +81,20 @@
                         class="flex bg-[#9CA3AF] bg-opacity-20 text-opacity-50 rounded-xl text-black gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-gray-600">
                         Back
                     </a>
-                    @livewire('button', ['text' => 'Add Item to Cart'])
+                    @if(Auth::check())
+                        <button type="submit" class="flex bg-cPrimary rounded-xl text-white text-[18px] gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]">
+                            Add Item to Cart
+                        </button>
+                    @else
+                        <button type="button" onclick="Livewire.dispatch('openModal', { component: 'modal-login-signup' })" class="flex bg-cPrimary rounded-xl text-white text-[18px] gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]">
+                            Please sign in to continue
+                        </button>
+                    @endif
                 </div>
             </div>
         </div>
         @include('layout.footer')
+        @livewire('wire-elements-modal')
     </body>
 </form>
 
