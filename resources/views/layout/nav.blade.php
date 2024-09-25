@@ -15,11 +15,11 @@
         </button>
         <!-- if user logged in, change to user name -->
         @if(Auth::check())
-            <a wire:navifate href="{{ route('customer.profile.basics') }}">{{ Auth::user()->name }}</a>
+            <a wire:navigate href="{{ route('customer.profile.basics') }}">{{ Auth::user()->name }}</a>
         @else
             <button onclick="Livewire.dispatch('openModal', { component: 'modal-login' })" href="">Login/Sign Up</button>
         @endif
-        @livewire('button', ['text' => 'Order Now'])
+        <a wire:navigate href="{{ route('customer.place-order.select-apparel') }}" class="flex bg-cPrimary rounded-xl text-white text-[18px] gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]">Order Now</a>
     </div>
 </nav>
 @livewire('wire-elements-modal')
