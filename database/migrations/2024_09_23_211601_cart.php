@@ -24,7 +24,7 @@ return new class extends Migration
             $table->foreignId('cart_id')->constrained('carts', 'cart_id')->onDelete('cascade');
             $table->foreignId('apparel_type_id')->constrained('apparel_types')->onDelete('cascade');
             $table->foreignId('production_type')->constrained('production_types')->onDelete('cascade');
-            $table->foreignId('productionCompany')->constrained('production_companies')->onDelete('cascade');
+            $table->foreignId('production_company_id')->constrained('production_companies')->onDelete('cascade');
             $table->string('customization');
             $table->string('orderType');
             $table->integer('quantity')->default(1);

@@ -15,7 +15,7 @@ class CartItem extends Model
         'apparel_type_id',
         'production_type',
         'quantity',
-        'productionCompany',
+        'production_company_id',
         'price',
         'customization',
         'orderType',
@@ -30,10 +30,9 @@ class CartItem extends Model
     {
         return $this->belongsTo(ApparelType::class, 'apparel_type_id');
     }
-
     public function productionCompany()
     {
-        return $this->belongsTo(ProductionCompany::class, 'productionCompany');
+        return $this->belongsTo(ProductionCompany::class, 'production_company_id');
     }
 
     public function productionType()

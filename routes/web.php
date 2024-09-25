@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\Review;
 use App\Http\Controllers\Customization;
 use App\Http\Controllers\GoogleAuth;
@@ -31,11 +32,8 @@ Route::post('/customization/{apparel}/{productionType}/{company}', [Customizatio
 Route::get('/review/{apparel}/{productionType}/{company}', [Review::class, 'review'])->name('customer.place-order.review');
 Route::post('/review/{apparel}/{productionType}/{company}', [Review::class, 'storeReview'])->name('customer.place-order.review-post');
 Route::get('/cart', [CartController::class, 'showCart'])->name('customer.cart');
-
-
-Route::get('/checkout', function () {
-    return view('cart.checkout');
-});
+Route::post('/cart', [CartController::class, 'checkout'])->name('customer.cart.post');
+Route::get('/checkout', [CheckoutController::class, 'checkout'])->name('customer.checkout');
 
 Route::get('/confirmation', function () {
     return view('cart.confirmation');

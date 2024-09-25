@@ -33,8 +33,8 @@ class Review extends Controller
         $cartItemData = [
             'apparel_type_id' => $apparel,
             'production_type' => $productionType,
-            'price' => 1000, // TO BE IMPLEMENTED
-            'productionCompany' => $company->id,
+            'price' => rand(5, 2500), // TO BE IMPLEMENTED
+            'production_company_id' => $company->id,
             'orderType' => $customization['order_type'],
             'customization' => $customization['custom_type']
         ];
