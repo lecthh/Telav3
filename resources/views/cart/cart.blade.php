@@ -79,11 +79,8 @@
             </div>
         </div>
     </div>
-</form>
+    </form>
     @include('layout.footer')
-</body>
-
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const checkboxes = document.querySelectorAll('.cart-checkbox');
@@ -104,7 +101,7 @@
                 });
             });
         });
-    </script>
+    </script>    
 </body>
 
 </html>
