@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\Review;
 use App\Http\Controllers\Customization;
 use App\Http\Controllers\GoogleAuth;
@@ -28,16 +30,10 @@ Route::get('/select-production-company/{apparel}/{productionType}', [SelectProdu
 Route::get('/customization/{apparel}/{productionType}/{company}', [Customization::class, 'customization'])->name('customer.place-order.customization');
 Route::post('/customization/{apparel}/{productionType}/{company}', [Customization::class, 'storeCustomization'])->name('customer.place-order.customization-post');
 Route::get('/review/{apparel}/{productionType}/{company}', [Review::class, 'review'])->name('customer.place-order.review');
-
-
-// FRONTEND CART FOLDER ROUTES
-Route::get('/cart', function () {
-    return view('cart.cart');
-});
-
-Route::get('/checkout', function () {
-    return view('cart.checkout');
-});
+Route::post('/review/{apparel}/{productionType}/{company}', [Review::class, 'storeReview'])->name('customer.place-order.review-post');
+Route::get('/cart', [CartController::class, 'showCart'])->name('customer.cart');
+Route::post('/cart', [CartController::class, 'checkout'])->name('customer.cart.post');
+Route::get('/checkout', [CheckoutController::class, 'checkout'])->name('customer.checkout');
 
 Route::get('/confirmation', function () {
     return view('cart.confirmation');

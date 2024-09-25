@@ -107,89 +107,62 @@
 
         <!-- RIGHT HALF -->
         <div class="flex flex-col px-[30px] py-[100px] flex-grow bg-[rgba(214,159,251,0.1)]">
-            <div class="flex flex-col gap-y-4">
-                <div class="flex flex-row justify-between items-center">
-                    <h2 class="font-gilroy font-bold text-2xl">EchoPoint Productions</h1>
-                    <a href="">@include('svgs.chevron')</a>                    
-                </div>
-                <hr>
-            </div>
+    @if($cartItems->isEmpty())
+        <p>Your cart is empty.</p>
+    @else
+        @foreach ($cartItems as $cartItem)
             <div class="flex flex-col gap-y-2">
                 <div class="flex flex-col gap-y-8 py-6">
                     <div class="flex flex-row gap-x-3 items-center">
                         <div class="flex flex-col gap-y-4 px-6 py-6 border border-black rounded-lg bg-[#F3F3F3]">
-                            <img src="{{ asset('images/shirt.png') }}" alt="Example Image" class="w-full h-auto">                              
+                            <img src="{{ asset('storage/' . $cartItem->cartItemImages[0]->image) }}" alt="Apparel Image" class="w-full h-auto">                              
                         </div>
                         <div class="flex flex-col gap-y-2 flex-grow">
                             <div class="flex flex-row justify-between">
                                 <h2 class="font-inter text-lg">Apparel Selected:</h2>
-                                <h2 class="font-inter font-bold text-lg">Jersey</h2>                                
+                                <h2 class="font-inter font-bold text-lg">{{ $cartItem->apparelType->name }}</h2>                                
                             </div>  
                             <div class="flex flex-row justify-between">
+                        <h2 class="font-inter text-lg">Production Company:</h2>
+                        <h2 class="font-inter font-bold text-lg">{{ $cartItem->productionCompany->company_name }}</h2>
+                    </div>
+                            <div class="flex flex-row justify-between">
                                 <h2 class="font-inter text-lg">Production Type:</h2>
-                                <h2 class="font-inter font-bold text-lg">Sublimation</h2>                                
+                                <h2 class="font-inter font-bold text-lg">{{ $cartItem->productionType->name }}</h2>                                
                             </div>
                             <div class="flex flex-row justify-between">
                                 <h2 class="font-inter text-lg">Order Type:</h2>
-                                <h2 class="font-inter font-bold text-lg">Bulk</h2>                                
+                                <h2 class="font-inter font-bold text-lg">{{ ucfirst($cartItem->orderType) }}</h2>                                
                             </div>
                             <div class="flex flex-row justify-between">
                                 <h2 class="font-inter text-lg">Customization:</h2>
-                                <h2 class="font-inter font-bold text-lg">Personalized</h2>                                
+                                <h2 class="font-inter font-bold text-lg">{{ ucfirst($cartItem->customization) }}</h2>                                
                             </div>                                
                         </div>
                     </div>
                     <div class="flex flex-col gap-y-1 ml-auto items-end">
-                        <h2 class="font-gilroy font-bold text-2xl text-cPrimary">4996 PHP</h2>
+                        <h2 class="font-gilroy font-bold text-2xl text-cPrimary">{{ $cartItem->price }} PHP</h2>
                         <div class="flex flex-row gap-y-2.5">
-                            <h2 class="font-gilroy font-bold text-base text-cAccent">remove</h2>
+                            
                         </div>                        
                     </div>
                 </div>
                 <hr>
-                <div class="flex flex-col gap-y-8 py-6">
-                    <div class="flex flex-row gap-x-3 items-center">
-                        <div class="flex flex-col gap-y-4 px-6 py-6 border border-black rounded-lg bg-[#F3F3F3]">
-                            <img src="{{ asset('images/shirt.png') }}" alt="Example Image" class="w-full h-auto">                              
-                        </div>
-                        <div class="flex flex-col gap-y-2 flex-grow">
-                            <div class="flex flex-row justify-between">
-                                <h2 class="font-inter text-lg">Apparel Selected:</h2>
-                                <h2 class="font-inter font-bold text-lg">Jersey</h2>                                
-                            </div>  
-                            <div class="flex flex-row justify-between">
-                                <h2 class="font-inter text-lg">Production Type:</h2>
-                                <h2 class="font-inter font-bold text-lg">Sublimation</h2>                                
-                            </div>
-                            <div class="flex flex-row justify-between">
-                                <h2 class="font-inter text-lg">Order Type:</h2>
-                                <h2 class="font-inter font-bold text-lg">Bulk</h2>                                
-                            </div>
-                            <div class="flex flex-row justify-between">
-                                <h2 class="font-inter text-lg">Customization:</h2>
-                                <h2 class="font-inter font-bold text-lg">Personalized</h2>                                
-                            </div>                                
-                        </div>
-                    </div>
-                    <div class="flex flex-col gap-y-1 ml-auto items-end">
-                        <h2 class="font-gilroy font-bold text-2xl text-cPrimary">4996 PHP</h2>
-                        <div class="flex flex-row gap-y-2.5">
-                            <h2 class="font-gilroy font-bold text-base text-cAccent">remove</h2>
-                        </div>                        
-                    </div>
-                </div>                
             </div>
+        @endforeach
 
-            <div class="flex flex-col gap-y-1">
-                <div class="flex flex-row justify-between">
-                    <h2 class="font-gilroy font-bold text-[30px]">Total</h2>
-                    <h2 class="font-gilroy font-bold text-[30px]">10000 PHP</h2>
-                </div> 
-                <div class="flex flex-col gap-y-2.5">
-                    <h3 class="font-inter text-sm text-gray-500">Please note that this payment serves as a down payment to secure the services of the production company and designers. The remaining balance will be due once your order is completed.</h3>
-                </div>               
-            </div>
-         </div>
+        <div class="flex flex-col gap-y-1">
+            <div class="flex flex-row justify-between">
+                <h2 class="font-gilroy font-bold text-[30px]">Total</h2>
+                <h2 class="font-gilroy font-bold text-[30px]">{{ number_format($cartItems->sum('price'), 2) }} PHP</h2>
+            </div> 
+            <div class="flex flex-col gap-y-2.5">
+                <h3 class="font-inter text-sm text-gray-500">Please note that this payment serves as a down payment to secure the services of the production company and designers. The remaining balance will be due once your order is completed.</h3>
+            </div>               
+        </div>
+    @endif
+</div>
+
 
     </div>
     @include('layout.footer')
