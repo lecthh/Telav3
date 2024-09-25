@@ -23,49 +23,14 @@
                     <h4 class="font-inter text-base">Here's what's going on today.</h4>
                 </div>
                 <ul class="flex gap-x-5">
-                    <a href="" class="flex flex-col p-5 bg-white drop-shadow-sm rounded-lg text-base justify-between w-full h-[113px] border border-cGrey">
-                        <div class="flex gap-x-3 items-center">
-                            @include('svgs.shipping-box')
-                            <h5>Pending Requests</h5>
-                        </div>
-                        <h3 class="font-gilroy font-bold text-xl text-black">3</h3>
-                    </a>
-                    <a href="" class="flex flex-col p-5 bg-white drop-shadow-sm rounded-lg text-base justify-between w-full h-[113px] border border-cGrey">
-                        <div class="flex gap-x-3 items-center">
-                            @include('svgs.print-palette')
-                            <h5>Design in Progress</h5>
-                        </div>
-                        <h3 class="font-gilroy font-bold text-xl text-black">3</h3>
-                    </a>
-                    <a href="" class="flex flex-col p-5 bg-white drop-shadow-sm rounded-lg text-base justify-between w-full h-[113px] border border-cGrey">
-                        <div class="flex gap-x-3 items-center">
-                            @include('svgs.print-palette')
-                            <h5>Finalize Order</h5>
-                        </div>
-                        <h3 class="font-gilroy font-bold text-xl text-black">3</h3>
-                    </a>
-                    <a href="" class="flex flex-col p-5 bg-white drop-shadow-sm rounded-lg text-base justify-between w-full h-[113px] border border-cGrey">
-                        <div class="flex gap-x-3 items-center">
-                            @include('svgs.square-clock')
-                            <h5>Awaiting Printing</h5>
-                        </div>
-                        <h3 class="font-gilroy font-bold text-xl text-black">3</h3>
-                    </a>
-                    <a href="" class="flex flex-col p-5 bg-white drop-shadow-sm rounded-lg text-base justify-between w-full h-[113px] border border-cGrey">
-                        <div class="flex gap-x-3 items-center">
-                            @include('svgs.shredder-device')
-                            <h5>Printing in Progress</h5>
-                        </div>
-                        <h3 class="font-gilroy font-bold text-xl text-black">3</h3>
-                    </a>
+                    @livewire('dashboard-card', ['svg' => 'svgs.shipping-box', 'heading' => 'Pending Requests', 'value' => 3])
+                    @livewire('dashboard-card', ['svg' => 'svgs.print-palette', 'heading' => 'Design in Progress', 'value' => 3])
+                    @livewire('dashboard-card', ['svg' => 'svgs.print-palette', 'heading' => 'Finalize Order', 'value' => 3])
+                    @livewire('dashboard-card', ['svg' => 'svgs.square-clock', 'heading' => 'Awaiting Printing', 'value' => 3])
+                    @livewire('dashboard-card', ['svg' => 'svgs.shredder-device', 'heading' => 'Printing in Progress', 'value' => 3])
                 </ul>
                 <ul class="flex gap-x-5 justify-between">
-                    <a href="" class="flex flex-col p-5 bg-white drop-shadow-sm rounded-lg text-base justify-between w-full h-[113px] border border-cGrey">
-                        <div class="flex gap-x-3 items-center">
-                            <h5>Orders Ready for Collection</h5>
-                        </div>
-                        <h3 class="font-gilroy font-bold text-xl text-black">3</h3>
-                    </a>
+                    @livewire('dashboard-card', ['svg' => 'svgs.shredder-device', 'heading' => 'Ready for Collection', 'value' => 3])
                     <li class="flex flex-col p-5 bg-white drop-shadow-sm rounded-lg text-base justify-between w-full h-[113px] border border-cGrey">
                         <div class="flex gap-x-3 items-center">
                             <h5>Payouts</h5>
