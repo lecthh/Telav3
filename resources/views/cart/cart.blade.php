@@ -26,45 +26,47 @@
             <p>Your cart is empty.</p>
             @else
             @foreach ($cartItems as $cartItem)
-            <div class="flex flex-row gap-x-8 items-center">
-                <input type="checkbox" class="cart-checkbox" name="cart_items[]" value="{{ is_array($cartItem) ? $cartItem['id'] : $cartItem->cart_item_id }}" data-price="{{ is_array($cartItem) ? $cartItem['price'] : $cartItem->price }}">
+    <div class="flex flex-row gap-x-8 items-center">
+        <input type="checkbox" class="cart-checkbox" name="cart_items[]" value="{{ $cartItem->cart_item_id }}" data-price="{{ $cartItem->price }}">
 
-                <div class="flex flex-col gap-y-4 px-5 py-5 border border-black rounded-lg bg-[#F3F3F3]">
-                    <div class="flex flex-col gap-y-2 5 p-x-2.5 p-y-2.5">
-                        <img src="{{ asset(is_array($cartItem) ? 'storage/' . $cartItem['images'][0] : 'storage/' . $cartItem->cartItemImages[0]->image) }}" alt="Apparel Image" class="w-full h-auto">
-                    </div>
-                </div>
-                <div class="flex flex-col gap-y-2 flex-grow">
-                    <div class="flex flex-row justify-between">
-                        <h2 class="font-inter text-lg">Apparel Selected:</h2>
-                        <h2 class="font-inter font-bold text-lg">{{ is_array($cartItem) ? $cartItem['apparel_type_name'] : $cartItem->apparelType->name }}</h2>
-                    </div>
-                    <div class="flex flex-row justify-between">
-                        <h2 class="font-inter text-lg">Production Company:</h2>
-                        <h2 class="font-inter font-bold text-lg">{{ is_array($cartItem) ? $cartItem['production_company_name'] : $cartItem->productionCompany->company_name }}</h2>
-                    </div>
-                    <div class="flex flex-row justify-between">
-                        <h2 class="font-inter text-lg">Production Type:</h2>
-                        <h2 class="font-inter font-bold text-lg">{{ is_array($cartItem) ? $cartItem['production_type_name'] : $cartItem->productionType->name }}</h2>
-                    </div>
-                    <div class="flex flex-row justify-between">
-                        <h2 class="font-inter text-lg">Order Type:</h2>
-                        <h2 class="font-inter font-bold text-lg">{{ is_array($cartItem) ? ucfirst($cartItem['orderType']) : ucfirst($cartItem->orderType) }}</h2>
-                    </div>
-                    <div class="flex flex-row justify-between">
-                        <h2 class="font-inter text-lg">Customization:</h2>
-                        <h2 class="font-inter font-bold text-lg">{{ is_array($cartItem) ? ucfirst($cartItem['customization']) : ucfirst($cartItem->customization) }}</h2>
-                    </div>
-                </div>
+        <div class="flex flex-col gap-y-4 px-5 py-5 border border-black rounded-lg bg-[#F3F3F3]">
+            <div class="flex flex-col gap-y-2 5 p-x-2.5 p-y-2.5">
+            <img src="{{ asset('storage/' . $cartItem->cartItemImages->first()->image) }}" alt="Apparel Image" class="w-full h-auto">
+
             </div>
-            <div class="flex flex-col gap-y-1 ml-auto items-end">
-                <h2 class="font-gilroy font-bold text-2xl text-cPrimary">{{ is_array($cartItem) ? $cartItem['price'] : $cartItem->price }} PHP</h2>
-                <div class="flex flex-row gap-y-2.5">
-                    <h2 class="font-gilroy font-bold text-base text-cAccent">remove</h2>
-                </div>
+        </div>
+        <div class="flex flex-col gap-y-2 flex-grow">
+            <div class="flex flex-row justify-between">
+                <h2 class="font-inter text-lg">Apparel Selected:</h2>
+                <h2 class="font-inter font-bold text-lg">{{ $cartItem->apparelType->name }}</h2>
             </div>
-            <hr>
-            @endforeach
+            <div class="flex flex-row justify-between">
+                <h2 class="font-inter text-lg">Production Company:</h2>
+                <h2 class="font-inter font-bold text-lg">{{ $cartItem->productionCompany->company_name }}</h2>
+            </div>
+            <div class="flex flex-row justify-between">
+                <h2 class="font-inter text-lg">Production Type:</h2>
+                <h2 class="font-inter font-bold text-lg">{{ $cartItem->productionType->name }}</h2>
+            </div>
+            <div class="flex flex-row justify-between">
+                <h2 class="font-inter text-lg">Order Type:</h2>
+                <h2 class="font-inter font-bold text-lg">{{ ucfirst($cartItem->orderType) }}</h2>
+            </div>
+            <div class="flex flex-row justify-between">
+                <h2 class="font-inter text-lg">Customization:</h2>
+                <h2 class="font-inter font-bold text-lg">{{ ucfirst($cartItem->customization) }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="flex flex-col gap-y-1 ml-auto items-end">
+        <h2 class="font-gilroy font-bold text-2xl text-cPrimary">{{ $cartItem->price }} PHP</h2>
+        <div class="flex flex-row gap-y-2.5">
+            <a href="{{ route('customer.remove-cart-item', ['cartItemId' => $cartItem->cart_item_id]) }}" class="font-gilroy font-bold text-base text-cAccent">Remove</a>
+        </div>
+    </div>
+    <hr>
+@endforeach
+
             @endif
         </div>
 

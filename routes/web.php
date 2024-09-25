@@ -38,6 +38,8 @@ Route::post('/review/{apparel}/{productionType}/{company}', [Review::class, 'sto
 Route::get('/cart', [CartController::class, 'showCart'])->name('customer.cart');
 Route::post('/cart', [CartController::class, 'checkout'])->name('customer.cart.post');
 Route::get('/checkout', [CheckoutController::class, 'checkout'])->name('customer.checkout');
+Route::get('/checkout/delete/{cartItemId}', [CheckoutController::class, 'deleteCartItem'])->name('customer.checkout.delete');
+Route::get('/cart/removeitem/{cartItemId}', [CartController::class, 'removeCartItem'])->name('customer.remove-cart-item');
 
 Route::get('/confirmation', function () {
     return view('cart.confirmation');

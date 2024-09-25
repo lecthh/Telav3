@@ -10,6 +10,7 @@ use App\Models\ProductionCompany;
 use App\Models\ProductionType as ModelsProductionType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class CartController extends Controller
@@ -21,23 +22,26 @@ class CartController extends Controller
             $cartItems = $cart ? CartItem::where('cart_id', $cart->cart_id)
                 ->with(['cartItemImages', 'apparelType', 'productionCompany', 'productionType'])
                 ->get() : collect();
-        } else {
-            $cartItems = collect(Session::get('cart_items', []));
-            $cartItems = $cartItems->map(function ($item) {
-                $apparelType = ApparelType::find($item['apparel_type_id']);
-                $item['apparel_type_name'] = $apparelType ? $apparelType->name : 'Unknown Apparel';
-    
-                $productionCompany = ProductionCompany::find($item['productionCompany']);
-                $item['production_company_name'] = $productionCompany ? $productionCompany->company_name : 'Unknown Company';
-                
-                $productionType = ModelsProductionType::find($item['production_type']);
-                $item['production_type_name'] = $productionType ? $productionType->name : 'Unknown Production Type';
-                return $item;
-            });
         }
         return view('cart.cart', compact('cartItems'));
     }
+    
+    public function removeCartItem($cartItemId)
+    {
+        if (Auth::check()) {
+            $cart = Cart::where('user_id', Auth::id())->first();
+    
 
+            $cartItem = CartItem::where('cart_id', $cart->cart_id)
+                ->where('cart_item_id', $cartItemId) 
+                ->first();
+            if ($cartItem) {
+                DB::table('cart_items')->where('cart_item_id', $cartItemId)->delete();
+            }
+        } 
+        return redirect()->route('customer.cart');
+    }
+    
 
     public function checkout(Request $request)
 {

@@ -107,9 +107,6 @@
 
         <!-- RIGHT HALF -->
         <div class="flex flex-col px-[30px] py-[100px] flex-grow bg-[rgba(214,159,251,0.1)]">
-    @if($cartItems->isEmpty())
-        <p>Your cart is empty.</p>
-    @else
         @foreach ($cartItems as $cartItem)
             <div class="flex flex-col gap-y-2">
                 <div class="flex flex-col gap-y-8 py-6">
@@ -124,7 +121,7 @@
                             </div>  
                             <div class="flex flex-row justify-between">
                         <h2 class="font-inter text-lg">Production Company:</h2>
-                        <h2 class="font-inter font-bold text-lg">{{ $cartItem->productionCompany->company_name }}</h2>
+                        <h2 class="font-inter font-bold text-lg">{{  $cartItem->productionCompany->company_name }}</h2>
                     </div>
                             <div class="flex flex-row justify-between">
                                 <h2 class="font-inter text-lg">Production Type:</h2>
@@ -143,7 +140,8 @@
                     <div class="flex flex-col gap-y-1 ml-auto items-end">
                         <h2 class="font-gilroy font-bold text-2xl text-cPrimary">{{ $cartItem->price }} PHP</h2>
                         <div class="flex flex-row gap-y-2.5">
-                            
+                        <a href="{{ route('customer.checkout.delete', ['cartItemId' => $cartItem->cart_item_id]) }}" class="font-gilroy font-bold text-base text-cAccent">Remove</a>
+
                         </div>                        
                     </div>
                 </div>
@@ -160,7 +158,6 @@
                 <h3 class="font-inter text-sm text-gray-500">Please note that this payment serves as a down payment to secure the services of the production company and designers. The remaining balance will be due once your order is completed.</h3>
             </div>               
         </div>
-    @endif
 </div>
 
 
