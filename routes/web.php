@@ -66,6 +66,19 @@ Route::get('/confirmation', function () {
     return view('cart.confirmation');
 });
 
+//order confirmation
+Route::get('/confirm-bulk', function () {
+    return view('customer.order-confirmation.standard-bulk');
+});
+Route::get('/confirm-bulk-custom', function () {
+    return view('customer.order-confirmation.bulk-customized');
+});
+Route::get('/confirm-jerseybulk-custom', function () {
+    return view('customer.order-confirmation.jersey-bulk-customized');
+});
+
+
+
 // DESIGNER DASHBOARD FOLDER ROUTES
 Route::get('/designer-dashboard', function () {
     return view('partner.designer.dashboard');
