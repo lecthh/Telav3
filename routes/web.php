@@ -34,11 +34,17 @@ Route::prefix('partner')->name('partner.')->group(function () {
         Route::get('/orders', [PrinterOrderController::class, 'index'])->name('orders');
         Route::get('/pending-x', [PrinterOrderController::class, 'pendingOrder'])->name('pending-order-x');
         Route::get('/design-in-progress', [PrinterOrderController::class, 'designInProgress'])->name('design-in-progress');
-        Route::get('/finalize-order', [PrinterOrderController::class, 'finalizeOrder'])->name('finalize-order');
+        Route::get('/design-x', [PrinterOrderController::class, 'designOrder'])->name('design-x');
+        Route::get('/finalize-order', [PrinterOrderController::class, 'finalize'])->name('finalize-order');
+        Route::get('/finalize-x', [PrinterOrderController::class, 'finalizeOrder'])->name('finalize-x');
         Route::get('/awaiting-printing', [PrinterOrderController::class, 'awaitingPrinting'])->name('awaiting-printing');
+        Route::get('/awaiting-x', [PrinterOrderController::class, 'awaitingOrder'])->name('awaiting-x');
         Route::get('/printing-in-progress', [PrinterOrderController::class, 'printingInProgress'])->name('printing-in-progress');
+        Route::get('/printing-x', [PrinterOrderController::class, 'printingOrder'])->name('printing-x');
         Route::get('/ready', [PrinterOrderController::class, 'ready'])->name('ready');
+        Route::get('/ready-x', [PrinterOrderController::class, 'readyOrder'])->name('ready-x');
         Route::get('/completed', [PrinterOrderController::class, 'completed'])->name('completed');
+        Route::get('/completed-x', [PrinterOrderController::class, 'completedOrder'])->name('completed-x');
     });
 });
 

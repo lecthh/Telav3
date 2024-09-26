@@ -22,7 +22,7 @@
                     <div class="flex flex-col gap-y-10">
                         <h1 class="font-gilroy font-bold text-2xl">Orders</h1>
                         @include('partner.printer.order-nav')
-                        <h1 class="font-gilroy font-bold text-xl text-black">Pending Request - Order No.0981</h1>
+                        <h1 class="font-gilroy font-bold text-xl text-black">Design in Progress - Order No.0981</h1>
                         <div class="flex gap-x-10">
                             <div class="flex flex-col">
                                 <div class="flex w-full">
@@ -75,7 +75,7 @@
                                 </div>
                                 <div class="flex">
                                     <div class="w-[10px] bg-cPrimary"></div>
-                                    <div class="flex flex-col bg-white p-5 border-t border-r borer-l w-full">
+                                    <div class="flex flex-col bg-white p-5 border-t border-r border-l w-full">
                                         <div class="flex gap-x-6">
                                             <div class="flex gap-x-2 px-3 py-3 rounded-lg bg-cPrimary bg-opacity-20 items-center justify-center w-[45px] h-[50px]">@include('svgs.receipt-check')</div>
                                             <div class="flex flex-col gap-y-2">
@@ -87,12 +87,24 @@
                                 </div>
                                 <div class="flex">
                                     <div class="w-[10px] bg-cPrimary"></div>
-                                    <div class="flex flex-col bg-white p-5 border rounded-br-lg w-full">
+                                    <div class="flex flex-col bg-white p-5 border-t border-r border-l w-full">
                                         <div class="flex gap-x-6">
                                             <div class="flex gap-x-2 px-3 py-3 rounded-lg bg-cPrimary bg-opacity-20 items-center justify-center w-[45px] h-[50px]">@include('svgs.paintbrush')</div>
                                             <div class="flex flex-col gap-y-2">
                                                 <h4 class="font-inter font-bold text-base">Customization</h4>
                                                 <h4 class="font-inter text-base">Personalized</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex">
+                                    <div class="w-[10px] bg-cPrimary"></div>
+                                    <div class="flex flex-col bg-white p-5 border rounded-br-lg w-full">
+                                        <div class="flex gap-x-6">
+                                            <div class="flex gap-x-2 px-3 py-3 rounded-lg bg-cPrimary bg-opacity-20 items-center justify-center w-[45px] h-[50px]">@include('svgs.paintbrush-1')</div>
+                                            <div class="flex flex-col gap-y-2">
+                                                <h4 class="font-inter font-bold text-base">Designer</h4>
+                                                <h4 class="font-inter text-base">Jane Doe</h4>
                                             </div>
                                         </div>
                                     </div>
@@ -118,31 +130,6 @@
                                             <div class="flex p-3 border border-gray-200 rounded-lg w-fill h-fill">
                                                 <p class="font-inter text-gray-600">I want a super cool design</p>
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="flex flex-col">
-                                    <div class="flex p-3 bg-cPrimary font-gilroy font-bold text-white text-base rounded-t-lg">
-                                        <h3>Assign Designer</h3>
-                                    </div>
-                                    <div class="flex flex-col gap-y-3 p-3 bg-white border rounded-b-lg">
-                                        <div class="flex">
-                                            <div class="flex flex-col gap-y-3 hover:bg-cAccent hover:bg-opacity-20 rounded-lg w-full">
-                                                <div class="flex p-3 rounded-lg w-fill h-fill items-center">
-                                                    <div class="flex gap-x-[18px] p-3">
-                                                        <div class="w-[52px] h-[52px] bg-cAccent rounded-full"><img src="" alt=""></div>
-                                                    </div>
-                                                    <div class="flex flex-col">
-                                                        <h4 class="font-gilroy font-bold text-base">Dunkit Jonathan</h4>
-                                                        <h4 class="font-gilroy font-semibold text-sm text-cDarkGrey">EchoPoint Productions</h4>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="flex justify-end">
-                                            <button type="" class="flex bg-cPrimary rounded-xl text-white text-base gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]">
-                                                Assign Designer
-                                            </button>
                                         </div>
                                     </div>
                                 </div>
