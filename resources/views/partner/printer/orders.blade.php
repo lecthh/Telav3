@@ -13,9 +13,9 @@
 </head>
 
 <body class="flex flex-col h-screen justify-between">
-    <div class="flex flex-col">
+    <div class="flex flex-col h-full">
         <div class="flex p-1 bg-cPrimary font-gilroy font-bold text-white text-sm justify-center">Production Hub</div>
-        <div class="flex">
+        <div class="flex h-full">
             @include('layout.printer')
             <div class="flex flex-col gap-y-10 p-14 bg-[#F9F9F9] w-full">
                 <div class="flex flex-col gap-y-1">

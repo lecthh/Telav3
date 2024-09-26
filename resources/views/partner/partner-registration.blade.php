@@ -10,7 +10,7 @@
     @vite('resources/css/app.css')
 </head>
 
-<body>
+<body class="flex flex-col h-screen justify-between">
     @include('layout.nav')
     <div class="flex flex-row gap-x-2.5 flex-grow">
         <div class="flex flex-col gap-y-[60px] px-[200px] py-[100px]">
@@ -19,7 +19,6 @@
                     <h1 class="font-gilroy font-bold text-5xl">Become a Partner</h1>
                     <h2 class="font-inter text-base">Interested in selling your services with us? Whether you're a production company or a freelance designer, we’d love to collaborate and bring your talents to our platform.</h2>
                 </div>
-
                 <div class="flex flex-row gap-x-2.5">
                     <div class="flex flex-col gap-y-7 flex-grow">
                         <div class="flex flex-col gap-y-6">

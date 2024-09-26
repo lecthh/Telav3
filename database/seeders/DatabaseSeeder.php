@@ -40,6 +40,18 @@ class DatabaseSeeder extends Seeder
             ],
         ]);
 
+        DB::table('role_types')->insert([
+            [
+                'role_name' => 'Customer',
+            ],
+            [
+                'role_name' => 'Production Company Admin',
+            ],
+            [
+                'role_name' => 'Designer Admin',
+            ],
+        ]);
+
         DB::table('production_types')->insert([
             // [
             //     'name' => 'Screen Printing',
@@ -150,6 +162,20 @@ class DatabaseSeeder extends Seeder
                 'apparel_type' => json_encode([1, 2, 3, 4]),
                 'review_count' => 4,
             ],
+        ]);
+        DB::table('order_statuses')->insert([
+            ['name' => 'Order Placed'],
+            ['name' => 'Design in Progress'],
+            ['name' => 'Finalize Order'],
+            ['name' => 'Awaiting Printing'],
+            ['name' => 'Printing in Progress'],
+            ['name' => 'Ready for Collection'],
+        ]);
+        DB::table('order_image_statuses')->insert([
+            ['name' => 'Initial Design'],
+            ['name' => 'Designer Design'],
+            ['name' => 'Revision'],
+            ['name' => 'Final Design'],
         ]);
     }
 }

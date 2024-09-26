@@ -25,11 +25,11 @@
                         <h1 class="font-gilroy font-bold text-xl text-black">Pending Request - Order No.0981</h1>
                         <div class="flex gap-x-10">
                             <div class="flex flex-col">
-                                <div class="flex">
+                                <div class="flex w-full">
                                     <div class="w-[10px] bg-cPrimary"></div>
                                     <div class="flex flex-col bg-white rounded-tr-lg p-5 border-t border-r borer-l">
                                         <div class="flex gap-x-6">
-                                            <div class="flex gap-x-2 px-3 rounded-lg bg-cPrimary bg-opacity-20 items-center justify-center">@include('svgs.calendar')</div>
+                                            <div class="flex gap-x-2 px-3 rounded-lg bg-cPrimary bg-opacity-20 items-center justify-center w-[45px] h-[50px]">@include('svgs.calendar')</div>
                                             <div class="flex flex-col gap-y-2">
                                                 <h4 class="font-inter font-bold text-base">Date Requested</h4>
                                                 <h4 class="font-inter text-base">September 12, 2024</h4>
@@ -39,13 +39,122 @@
                                 </div>
                                 <div class="flex">
                                     <div class="w-[10px] bg-cPrimary"></div>
-                                    <div class="flex flex-col bg-white p-5 border-t border-r borer-l">
+                                    <div class="flex flex-col bg-white p-5 border-t border-r borer-l w-full">
                                         <div class="flex gap-x-6">
-                                            <div class="flex gap-x-2 px-3 py-3 rounded-lg bg-cPrimary bg-opacity-20">@include('svgs.calendar')</div>
+                                            <div class="flex gap-x-2 px-3 py-3 rounded-lg bg-cPrimary bg-opacity-20 items-center justify-center w-[45px] h-[50px]">@include('svgs.user-single')</div>
                                             <div class="flex flex-col gap-y-2">
-                                                <h4 class="font-inter font-bold text-base">Date Requested</h4>
-                                                <h4 class="font-inter text-base">September 12, 2024</h4>
+                                                <h4 class="font-inter font-bold text-base">Customer Name</h4>
+                                                <h4 class="font-inter text-base">Alexis Paramore</h4>
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex">
+                                    <div class="w-[10px] bg-cPrimary"></div>
+                                    <div class="flex flex-col bg-white p-5 border-t border-r borer-l w-full">
+                                        <div class="flex gap-x-6">
+                                            <div class="flex gap-x-2 px-3 py-3 rounded-lg bg-cPrimary bg-opacity-20 items-center justify-center w-[45px] h-[50px]">@include('svgs.email')</div>
+                                            <div class="flex flex-col gap-y-2">
+                                                <h4 class="font-inter font-bold text-base">Email</h4>
+                                                <h4 class="font-inter text-base">alexis@gmail.com</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex">
+                                    <div class="w-[10px] bg-cPrimary"></div>
+                                    <div class="flex flex-col bg-white p-5 border-t border-r borer-l w-full">
+                                        <div class="flex gap-x-6">
+                                            <div class="flex gap-x-2 px-3 py-3 rounded-lg bg-cPrimary bg-opacity-20 items-center justify-center w-[45px] h-[50px]">@include('svgs.shirt')</div>
+                                            <div class="flex flex-col gap-y-2">
+                                                <h4 class="font-inter font-bold text-base">Apparel Type</h4>
+                                                <h4 class="font-inter text-base">T-shirt</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex">
+                                    <div class="w-[10px] bg-cPrimary"></div>
+                                    <div class="flex flex-col bg-white p-5 border-t border-r borer-l w-full">
+                                        <div class="flex gap-x-6">
+                                            <div class="flex gap-x-2 px-3 py-3 rounded-lg bg-cPrimary bg-opacity-20 items-center justify-center w-[45px] h-[50px]">@include('svgs.receipt-check')</div>
+                                            <div class="flex flex-col gap-y-2">
+                                                <h4 class="font-inter font-bold text-base">Order Type</h4>
+                                                <h4 class="font-inter text-base">Bulk</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex">
+                                    <div class="w-[10px] bg-cPrimary"></div>
+                                    <div class="flex flex-col bg-white p-5 border rounded-br-lg w-full">
+                                        <div class="flex gap-x-6">
+                                            <div class="flex gap-x-2 px-3 py-3 rounded-lg bg-cPrimary bg-opacity-20 items-center justify-center w-[45px] h-[50px]">@include('svgs.paintbrush')</div>
+                                            <div class="flex flex-col gap-y-2">
+                                                <h4 class="font-inter font-bold text-base">Customization</h4>
+                                                <h4 class="font-inter text-base">Personalized</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-y-8 w-full">
+                                <div class="flex flex-col">
+                                    <div class="flex p-3 bg-cPrimary font-gilroy font-bold text-white text-base rounded-t-lg">
+                                        <h3>Order Specifications</h3>
+                                    </div>
+                                    <div class="flex gap-x-3 p-3 bg-white border">
+                                        <div class="flex flex-col gap-y-3">
+                                            <h3 class="font-gilroy font-bold text-black text-base">Media</h3>
+                                            <div class="flex gap-x-3">
+                                                <div class="w-[245px] h-[186px] bg-cAccent"></div>
+                                                <div class="w-[245px] h-[186px] bg-cAccent"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-x-3 p-3 bg-white border-r border-l border-b">
+                                        <div class="flex flex-col gap-y-3 w-full">
+                                            <h3 class="font-gilroy font-bold text-black text-base">Description</h3>
+                                            <div class="flex p-3 border border-gray-200 rounded-lg w-fill h-fill">
+                                                <p class="font-inter text-gray-600">I want a super cool design</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col">
+                                    <div class="flex p-3 bg-cPrimary font-gilroy font-bold text-white text-base rounded-t-lg">
+                                        <h3>Assign Designer</h3>
+                                    </div>
+                                    <div class="flex flex-col gap-y-3 p-3 bg-white border rounded-b-lg">
+                                        <div class="flex">
+                                            <div class="flex flex-col gap-y-3 hover:bg-cAccent hover:bg-opacity-20 rounded-lg w-full">
+                                                <div class="flex p-3 rounded-lg w-fill h-fill items-center">
+                                                    <div class="flex gap-x-[18px] p-3">
+                                                        <div class="w-[52px] h-[52px] bg-cAccent rounded-full"><img src="" alt=""></div>
+                                                    </div>
+                                                    <div class="flex flex-col">
+                                                        <h4 class="font-gilroy font-bold text-base">Dunkit Jonathan</h4>
+                                                        <h4 class="font-gilroy font-semibold text-sm text-cDarkGrey">EchoPoint Productions</h4>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex justify-end">
+                                            <button type="" class="flex bg-cPrimary rounded-xl text-white text-base gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]">
+                                                Assign Designer
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col">
+                                    <div class="flex p-3 bg-cPrimary font-gilroy font-bold text-white text-base rounded-t-lg">
+                                        <h3>Actions</h3>
+                                    </div>
+                                    <div class="flex flex-col gap-y-3 p-3 bg-white border rounded-b-lg">
+                                        <div class="flex justify-start">
+                                            <button type="" class="flex bg-red-500 rounded-xl text-white text-base gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-red-600">
+                                                Cancel Order
+                                            </button>
                                         </div>
                                     </div>
                                 </div>

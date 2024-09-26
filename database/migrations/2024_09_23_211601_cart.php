@@ -26,6 +26,7 @@ return new class extends Migration
             $table->foreignId('production_type')->constrained('production_types')->onDelete('cascade');
             $table->foreignId('production_company_id')->constrained('production_companies')->onDelete('cascade');
             $table->string('customization');
+            $table->string('description')->nullable();
             $table->string('orderType');
             $table->integer('quantity')->default(1);
             $table->json('images')->nullable();
