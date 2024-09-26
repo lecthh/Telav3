@@ -11,22 +11,27 @@ return new class extends Migration
      */
     public function up(): void
     {
+
+        Schema::create('role_types', function (Blueprint $table) {
+            $table->id(); 
+            $table->string('role_name')->unique();  
+            $table->timestamps();
+        });
+
         Schema::create('users', function (Blueprint $table) {
             $table->string('user_id')->primary();
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
-            $table->string('role')->default('customer');
+            $table->unsignedBigInteger('role_type_id')->default(1); 
             $table->rememberToken();
             $table->timestamps();
+            $table->string('passwordToken')->nullable();
+
+            $table->foreign('role_type_id')->references('id')->on('role_types')->onDelete('cascade');
         });
 
-        Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email')->primary();
-            $table->string('token');
-            $table->timestamp('created_at')->nullable();
-        });
 
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();

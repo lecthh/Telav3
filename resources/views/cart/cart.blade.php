@@ -106,7 +106,7 @@
                 });
             });
         });
-    </script>
+    </script>    
 </body>
 
 </html>

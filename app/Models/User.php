@@ -21,10 +21,15 @@ class User extends Authenticatable
         'email',
         'password',
         'role_type_id',
+        'passwordToken'
     ];
 
     public function roleType()
     {
         return $this->hasOne(RoleType::class, 'id', 'role_type_id');
+    }
+    public function addressInformation()
+    {
+        return $this->hasOne(AddressInformation::class, 'user_id', 'user_id');
     }
 }
