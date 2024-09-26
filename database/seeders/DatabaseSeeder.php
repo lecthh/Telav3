@@ -40,6 +40,18 @@ class DatabaseSeeder extends Seeder
             ],
         ]);
 
+        DB::table('role_types')->insert([
+            [
+                'role_name' => 'Customer',
+            ],
+            [
+                'role_name' => 'Production Company Admin',
+            ],
+            [
+                'role_name' => 'Designer Admin',
+            ],
+        ]);
+
         DB::table('production_types')->insert([
             // [
             //     'name' => 'Screen Printing',
