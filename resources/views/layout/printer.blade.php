@@ -1,4 +1,4 @@
-<div class="flex flex-col border-r border-black border-opacity-20 h-screen w-[280px]">
+<div class="flex flex-col border-r border-black border-opacity-20 h-full w-[280px]">
     <div class="flex gap-x-2 p-3 border-b border-black border-opacity-20">
         <div class="flex p-1 bg-black bg-opacity-10 rounded-sm">
             @include('svgs.home')
