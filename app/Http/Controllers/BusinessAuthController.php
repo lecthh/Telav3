@@ -44,6 +44,12 @@ class BusinessAuthController extends Controller
         return redirect()->route('login')->with('success', 'Your password has been set.');
     }
 
+    public function logout()
+    {
+        Auth::logout();
+        return redirect()->route('home');
+    }
+
     public function login()
     {
         return view('auth.login_business');

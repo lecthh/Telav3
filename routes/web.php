@@ -26,12 +26,14 @@ Route::get('/', function () {
 Route::get('/partner-registration', [PartnerRegistration::class, 'partnerRegistration'])->name('partner-registration');
 Route::get('/partner-confirmation', [PartnerRegistration::class, 'partnerConfirmation'])->name('partner-confirmation');
 
-//frontend printer partner dashboard
 Route::get('/printer-dashboard', function () {
     return view('partner.printer.dashboard');
-})->name('printer-dashboard');
+})->name('printer-dashboard')->middleware('ProductionAdminOnly');
+
+
 // Printer Partner Routes
-Route::prefix('partner')->name('partner.')->group(function () {
+Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->group(function () {
+
     Route::prefix('printer')->name('printer.')->group(function () {
         Route::get('/orders', [PrinterOrderController::class, 'index'])->name('orders');
         Route::get('/pending-x', [PrinterOrderController::class, 'pendingOrder'])->name('pending-order-x');
@@ -49,6 +51,7 @@ Route::prefix('partner')->name('partner.')->group(function () {
         Route::get('/completed-x', [PrinterOrderController::class, 'completedOrder'])->name('completed-x');
     });
 });
+
 
 
 Route::get('/select-apparel', [SelectAparrelController::class, 'selectApparel'])->name('customer.place-order.select-apparel');
@@ -74,6 +77,7 @@ Route::post('/set-password/store', [BusinessAuthController::class, 'storePasswor
 
 Route::get('/login', [BusinessAuthController::class, 'login'])->name('login');
 Route::post('/login/user', [BusinessAuthController::class, 'loginPost'])->name('login.post');
+Route::get('/logout', [BusinessAuthController::class, 'logout'])->name('logout');
 
 
 //order confirmation
