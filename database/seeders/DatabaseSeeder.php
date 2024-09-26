@@ -163,5 +163,13 @@ class DatabaseSeeder extends Seeder
                 'review_count' => 4,
             ],
         ]);
+        DB::table('order_statuses')->insert([
+            ['name' => 'Order Placed'],
+            ['name' => 'Design in Progress'],
+            ['name' => 'Finalize Order'],
+            ['name' => 'Awaiting Printing'],
+            ['name' => 'Printing in Progress'],
+            ['name' => 'Ready for Collection'],
+        ]);
     }
 }

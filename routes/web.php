@@ -51,11 +51,15 @@ Route::get('/customization/{apparel}/{productionType}/{company}', [Customization
 Route::post('/customization/{apparel}/{productionType}/{company}', [Customization::class, 'storeCustomization'])->name('customer.place-order.customization-post');
 Route::get('/review/{apparel}/{productionType}/{company}', [Review::class, 'review'])->name('customer.place-order.review');
 Route::post('/review/{apparel}/{productionType}/{company}', [Review::class, 'storeReview'])->name('customer.place-order.review-post');
+
 Route::get('/cart', [CartController::class, 'showCart'])->name('customer.cart');
 Route::post('/cart', [CartController::class, 'checkout'])->name('customer.cart.post');
-Route::get('/checkout', [CheckoutController::class, 'checkout'])->name('customer.checkout');
-Route::get('/checkout/delete/{cartItemId}', [CheckoutController::class, 'deleteCartItem'])->name('customer.checkout.delete');
 Route::get('/cart/removeitem/{cartItemId}', [CartController::class, 'removeCartItem'])->name('customer.remove-cart-item');
+
+Route::get('/checkout', [CheckoutController::class, 'checkout'])->name('customer.checkout');
+Route::post('/checkout/create', [CheckoutController::class, 'postCheckout'])->name('customer.checkout.post');
+Route::get('/checkout/delete/{cartItemId}', [CheckoutController::class, 'deleteCartItem'])->name('customer.checkout.delete');
+
 
 Route::get('/set-password/{token}', [BusinessAuthController::class, 'showSetPasswordForm'])->name('set-password');
 Route::post('/set-password/store', [BusinessAuthController::class, 'storePassword'])->name('password.store');

@@ -28,4 +28,8 @@ class User extends Authenticatable
     {
         return $this->hasOne(RoleType::class, 'id', 'role_type_id');
     }
+    public function addressInformation()
+    {
+        return $this->hasOne(AddressInformation::class, 'user_id', 'user_id');
+    }
 }

@@ -14,12 +14,13 @@ return new class extends Migration
         Schema::create('address_information', function (Blueprint $table) {
             $table->id();
             $table->string('user_id')->nullable()->index();
-            $table->string('address'); 
-            $table->string('state');  
-            $table->string('city');   
-            $table->string('zip_code'); 
+            $table->string('address');
+            $table->string('state');
+            $table->string('city');
+            $table->string('zip_code');
+            $table->string('phone_number');
             $table->timestamps();
-            
+
             $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
         });
     }
