@@ -10,6 +10,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SelectAparrelController;
 use App\Http\Controllers\SelectProductionCompanyController;
 use App\Http\Controllers\SelectProductionTypeController;
+use App\Http\Controllers\PrinterOrderController;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
@@ -23,10 +24,24 @@ Route::get('/', function () {
 Route::get('/partner-registration', [PartnerRegistration::class, 'partnerRegistration'])->name('partner-registration');
 Route::get('/partner-confirmation', [PartnerRegistration::class, 'partnerConfirmation'])->name('partner-confirmation');
 
-//frontend partner dashboard
-Route::get('/printer-dashboard', function() {
+//frontend printer partner dashboard
+Route::get('/printer-dashboard', function () {
     return view('partner.printer.dashboard');
+})->name('printer-dashboard');
+// Printer Partner Routes
+Route::prefix('partner')->name('partner.')->group(function () {
+    Route::prefix('printer')->name('printer.')->group(function () {
+        Route::get('/orders', [PrinterOrderController::class, 'index'])->name('orders');
+        Route::get('/pending-x', [PrinterOrderController::class, 'pendingOrder'])->name('pending-order-x');
+        Route::get('/design-in-progress', [PrinterOrderController::class, 'designInProgress'])->name('design-in-progress');
+        Route::get('/finalize-order', [PrinterOrderController::class, 'finalizeOrder'])->name('finalize-order');
+        Route::get('/awaiting-printing', [PrinterOrderController::class, 'awaitingPrinting'])->name('awaiting-printing');
+        Route::get('/printing-in-progress', [PrinterOrderController::class, 'printingInProgress'])->name('printing-in-progress');
+        Route::get('/ready', [PrinterOrderController::class, 'ready'])->name('ready');
+        Route::get('/completed', [PrinterOrderController::class, 'completed'])->name('completed');
+    });
 });
+
 
 Route::get('/select-apparel', [SelectAparrelController::class, 'selectApparel'])->name('customer.place-order.select-apparel');
 Route::get('/select-production-type/{apparel}', [SelectProductionTypeController::class, 'selectProductionType'])->name('customer.place-order.select-production-type');
@@ -56,13 +71,3 @@ Route::get('/profile-reviews', [ProfileController::class, 'profileReviews'])->na
 
 Route::get('/auth/google/redirect', [GoogleAuth::class, 'redirectToGoogle'])->name('google.redirect');
 Route::get('/auth/google/callback', [GoogleAuth::class, 'handleGoogleCallback'])->name('google.callback');
-
-
-// Route::get('/select-apparel', [SelectAparrelController::class, 'selectApparel'])->name('select-apparel');
-// Route::post('/select-apparel', [SelectAparrelController::class, 'selectApparelPost'])->name('select-apparel-post');
-
-// Route::get('/select-production-type/{apparel}', [SelectProductionTypeController::class, 'selectProductionType'])->name('select-production-type');
-// Route::post('/select-production-type', [SelectProductionTypeController::class, 'selectProductionTypePost'])->name('select-production-type-post');
-
-// Route::get('/select-production-company/{apparel}/{productionType}', [SelectProductionCompanyController::class, 'selectProductionCompany'])->name('select-production-company');
-// Route::post('/select-production-company', [SelectProductionCompanyController::class, 'selectProductionCompanyPost'])->name('select-production-company-post');
