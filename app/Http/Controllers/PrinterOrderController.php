@@ -1,16 +1,20 @@
 <?php
+
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use Illuminate\Http\Request;
 
 class PrinterOrderController extends Controller
 {
     public function index()
     {
-        return view('partner.printer.orders');
+        $pendingOrders = Order::where('status_id', '1')->get();
+        return view('partner.printer.orders', compact('pendingOrders'));
     }
 
-    public function pendingOrder() {
+    public function pendingOrder()
+    {
         return view('partner.printer.order');
     }
 
