@@ -17,8 +17,8 @@
     <div class="flex flex-col justify-center items-center flex-grow">
         <div class="relative">
             <div class="flex flex-col gap-x-[12px] text-center mb-5 relative">
-                <h1 class="font-gilroy font-bold text-5xl mb-6 -ml-12 w-[150%]">Welcome to Tel-a BusinessHub</h1>
-                <p class="font-inter font-medium text-[18px] -ml-8 w-[120%]">Gain access to your personalized dashboard and manage your business.</p>
+                <h1 class="font-gilroy font-bold text-5xl mb-6 ">Welcome to Tel-a BusinessHub</h1>
+                <p class="font-inter font-medium text-[18px]">Gain access to your personalized dashboard and manage your business.</p>
             </div>
         </div>
         <div class="w-full max-w-lg p-10 space-y-8 relative">

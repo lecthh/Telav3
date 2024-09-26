@@ -51,15 +51,26 @@ class BusinessAuthController extends Controller
 
     public function loginPost(Request $request)
     {
+        // Validate the email and password input
         $request->validate([
             'email' => 'required|email',
             'password' => 'required|min:8',
         ]);
 
         $credentials = $request->only('email', 'password');
+        $user = User::where('email', $request->email)->first();
+        if (!$user || $user->role_type_id == 1) {
+            return back()->withErrors(['email' => 'Invalid email or password'])->withInput();
+        }
 
         if (Auth::attempt($credentials)) {
-            return redirect()->intended('dashboard')->with('success', 'Logged in successfully');
+            $user = Auth::user();
+
+            if ($user->role_type_id == 2) {
+                return redirect()->intended('printer-dashboard')->with('success', 'Logged in successfully');
+            } else if ($user->role_type_id == 3) {
+                return redirect()->intended('designer-dashboard')->with('success', 'Logged in successfully');
+            }
         } else {
             return back()->withErrors(['email' => 'Invalid email or password'])->withInput();
         }
