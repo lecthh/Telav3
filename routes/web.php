@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BusinessAuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\Review;
@@ -55,6 +56,12 @@ Route::post('/cart', [CartController::class, 'checkout'])->name('customer.cart.p
 Route::get('/checkout', [CheckoutController::class, 'checkout'])->name('customer.checkout');
 Route::get('/checkout/delete/{cartItemId}', [CheckoutController::class, 'deleteCartItem'])->name('customer.checkout.delete');
 Route::get('/cart/removeitem/{cartItemId}', [CartController::class, 'removeCartItem'])->name('customer.remove-cart-item');
+
+Route::get('/set-password/{token}', [BusinessAuthController::class, 'showSetPasswordForm'])->name('set-password');
+Route::post('/set-password/store', [BusinessAuthController::class, 'storePassword'])->name('password.store');
+
+Route::get('/login', [BusinessAuthController::class, 'login'])->name('login');
+Route::post('/login/user', [BusinessAuthController::class, 'loginPost'])->name('login.post');
 
 Route::get('/confirmation', function () {
     return view('cart.confirmation');

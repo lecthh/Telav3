@@ -21,6 +21,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role_type_id',
+        'passwordToken'
     ];
 
     public function roleType()

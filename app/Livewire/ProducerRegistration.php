@@ -71,19 +71,19 @@ class ProducerRegistration extends Component
         $token = uniqid();
 
         $url = URL::temporarySignedRoute(
-            'setpassword',
+            'set-password',
             now()->addMinutes(60),
             ['token' => $token, 'email' => $user->email]
         );
         $name = $user->name;
 
-        $user->update(['reset_token' => $token]);
+        $user->update(['passwordToken' => $token]);
         $user->save();
         Mail::send('mail.verify', ['url' => $url, 'name' => $name], function ($message) use ($user) {
             $message->to($user->email);
             $message->subject('Set Your Password');
         });
-        
+
 
         redirect()->route('partner-confirmation');
     }
