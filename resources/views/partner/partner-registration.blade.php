@@ -22,8 +22,6 @@
 
                 <div class="flex flex-row gap-x-2.5">
                     <div class="flex flex-col gap-y-7 flex-grow">
-
-
                         <div class="flex flex-col gap-y-6">
                             <div class="flex flex-col gap-y-6">
                                 <div class="flex flex-col gap-y-4">
@@ -41,20 +39,18 @@
                                 </div>
                             </div>
                         </div>
-                        <livewire:producer-registration />
-
-
-                        <!-- DESIGNER REGISTRATION VIEW -->
-                        <div id="designer-registration" style="display: none;">
-
+                        <div id="producer-registration">
+                            <livewire:producer-registration />
                         </div>
-
+                        <div id="designer-registration" style="display: none;">
+                            <livewire:designer-registration />
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
+    @include('layout.footer')
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -76,6 +72,5 @@
         });
     </script>
 </body>
-
 
 </html>

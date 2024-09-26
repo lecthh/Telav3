@@ -162,7 +162,7 @@
 
 
     </div>
-
+    @include('layout.footer')
 </body>
 
 
