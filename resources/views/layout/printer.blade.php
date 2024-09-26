@@ -25,5 +25,9 @@
             @include('svgs.pen-draw')
             <h3>Designers</h3>
         </li></a>
+        <a href=""><li class="flex gap-x-2 p-1 rounded-sm text-black hover:bg-cAccent hover:bg-opacity-20 cursor-pointer items-center">
+            @include('svgs.logout')
+            <h3>Logout</h3>
+        </li></a>
     </ul>
 </div>
