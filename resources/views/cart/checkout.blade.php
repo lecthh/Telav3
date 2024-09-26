@@ -84,6 +84,13 @@
                     </div>
                 </div>
             </div>
+            @if (session('error'))
+            <div class="flex flex-col gap-y-2.5">
+                <div class="flex flex-col gap-y-2.5 px-6 py-3.5 rounded-lg bg-[rgba(255,0,0,0.1)]">
+                    <h2 class="font-inter text-lg text-[rgba(255,0,0,0.5)]">{{ session('error') }}</h2>
+                </div>
+            </div>
+            @endif
 
             <div class="flex flex-row gap-x-3 h-[50px]">
                 <div class="flex flex-col gap-y-2.5 px-6 py-3.5 rounded-lg bg-[rgba(156,163,175,0.21)]">

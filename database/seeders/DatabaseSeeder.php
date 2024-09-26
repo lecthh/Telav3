@@ -171,5 +171,11 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Printing in Progress'],
             ['name' => 'Ready for Collection'],
         ]);
+        DB::table('order_image_statuses')->insert([
+            ['name' => 'Initial Design'],
+            ['name' => 'Designer Design'],
+            ['name' => 'Revision'],
+            ['name' => 'Final Design'],
+        ]);
     }
 }

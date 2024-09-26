@@ -3,6 +3,7 @@
 use App\Http\Controllers\BusinessAuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ConfirmationMessageController;
 use App\Http\Controllers\Review;
 use App\Http\Controllers\Customization;
 use App\Http\Controllers\GoogleAuth;
@@ -66,6 +67,7 @@ Route::get('/checkout', [CheckoutController::class, 'checkout'])->name('customer
 Route::post('/checkout/create', [CheckoutController::class, 'postCheckout'])->name('customer.checkout.post');
 Route::get('/checkout/delete/{cartItemId}', [CheckoutController::class, 'deleteCartItem'])->name('customer.checkout.delete');
 
+Route::get('/confirmation', [ConfirmationMessageController::class, 'confirmation'])->name('customer.confirmation');
 
 Route::get('/set-password/{token}', [BusinessAuthController::class, 'showSetPasswordForm'])->name('set-password');
 Route::post('/set-password/store', [BusinessAuthController::class, 'storePassword'])->name('password.store');
@@ -73,9 +75,6 @@ Route::post('/set-password/store', [BusinessAuthController::class, 'storePasswor
 Route::get('/login', [BusinessAuthController::class, 'login'])->name('login');
 Route::post('/login/user', [BusinessAuthController::class, 'loginPost'])->name('login.post');
 
-Route::get('/confirmation', function () {
-    return view('cart.confirmation');
-});
 
 // DESIGNER DASHBOARD FOLDER ROUTES
 Route::get('/designer-dashboard', function () {
