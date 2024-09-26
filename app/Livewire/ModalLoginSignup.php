@@ -2,18 +2,15 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
+use LivewireUI\Modal\ModalComponent;
 
-class ModalLoginSignup extends Component
+class ModalLoginSignup extends ModalComponent
 {
-    public $isOpen = false;
-    
-    public function openModal() {
-        $this->isOpen = true;
+    public static function modalMaxWidth(): string
+    {
+        return 'sm';
     }
-    public function closeModal() {
-        $this->isOpen = false;
-    }
+
     public function render()
     {
         return view('livewire.modal-login-signup');

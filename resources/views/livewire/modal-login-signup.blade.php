@@ -1,4 +1,4 @@
-<div class="w-[612px] flex flex-col px-[50px] pt-[52px] pb-[100px] gap-y-[60px] bg-white rounded-lg">
+<div class="w-[612px] flex flex-col px-[50px] pt-[52px] pb-[100px] gap-y-[60px] bg-white rounded-lg border border-black">
     <div class="flex flex-col gap-y-8">
         <div class="flex items-center justify-end">
             @include('svgs.delete')
@@ -21,8 +21,13 @@
             <span class="text-sm text-red-500 text-center">Invalid email or password</span>
         </div>
         <div class="flex flex-col gap-y-4">
-            @livewire('button', ['text' => 'Continue with Email'])
-            @livewire('button', ['style' => 'secondary_black', 'text' => 'Continue with Google', 'icon' => 'google'])
+            <div class="flex w-full bg-cPrimary rounded-md px-6 py-[14px] text-white text-base items-center justify-center">
+                Continue with Email
+            </div>
+            <a href="{{ route('google.redirect') }}" class="flex w-full rounded-md px-6 py-[14px] gap-x-3 bg-white border border-black text-black text-base items-center justify-center">
+                @include('svgs.google')
+                Continue with Google
+            </a>
         </div>
     </div>
 </div>

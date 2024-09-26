@@ -26,6 +26,11 @@
             <div class="flex flex-col mb-[30px] gap-y-6 w-[600px]">
                 @livewire('update-profile')
             </div>
+
+            <div class="flex justify-start">
+                @livewire('logout-button')
+            </div>
+            
         </div>
     </div>
 </body>
