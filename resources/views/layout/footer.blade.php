@@ -2,10 +2,10 @@
     <div class="flex flex-col gap-y-[10px] text-sm">
         <h1 class="font-inter font-bold">Site Links</h1>
         <ul class="flex gap-x-6">
-            <li class=""><a href="">Home</a></li>
-            <li class=""><a href="">Start Your Custom Order</a></li>
+            <li class=""><a wire:navigate href="{{ route('home') }}">Home</a></li>
+            <li class=""><a wire:navigate href="{{ route('customer.place-order.select-apparel') }}">Start Your Custom Order</a></li>
             <li class=""><a href="">Browse Production Services</a></li>
-            <li class=""><a href="">Become a Partner</a></li>
+            <li class=""><a wire:navigate href="{{ route('partner-registration') }}">Become a Partner</a></li>
         </ul>
     </div>
 </footer>
