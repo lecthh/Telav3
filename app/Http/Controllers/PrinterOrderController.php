@@ -15,8 +15,8 @@ class PrinterOrderController extends Controller
 
     public function pendingOrder($order_id)
     {
-
-        return view('partner.printer.order');
+        $order = Order::find($order_id);
+        return view('partner.printer.order', compact('order'));
     }
 
     public function designInProgress()
@@ -27,6 +27,7 @@ class PrinterOrderController extends Controller
 
     public function designOrder($order_id)
     {
+        $order = Order::find($order_id);
         return view('partner.printer.design.order');
     }
 
@@ -38,6 +39,7 @@ class PrinterOrderController extends Controller
 
     public function finalizeOrder($order_id)
     {
+        $order = Order::find($order_id);
         return view('partner.printer.finalize.order');
     }
 
@@ -49,7 +51,7 @@ class PrinterOrderController extends Controller
 
     public function awaitingOrder($order_id)
     {
-
+        $order = Order::find($order_id);
         return view('partner.printer.awaiting.order');
     }
 
@@ -61,6 +63,7 @@ class PrinterOrderController extends Controller
 
     public function printingOrder($order_id)
     {
+        $order = Order::find($order_id);
         return view('partner.printer.printing.order');
     }
 
@@ -71,6 +74,7 @@ class PrinterOrderController extends Controller
     }
     public function readyOrder($order_id)
     {
+        $order = Order::find($order_id);
         return view('partner.printer.ready.order');
     }
 
@@ -81,6 +85,7 @@ class PrinterOrderController extends Controller
     }
     public function completedOrder($order_id)
     {
+        $order = Order::find($order_id);
         return view('partner.printer.complete.order');
     }
 }
