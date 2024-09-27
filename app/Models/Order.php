@@ -8,9 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     use HasFactory;
+
     protected $table = 'orders';
+
     protected $primaryKey = 'order_id';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     protected $fillable = [
+        'order_id',
         'user_id',
         'production_company_id',
         'assigned_designer_id',
@@ -25,14 +31,11 @@ class Order extends Model
         'custom_design_info',
         'revision_count',
     ];
-    public $incrementing = true;
-    protected $keyType = 'int';
 
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
-
 
     public function productionCompany()
     {

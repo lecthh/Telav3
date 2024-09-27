@@ -19,7 +19,7 @@
             @include('layout.printer')
             <div class="flex flex-col gap-y-10 p-14 bg-[#F9F9F9] w-full">
                 <div class="flex flex-col gap-y-1">
-                    <h2 class="font-gilroy font-bold text-3xl text-black">Hello, EchoPoint Productions</h2>
+                    <h2 class="font-gilroy font-bold text-3xl text-black">Hello, {{ $productionCompany->company_name }}</h2>
                     <h4 class="font-inter text-base">Here's what's going on today.</h4>
                 </div>
                 <div class="flex flex-col gap-y-5">
@@ -44,20 +44,29 @@
                             </tr>
                         </thead>
                         <tbody class="border drop-shadow-sm">
-                            <tr class="odd:bg-gray-100 even:bg-white hover:bg-cAccent hover:bg-opacity-10 cursor-pointer">
-                                <td class="px-5 py-[14px]"><input type="checkbox" class="cart-checkbox ..."></td>
-                                <td class="px-5 py-[14px]">9/11/1999</td>
-                                <td class="px-5 py-[14px]">0493</td>
-                                <td class="px-5 py-[14px]">Alexis Paramore</td>
-                                <td class="px-5 py-[14px]">alexis@gmail.com</td>
-                                <td class="px-5 py-[14px]">Jersey</td>
-                                <td class="px-5 py-[14px]">Sublimation</td>
-                                <td class="px-5 py-[14px]">Bulk</td>
-                                <td class="px-5 py-[14px]">Personalized</td>
+                            @if($pendingOrders->isEmpty())
+                            <tr>
+                                <td colspan="7" class="text-center px-5 py-[14px]">
+                                    No orders right now.
+                                </td>
                             </tr>
+                            @else
+                            @foreach($pendingOrders as $order)
+                            <tr class="odd:bg-gray-100 even:bg-white hover:bg-cAccent hover:bg-opacity-10 cursor-pointer" data-url="{{ route('partner.printer.pending-order-x', ['order_id' => $order->order_id]) }}">
+                                <td class="px-5 py-[14px]"><input type="checkbox" class="cart-checkbox ..."></td>
+                                <td class="px-5 py-[14px]">{{ $order->created_at->format('m/d/Y') }}</td>
+                                <td class="px-5 py-[14px]">{{ $order->order_id }}</td>
+                                <td class="px-5 py-[14px]">{{ $order->user->name }}</td>
+                                <td class="px-5 py-[14px]">{{ $order->user->email }}</td>
+                                <td class="px-5 py-[14px]">{{ $order->apparelType->name }}</td>
+                                <td class="px-5 py-[14px]">{{ $order->productionType->name }}</td>
+                                <td class="px-5 py-[14px]">{{ $order->is_bulk_order ? 'Bulk' : 'Single' }}</td>
+                                <td class="px-5 py-[14px]">{{ $order->is_customized ? 'Personalized' : 'Standard' }}</td>
+                            </tr>
+                            @endforeach
+                            @endif
                         </tbody>
                     </table>
-
                 </div>
             </div>
         </div>
@@ -65,5 +74,16 @@
 
     @include('layout.footer')
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const rows = document.querySelectorAll('tr[data-url]');
+
+        rows.forEach(row => {
+            row.addEventListener('click', function() {
+                window.location.href = row.getAttribute('data-url');
+            });
+        });
+    });
+</script>
 
 </html>

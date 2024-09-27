@@ -6,9 +6,11 @@ use App\Models\AddressInformation;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Order;
+use App\Models\OrderImages;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CheckoutController extends Controller
 {
@@ -51,14 +53,15 @@ class CheckoutController extends Controller
         DB::beginTransaction();
         try {
             foreach ($cartItems as $cartItemId) {
-                $cartItem = CartItem::with(['apparelType', 'productionCompany', 'productionType'])
+                $cartItem = CartItem::with(['apparelType', 'productionCompany', 'productionType', 'cartItemImages'])
                     ->where('cart_item_id', $cartItemId->cart_item_id)
                     ->first();
 
                 if ($cartItem) {
                     $isBulkOrder = ($cartItem->orderType == 'bulk') ? true : false;
                     $isCustomized = ($cartItem->customization == 'custom') ? true : false;
-                    Order::create([
+                    $order = Order::create([
+                        'order_id' => uniqid(),
                         'user_id' => $user->user_id,
                         'production_company_id' => $cartItem->production_company_id,
                         'assigned_designer_id' => null,
@@ -70,19 +73,29 @@ class CheckoutController extends Controller
                         'production_type' => $cartItem->production_type,
                         'downpayment_amount' => $cartItem->price,
                         'final_price' => null,
-                        'custom_design_info' => $cartItem->images,
+                        'custom_design_info' => $cartItem->description,
                         'revision_count' => 0,
                     ]);
+                    foreach ($cartItem->cartItemImages as $image) {
+                        OrderImages::create([
+                            'order_id' => $order->order_id,
+                            'image' => $image->image,
+                            'status_id' => 1,
+                        ]);
+                    }
+                    $cartItem->delete();
                 }
             }
+
             session()->forget('selected_cart_items');
 
             DB::commit();
 
-            return redirect()->route('thank_you_page')->with('success', 'Order placed successfully.');
+            return redirect()->route('customer.confirmation')->with('success', 'Order placed successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'An error occurred while processing your order.');
+            Log::error('Order Checkout Error: ' . $e->getMessage());
+            return back()->with('error', 'An error occurred while processing your order: ' . $e->getMessage());
         }
     }
 

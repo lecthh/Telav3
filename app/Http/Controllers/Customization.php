@@ -16,7 +16,7 @@ class Customization extends Controller
     public function storeCustomization(Request $request, $apparel, $productionType, $company)
     {
         $request->validate([
-            'description' => 'required|string|max:500',
+            'description' => 'nullable|string|max:500',
             'media.*' => 'nullable|mimes:jpeg,png|max:102400',
             'order_type' => 'required|in:bulk,single',
             'custom_type' => 'required|in:standard,personalized',

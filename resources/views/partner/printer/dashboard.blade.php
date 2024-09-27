@@ -19,16 +19,17 @@
             @include('layout.printer')
             <div class="flex flex-col gap-y-10 p-14 bg-[#F9F9F9] w-full animate-fade-in">
                 <div class="flex flex-col gap-y-1">
-                    <h2 class="font-gilroy font-bold text-3xl text-black">Hello, EchoPoint Productions</h2>
+                    <h2 class="font-gilroy font-bold text-3xl text-black">Hello, {{ $productionCompany->company_name }}</h2>
                     <h4 class="font-inter text-base">Here's what's going on today.</h4>
                 </div>
                 <ul class="flex gap-x-5">
-                    @livewire('dashboard-card', ['svg' => 'svgs.shipping-box', 'heading' => 'Pending Requests', 'value' => 3])
-                    @livewire('dashboard-card', ['svg' => 'svgs.print-palette', 'heading' => 'Design in Progress', 'value' => 3])
-                    @livewire('dashboard-card', ['svg' => 'svgs.print-palette', 'heading' => 'Finalize Order', 'value' => 3])
-                    @livewire('dashboard-card', ['svg' => 'svgs.square-clock', 'heading' => 'Awaiting Printing', 'value' => 3])
-                    @livewire('dashboard-card', ['svg' => 'svgs.shredder-device', 'heading' => 'Printing in Progress', 'value' => 3])
+                    @livewire('dashboard-card', ['svg' => 'svgs.shipping-box', 'heading' => 'Pending Requests', 'value' => $pendingCount])
+                    @livewire('dashboard-card', ['svg' => 'svgs.print-palette', 'heading' => 'Design in Progress', 'value' => $designInProgressCount])
+                    @livewire('dashboard-card', ['svg' => 'svgs.print-palette', 'heading' => 'Finalize Order', 'value' => $finalizeOrderCount])
+                    @livewire('dashboard-card', ['svg' => 'svgs.square-clock', 'heading' => 'Awaiting Printing', 'value' => $awaitingPrintingCount])
+                    @livewire('dashboard-card', ['svg' => 'svgs.shredder-device', 'heading' => 'Printing in Progress', 'value' => $printingInProgressCount])
                 </ul>
+
                 <ul class="flex gap-x-5 justify-between">
                     @livewire('dashboard-card', ['svg' => 'svgs.shredder-device', 'heading' => 'Ready for Collection', 'value' => 3])
                     <li class="flex flex-col p-5 bg-white drop-shadow-sm rounded-lg text-base justify-between w-full h-[113px] border border-cGrey">

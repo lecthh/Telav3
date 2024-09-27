@@ -3,6 +3,7 @@
 use App\Http\Controllers\BusinessAuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ConfirmationMessageController;
 use App\Http\Controllers\Review;
 use App\Http\Controllers\Customization;
 use App\Http\Controllers\GoogleAuth;
@@ -26,27 +27,28 @@ Route::get('/', function () {
 Route::get('/partner-registration', [PartnerRegistration::class, 'partnerRegistration'])->name('partner-registration');
 Route::get('/partner-confirmation', [PartnerRegistration::class, 'partnerConfirmation'])->name('partner-confirmation');
 
-//frontend printer partner dashboard
 Route::get('/printer-dashboard', function () {
     return view('partner.printer.dashboard');
-})->name('printer-dashboard');
+})->name('printer-dashboard')->middleware('ProductionAdminOnly');
+
+
 // Printer Partner Routes
-Route::prefix('partner')->name('partner.')->group(function () {
+Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->group(function () {
     Route::prefix('printer')->name('printer.')->group(function () {
         Route::get('/orders', [PrinterOrderController::class, 'index'])->name('orders');
-        Route::get('/pending-x', [PrinterOrderController::class, 'pendingOrder'])->name('pending-order-x');
+        Route::get('/pending-x/{order_id}', [PrinterOrderController::class, 'pendingOrder'])->name('pending-order-x');
         Route::get('/design-in-progress', [PrinterOrderController::class, 'designInProgress'])->name('design-in-progress');
-        Route::get('/design-x', [PrinterOrderController::class, 'designOrder'])->name('design-x');
+        Route::get('/design-x/{order_id}', [PrinterOrderController::class, 'designOrder'])->name('design-x');
         Route::get('/finalize-order', [PrinterOrderController::class, 'finalize'])->name('finalize-order');
-        Route::get('/finalize-x', [PrinterOrderController::class, 'finalizeOrder'])->name('finalize-x');
+        Route::get('/finalize-x/{order_id}', [PrinterOrderController::class, 'finalizeOrder'])->name('finalize-x');
         Route::get('/awaiting-printing', [PrinterOrderController::class, 'awaitingPrinting'])->name('awaiting-printing');
-        Route::get('/awaiting-x', [PrinterOrderController::class, 'awaitingOrder'])->name('awaiting-x');
+        Route::get('/awaiting-x/{order_id}', [PrinterOrderController::class, 'awaitingOrder'])->name('awaiting-x');
         Route::get('/printing-in-progress', [PrinterOrderController::class, 'printingInProgress'])->name('printing-in-progress');
-        Route::get('/printing-x', [PrinterOrderController::class, 'printingOrder'])->name('printing-x');
+        Route::get('/printing-x/{order_id}', [PrinterOrderController::class, 'printingOrder'])->name('printing-x');
         Route::get('/ready', [PrinterOrderController::class, 'ready'])->name('ready');
-        Route::get('/ready-x', [PrinterOrderController::class, 'readyOrder'])->name('ready-x');
+        Route::get('/ready-x/{order_id}', [PrinterOrderController::class, 'readyOrder'])->name('ready-x');
         Route::get('/completed', [PrinterOrderController::class, 'completed'])->name('completed');
-        Route::get('/completed-x', [PrinterOrderController::class, 'completedOrder'])->name('completed-x');
+        Route::get('/completed-x/{order_id}', [PrinterOrderController::class, 'completedOrder'])->name('completed-x');
     });
 });
 
@@ -61,6 +63,7 @@ Route::prefix('partner')->name('partner.')->group(function () {
         Route::get('/complete-x', [DesignerOrderController::class, 'completeOrder'])->name('complete-x');
     });
 });
+
 
 Route::get('/select-apparel', [SelectAparrelController::class, 'selectApparel'])->name('customer.place-order.select-apparel');
 Route::get('/select-production-type/{apparel}', [SelectProductionTypeController::class, 'selectProductionType'])->name('customer.place-order.select-production-type');
@@ -78,16 +81,15 @@ Route::get('/checkout', [CheckoutController::class, 'checkout'])->name('customer
 Route::post('/checkout/create', [CheckoutController::class, 'postCheckout'])->name('customer.checkout.post');
 Route::get('/checkout/delete/{cartItemId}', [CheckoutController::class, 'deleteCartItem'])->name('customer.checkout.delete');
 
+Route::get('/confirmation', [ConfirmationMessageController::class, 'confirmation'])->name('customer.confirmation');
 
 Route::get('/set-password/{token}', [BusinessAuthController::class, 'showSetPasswordForm'])->name('set-password');
 Route::post('/set-password/store', [BusinessAuthController::class, 'storePassword'])->name('password.store');
 
 Route::get('/login', [BusinessAuthController::class, 'login'])->name('login');
 Route::post('/login/user', [BusinessAuthController::class, 'loginPost'])->name('login.post');
+Route::get('/logout', [BusinessAuthController::class, 'logout'])->name('logout');
 
-Route::get('/confirmation', function () {
-    return view('cart.confirmation');
-});
 
 //order confirmation
 Route::get('/confirm-bulk', function () {

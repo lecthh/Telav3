@@ -36,29 +36,21 @@ class Review extends Controller
             'price' => rand(5, 2500), // TO BE IMPLEMENTED
             'production_company_id' => $company->id,
             'orderType' => $customization['order_type'],
-            'customization' => $customization['custom_type']
+            'customization' => $customization['custom_type'],
+            'description' => $customization['description'],
         ];
 
-        if (Auth::check()) {
-            $cart = Cart::firstOrCreate([
-                'user_id' => Auth::id()
-            ]);
-
-            $cartItem = CartItem::create(array_merge($cartItemData, ['cart_id' => $cart->cart_id]));
-            if (isset($customization['media'])) {
-                foreach ($customization['media'] as $image) {
-                    CartItemImages::create([
-                        'cart_item_id' => $cartItem->id,
-                        'image' => $image,
-                    ]);
-                }
+        $cart = Cart::firstOrCreate([
+            'user_id' => Auth::id()
+        ]);
+        $cartItem = CartItem::create(array_merge($cartItemData, ['cart_id' => $cart->cart_id]));
+        if (isset($customization['media'])) {
+            foreach ($customization['media'] as $image) {
+                CartItemImages::create([
+                    'cart_item_id' => $cartItem->cart_item_id,
+                    'image' => $image,
+                ]);
             }
-        } else {
-            $cartItems = Session::get('cart_items', []);
-            $newCartItem = $cartItemData;
-            $newCartItem['images'] = $customization['media'] ?? [];
-            $cartItems[] = $newCartItem;
-            Session::put('cart_items', $cartItems);
         }
 
         return redirect()->route('customer.cart');
