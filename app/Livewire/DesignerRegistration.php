@@ -33,7 +33,7 @@ class DesignerRegistration extends Component
             'display_name' => 'required_if:affiliate,no|string',
             'first_name' => 'required|string',
             'last_name' => 'required|string',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:users,email',
         ]);
 
 
