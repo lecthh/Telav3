@@ -12,6 +12,7 @@ use App\Http\Controllers\SelectAparrelController;
 use App\Http\Controllers\SelectProductionCompanyController;
 use App\Http\Controllers\SelectProductionTypeController;
 use App\Http\Controllers\PrinterOrderController;
+use App\Http\Controllers\DesignerOrderController;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
@@ -49,6 +50,17 @@ Route::prefix('partner')->name('partner.')->group(function () {
     });
 });
 
+Route::get('/designer-dashboard', function () {
+    return view('partner.designer.dashboard');
+})->name('designer-dashboard');
+Route::prefix('partner')->name('partner.')->group(function () {
+    Route::prefix('designer')->name('designer.')->group(function () {
+        Route::get('/orders', [DesignerOrderController::class, 'index'])->name('orders');
+        Route::get('/assigned-x', [DesignerOrderController::class, 'assignedOrder'])->name('assigned-x');
+        Route::get('/completed', [DesignerOrderController::class, 'complete'])->name('complete');
+        Route::get('/complete-x', [DesignerOrderController::class, 'completeOrder'])->name('complete-x');
+    });
+});
 
 Route::get('/select-apparel', [SelectAparrelController::class, 'selectApparel'])->name('customer.place-order.select-apparel');
 Route::get('/select-production-type/{apparel}', [SelectProductionTypeController::class, 'selectProductionType'])->name('customer.place-order.select-production-type');
@@ -86,13 +98,6 @@ Route::get('/confirm-bulk-custom', function () {
 });
 Route::get('/confirm-jerseybulk-custom', function () {
     return view('customer.order-confirmation.jersey-bulk-customized');
-});
-
-
-
-// DESIGNER DASHBOARD FOLDER ROUTES
-Route::get('/designer-dashboard', function () {
-    return view('partner.designer.dashboard');
 });
 
 Route::get('/profile-basics', [ProfileController::class, 'showProfileDetails'])->name('customer.profile.basics');
