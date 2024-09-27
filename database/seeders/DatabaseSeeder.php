@@ -79,6 +79,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Awaiting Printing'],
             ['name' => 'Printing in Progress'],
             ['name' => 'Ready for Collection'],
+            ['name' => 'Order Completed'],
         ]);
         DB::table('order_image_statuses')->insert([
             ['name' => 'Initial Design'],

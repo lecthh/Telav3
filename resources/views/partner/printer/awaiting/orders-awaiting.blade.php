@@ -51,7 +51,7 @@
                             </tr>
                             @else
                             @foreach($awaitingPrinting as $order)
-                            <tr class="odd:bg-gray-100 even:bg-white hover:bg-cAccent hover:bg-opacity-10 cursor-pointer" data-url="{{ route('awaiting-x', ['order_id' => $awaitingPrinting->order_id]) }}">
+                            <tr class="odd:bg-gray-100 even:bg-white hover:bg-cAccent hover:bg-opacity-10 cursor-pointer" data-url="{{ route('partner.printer.awaiting-x', ['order_id' => $order->order_id]) }}">
                                 <td class="px-5 py-[14px]"><input type="checkbox" class="cart-checkbox ..."></td>
                                 <td class="px-5 py-[14px]">{{ $order->created_at->format('m/d/Y') }}</td>
                                 <td class="px-5 py-[14px]">{{ $order->order_id }}</td>

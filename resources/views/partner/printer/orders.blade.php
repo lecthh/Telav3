@@ -44,6 +44,13 @@
                             </tr>
                         </thead>
                         <tbody class="border drop-shadow-sm">
+                            @if($pendingOrders->isEmpty())
+                            <tr>
+                                <td colspan="7" class="text-center px-5 py-[14px]">
+                                    No orders right now.
+                                </td>
+                            </tr>
+                            @else
                             @foreach($pendingOrders as $order)
                             <tr class="odd:bg-gray-100 even:bg-white hover:bg-cAccent hover:bg-opacity-10 cursor-pointer" data-url="{{ route('partner.printer.pending-order-x', ['order_id' => $order->order_id]) }}">
                                 <td class="px-5 py-[14px]"><input type="checkbox" class="cart-checkbox ..."></td>
@@ -57,9 +64,9 @@
                                 <td class="px-5 py-[14px]">{{ $order->is_customized ? 'Personalized' : 'Standard' }}</td>
                             </tr>
                             @endforeach
+                            @endif
                         </tbody>
                     </table>
-
                 </div>
             </div>
         </div>
