@@ -19,7 +19,7 @@
             @include('layout.printer')
             <div class="flex flex-col gap-y-10 p-14 bg-[#F9F9F9] w-full animate-fade-in">
                 <div class="flex flex-col gap-y-1">
-                    <h2 class="font-gilroy font-bold text-3xl text-black">Hello, EchoPoint Productions</h2>
+                    <h2 class="font-gilroy font-bold text-3xl text-black">Hello, {{ $productionCompany->company_name }}</h2>
                     <h4 class="font-inter text-base">Here's what's going on today.</h4>
                 </div>
                 <ul class="flex gap-x-5">

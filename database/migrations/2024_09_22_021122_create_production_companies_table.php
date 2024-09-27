@@ -18,9 +18,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->json('production_type');
             $table->json('apparel_type');
-            $table->string('user_id')->nullable();
-            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('set null');
-            // temporary onleh
+            $table->string('user_id');
+            $table->foreign('user_id')->references('user_id')->on('users');
             $table->string('address');
             $table->string('phone');
             $table->float('avg_rating');

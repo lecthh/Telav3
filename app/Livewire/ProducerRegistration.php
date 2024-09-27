@@ -53,6 +53,7 @@ class ProducerRegistration extends Component
             'state' => $validatedData['state'],
             'city' => $validatedData['city'],
             'zip_code' => $validatedData['zip_code'],
+            'phone_number' => $validatedData['mobile'],
         ]);
 
         $productionCompany = ProductionCompany::create([
