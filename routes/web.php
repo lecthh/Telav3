@@ -14,6 +14,7 @@ use App\Http\Controllers\SelectProductionCompanyController;
 use App\Http\Controllers\SelectProductionTypeController;
 use App\Http\Controllers\PrinterOrderController;
 use App\Http\Controllers\DesignerOrderController;
+use App\Http\Controllers\DesignInProgressController;
 use App\Http\Controllers\PendingRequestController;
 use App\Http\Middleware\PreventBackHistory;
 use Illuminate\Http\Request;
@@ -41,8 +42,9 @@ Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->g
         Route::get('/pending-x/{order_id}', [PendingRequestController::class, 'pendingOrder'])->name('pending-order-x');
         Route::post('/assign-designer/{order_id}', [PendingRequestController::class, 'assignDesigner'])->name('assign-designer');
 
-        Route::get('/design-in-progress', [PrinterOrderController::class, 'designInProgress'])->name('design-in-progress');
-        Route::get('/design-x/{order_id}', [PrinterOrderController::class, 'designOrder'])->name('design-x');
+        Route::get('/design-in-progress', [DesignInProgressController::class, 'designInProgress'])->name('design-in-progress');
+        Route::get('/design-x/{order_id}', [DesignInProgressController::class, 'designOrder'])->name('design-x');
+
         Route::get('/finalize-order', [PrinterOrderController::class, 'finalize'])->name('finalize-order');
         Route::get('/finalize-x/{order_id}', [PrinterOrderController::class, 'finalizeOrder'])->name('finalize-x');
         Route::get('/awaiting-printing', [PrinterOrderController::class, 'awaitingPrinting'])->name('awaiting-printing');

@@ -121,7 +121,7 @@
                                         <div class="flex flex-col gap-y-3 w-full">
                                             <h3 class="font-gilroy font-bold text-black text-base">Description</h3>
                                             <div class="flex p-3 border border-gray-200 rounded-lg w-fill h-fill">
-                                                <p class="font-inter text-gray-600">I want a super cool design</p>
+                                                <p class="font-inter text-gray-600">{{$order->custom_design_info}}</p>
                                             </div>
                                         </div>
                                     </div>
