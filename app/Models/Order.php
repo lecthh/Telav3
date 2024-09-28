@@ -39,8 +39,9 @@ class Order extends Model
 
     public function productionCompany()
     {
-        return $this->belongsTo(ProductionCompany::class, 'production_company_id', 'production_company_id');
+        return $this->belongsTo(ProductionCompany::class, 'production_company_id', 'id');
     }
+
 
     public function designer()
     {

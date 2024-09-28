@@ -58,13 +58,12 @@ Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->g
     });
 });
 
-Route::get('/designer-dashboard', function () {
-    return view('partner.designer.dashboard');
-})->name('designer-dashboard');
+//Designer Routes
+Route::get('/designer-dashboard', [DesignerOrderController::class, 'dashboard'])->name('designer-dashboard')->middleware('DesignerOnly');
 Route::prefix('partner')->name('partner.')->group(function () {
     Route::prefix('designer')->name('designer.')->group(function () {
         Route::get('/orders', [DesignerOrderController::class, 'index'])->name('orders');
-        Route::get('/assigned-x', [DesignerOrderController::class, 'assignedOrder'])->name('assigned-x');
+        Route::get('/assigned-x/{order_id}', [DesignerOrderController::class, 'assignedOrder'])->name('assigned-x');
         Route::get('/completed', [DesignerOrderController::class, 'complete'])->name('complete');
         Route::get('/complete-x', [DesignerOrderController::class, 'completeOrder'])->name('complete-x');
     });

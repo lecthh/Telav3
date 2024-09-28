@@ -21,7 +21,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        View::composer('*', function ($view) {
+        View::composer('partner.printer.*', function ($view) {
+            $productionCompany = session('admin');
+            $view->with('productionCompany', $productionCompany);
+        });
+
+        View::composer('partner.designer.*', function ($view) {
             $productionCompany = session('admin');
             $view->with('productionCompany', $productionCompany);
         });
