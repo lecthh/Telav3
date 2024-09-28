@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\OrderStatus;
 
 class CheckoutController extends Controller
 {
@@ -68,7 +69,7 @@ class CheckoutController extends Controller
                         'is_customized' => $isCustomized,
                         'is_bulk_order' => $isBulkOrder,
                         'quantity' => $cartItem->quantity,
-                        'status_id' => 1,
+                        'status_id' => OrderStatus::STATUS_ORDER_PLACED,
                         'apparel_type' => $cartItem->apparel_type_id,
                         'production_type' => $cartItem->production_type,
                         'downpayment_amount' => $cartItem->price,

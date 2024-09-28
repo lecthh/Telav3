@@ -14,6 +14,8 @@ class OrderStatus extends Model
     public $incrementing = true;
     protected $keyType = 'int';
 
+    const STATUS_ORDER_PLACED = 1;
+
     public function orders()
     {
         return $this->hasMany(Order::class, 'status_id', 'status_id');
