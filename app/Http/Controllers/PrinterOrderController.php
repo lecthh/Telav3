@@ -8,19 +8,6 @@ use Illuminate\Http\Request;
 class PrinterOrderController extends Controller
 {
 
-
-    public function designInProgress()
-    {
-        $designInProgress = Order::where('status_id', '2')->get();
-        return view('partner.printer.design.orders-design', compact('designInProgress'));
-    }
-
-    public function designOrder($order_id)
-    {
-        $order = Order::find($order_id);
-        return view('partner.printer.design.order');
-    }
-
     public function finalize()
     {
         $finalizeOrders = Order::where('status_id', '3')->get();

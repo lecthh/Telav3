@@ -46,7 +46,7 @@
                         <tbody class="border drop-shadow-sm">
                             @if($pendingOrders->isEmpty())
                             <tr>
-                                <td colspan="7" class="text-center px-5 py-[14px]">
+                                <td colspan="8" class="text-center px-5 py-[14px]">
                                     No orders right now.
                                 </td>
                             </tr>

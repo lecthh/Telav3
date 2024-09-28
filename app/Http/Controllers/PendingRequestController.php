@@ -23,8 +23,11 @@ class PendingRequestController extends Controller
     // Create/update notification here
     public function assignDesigner(Request $request, $order_id)
     {
+        $request->validate([
+            'selected_designer_id' => 'required',
+        ]);
         $order = Order::find($order_id);
-        $order->assigned_designer_id = $request->designer_id;
+        $order->assigned_designer_id = intval($request->selected_designer_id);
         $order->status_id = 2;
         $order->save();
 
