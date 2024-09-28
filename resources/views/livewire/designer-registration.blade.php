@@ -5,17 +5,30 @@
     </div>
     @endif
 
+    @if ($errors->any())
+    <div class="flex flex-col gap-y-2.5">
+        <div class="flex flex-col gap-y-2.5 px-6 py-3.5 rounded-lg bg-[rgba(255,0,0,0.1)]">
+            <h2 class="font-inter text-lg text-[rgba(255,0,0,0.5)]">There are errors with your submission:</h2>
+            <ul class="list-disc list-inside text-[rgba(255,0,0,0.5)]">
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+    @endif
+
     <form wire:submit.prevent="submit">
         <div class="flex flex-col gap-y-4">
             <h2 class="font-inter font-bold text-lg">Are you affiliated with a producer that is currently partnered with us?</h2>
             <div class="flex flex-col gap-y-2">
                 <div class="flex flex-row gap-x-8">
                     <div class="flex flex-row gap-x-2 items-center">
-                        <input type="radio" id="affiliate-yes" name="affiliate" value="yes" class="form-radio border border-black w-4 h-4 p-1 py-1 rounded-full checked:bg-cPrimary checked:hover:bg-cPrimary checked:active:bg-cPrimary checked:focus:bg-cPrimary focus:bg-cPrimary focus:outline-none focus:ring-1 focus:ring-cPrimary" onclick="toggleSections()" checked>
+                        <input type="radio" id="affiliate-yes" name="affiliate" value="yes" wire:model="affiliate" class="form-radio border border-black w-4 h-4 p-1 py-1 rounded-full checked:bg-cPrimary checked:hover:bg-cPrimary checked:active:bg-cPrimary checked:focus:bg-cPrimary focus:bg-cPrimary focus:outline-none focus:ring-1 focus:ring-cPrimary" onclick="toggleSections()" checked>
                         <label for="affiliate-yes" class="font-inter text-base">Yes</label>
                     </div>
                     <div class="flex flex-row gap-x-2 items-center">
-                        <input type="radio" id="affiliate-no" name="affiliate" value="no" class="form-radio border border-black w-4 h-4 p-1 py-1 rounded-full checked:bg-cPrimary checked:hover:bg-cPrimary checked:active:bg-cPrimary checked:focus:bg-cPrimary focus:bg-cPrimary focus:outline-none focus:ring-1 focus:ring-cPrimary" onclick="toggleSections()">
+                        <input type="radio" id="affiliate-no" name="affiliate" value="no" wire:model="affiliate" class="form-radio border border-black w-4 h-4 p-1 py-1 rounded-full checked:bg-cPrimary checked:hover:bg-cPrimary checked:active:bg-cPrimary checked:focus:bg-cPrimary focus:bg-cPrimary focus:outline-none focus:ring-1 focus:ring-cPrimary" onclick="toggleSections()">
                         <label for="affiliate-no" class="font-inter text-base">No</label>
                     </div>
                 </div>
@@ -82,6 +95,13 @@
 </div>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        toggleSections();
+        Livewire.on('updated', () => {
+            toggleSections();
+        });
+    });
+
     function toggleSections() {
         const affiliateYes = document.getElementById('affiliate-yes').checked;
         const producerSection = document.getElementById('producer-section');
@@ -92,8 +112,4 @@
             producerSection.style.display = 'none';
         }
     }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        toggleSections();
-    });
 </script>

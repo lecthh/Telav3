@@ -29,7 +29,7 @@ class DesignerRegistration extends Component
     {
         $validatedData = $this->validate([
             'affiliate' => 'required|string',
-            'affiliated_producer' => 'required_if:affiliate,yes|string',
+            'affiliated_producer' => 'required_if:affiliate,yes',
             'display_name' => 'required_if:affiliate,no|string',
             'first_name' => 'required|string',
             'last_name' => 'required|string',
