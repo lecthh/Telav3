@@ -12,12 +12,12 @@
     @vite('resources/css/app.css')
 </head>
 
-<body class="flex flex-col h-screen justify-between">
-    <div class="flex flex-col">
+<body class="flex flex-col h-full justify-between">
+    <div class="flex flex-col h-full">
         <div class="flex p-1 bg-cPrimary font-gilroy font-bold text-white text-sm justify-center">Production Hub</div>
-        <div class="flex">
+        <div class="flex h-full">
             @include('layout.printer')
-            <div class="flex flex-col gap-y-10 p-14 bg-[#F9F9F9] w-full animate-fade-in">
+            <div class="flex flex-col gap-y-10 p-14 bg-[#F9F9F9] h-full w-full animate-fade-in">
                 <div class="flex flex-col gap-y-1">
                     <h2 class="font-gilroy font-bold text-3xl text-black">Hello, {{ $productionCompany->company_name }}</h2>
                     <h4 class="font-inter text-base">Here's what's going on today.</h4>

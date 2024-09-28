@@ -36,7 +36,7 @@
         </div>
         <br>
         <div id="producer-section" class="flex flex-col gap-y-4 flex-grow" style="display: none;">
-            <div class="flex flex-col gap-y-4">
+            <div class="flex flex-col gap-y-4 mb-5">
                 <h2 class="font-inter font-bold text-lg">Please select a producer</h2>
                 <div class="flex flex-col gap-y-2">
                     <select wire:model="affiliated_producer" class="flex flex-row gap-y-2.5 px-5  border border-black rounded-lg h-[50px]">

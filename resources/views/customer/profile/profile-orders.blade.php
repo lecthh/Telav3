@@ -31,25 +31,6 @@
                 <div class="flex flex-row gap-x-[18px]">
 
                     <div class="flex flex-col gap-y-2 flex-grow">
-
-                        <div class="flex flex-row justify-between">
-                            <div class="flex flex-col">
-                                <h2 class="font-inter font-bold text-lg">Order no. 3981</h2>
-                            </div>
-                            <h2 class="font-inter font-bold text-base text-gray-500">September 13, 2024</h2>
-                        </div>
-                        <h2 class="font-inter text-sm text-gray-500">Order Received</h2>
-                        <hr>
-
-                        <div class="flex flex-row justify-between">
-                            <div class="flex flex-col">
-                                <h2 class="font-inter font-bold text-lg">Order no. 3981</h2>
-                            </div>
-                            <h2 class="font-inter font-bold text-base text-gray-500">September 13, 2024</h2>
-                        </div>
-                        <h2 class="font-inter text-sm text-gray-500">Order Received</h2>
-                        <hr>
-
                         <div class="flex flex-row justify-between">
                             <div class="flex flex-col">
                                 <h2 class="font-inter font-bold text-lg">Order no. 3981</h2>
