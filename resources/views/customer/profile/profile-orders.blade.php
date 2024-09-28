@@ -10,11 +10,11 @@
     @vite('resources/css/app.css')
 </head>
 
-<body>
+<body class="h-full">
     @include('layout.nav')
-    <div class="flex flex-row animate-fade-in">
+    <div class="flex flex-row animate-fade-in h-screen">
         <!-- LEFT HALF -->
-        <div class="flex flex-col gap-y-[60px] px-[200px] py-[100px] w-[1200px] justify-start">
+        <div class="flex flex-col gap-y-[60px] px-[200px] py-[100px] w-[1200px] justify-start h-full">
             <div class="flex flex-col gap-y-5">
                 <div class="flex flex-col gap-y-3">
                     <h1 class="font-gilroy font-bold text-5xl">Profile Page</h1>
@@ -27,11 +27,11 @@
             </div>
 
 
-            <div class="flex flex-col">
-                <div class="flex flex-row gap-x-[18px]">
+            <div class="flex flex-col h-full">
+                <div class="flex flex-row gap-x-[18px] h-full">
                     @foreach($orders as $order)
-                    <div class="flex flex-col gap-y-2 flex-grow">
-                        <div class="flex flex-row justify-between">
+                    <button class="flex flex-col gap-y-2 flex-grow order-button" data-order-id="{{ $order->order_id }}" data-order-status="{{ $order->status->name }}" data-order-created-at="{{ $order->created_at }}">
+                        <div class="flex w-full justify-between">
                             <div class="flex flex-col">
                                 <h2 class="font-inter font-bold text-lg">Order no.{{ $order->order_id }}</h2>
                             </div>
@@ -39,112 +39,71 @@
                         </div>
                         <h2 class="font-inter text-sm text-gray-500">{{ $order->status->name ?? 'in progress' }}</h2>
                         <hr>
-                    </div>
-                    @endforeach 
+                    </button>
+                    @endforeach
                 </div>
             </div>
-
         </div>
 
         <!-- RIGHT HALF -->
-        <div class="flex flex-col gap-y-10 px-[30px] py-[100px] flex-grow bg-[rgba(214,159,251,0.1)]">
+        <div id="order-details" class="animate-fade-in-left flex flex-col gap-y-10 px-[30px] py-[100px] flex-grow bg-[rgba(214,159,251,0.1)] h-full hidden">
             <div class="flex flex-col gap-y-4">
                 <div class="flex flex-col gap-y-4">
-                    <h2 class="font-gilroy font-bold text-2xl">Order no.3981</h1>
+                    <h2 class="font-gilroy font-bold text-2xl">Order no. <span id="order-id-display"></h1>
                 </div>
                 <hr>
             </div>
 
-            <div class="flex flex-col gap-y-6">
-                <div class="flex flex-row gap-x-7">
-                    <!-- ADD ICON THING -->
-                    <div class="flex flex-col gap-y-1">
-                        <h2 class="font-inter font-bold text-lg">Ready for Collection</h2>
-                        <h2 class="font-inter text-base text-gray-500">Order is Complete</h2>
-                    </div>
-                    <div class="flex flex-col gap-y-1 items-end">
-                        <h2 class="font-inter font-bold text-lg">Sep 20</h2>
-                        <h2 class="font-inter text-base text-gray-500">12:00 PM</h2>
-                    </div>
-                </div>
+            <div class="flex flex-col gap-y-6 text-base" id="order-status-details">
 
-                <div class="flex flex-row gap-x-7">
-                    <!-- ADD ICON THING -->
-                    <div class="flex flex-col gap-y-1">
-                        <h2 class="font-inter font-bold text-lg">Ready for Collection</h2>
-                        <h2 class="font-inter text-base text-gray-500">Order is Complete</h2>
-                    </div>
-                    <div class="flex flex-col gap-y-1 items-end">
-                        <h2 class="font-inter font-bold text-lg">Sep 20</h2>
-                        <h2 class="font-inter text-base text-gray-500">12:00 PM</h2>
-                    </div>
-                </div>
-
-                <div class="flex flex-row gap-x-7">
-                    <!-- ADD ICON THING -->
-                    <div class="flex flex-col gap-y-1">
-                        <h2 class="font-inter font-bold text-lg">Ready for Collection</h2>
-                        <h2 class="font-inter text-base text-gray-500">Order is Complete</h2>
-                    </div>
-                    <div class="flex flex-col gap-y-1 items-end">
-                        <h2 class="font-inter font-bold text-lg">Sep 20</h2>
-                        <h2 class="font-inter text-base text-gray-500">12:00 PM</h2>
-                    </div>
-                </div>
-
-                <div class="flex flex-row gap-x-7">
-                    <!-- ADD ICON THING -->
-                    <div class="flex flex-col gap-y-1">
-                        <h2 class="font-inter font-bold text-lg">Ready for Collection</h2>
-                        <h2 class="font-inter text-base text-gray-500">Order is Complete</h2>
-                    </div>
-                    <div class="flex flex-col gap-y-1 items-end">
-                        <h2 class="font-inter font-bold text-lg">Sep 20</h2>
-                        <h2 class="font-inter text-base text-gray-500">12:00 PM</h2>
-                    </div>
-                </div>
-
-                <div class="flex flex-row gap-x-7">
-                    <!-- ADD ICON THING -->
-                    <div class="flex flex-col gap-y-1">
-                        <h2 class="font-inter font-bold text-lg">Ready for Collection</h2>
-                        <h2 class="font-inter text-base text-gray-500">Order is Complete</h2>
-                    </div>
-                    <div class="flex flex-col gap-y-1 items-end">
-                        <h2 class="font-inter font-bold text-lg">Sep 20</h2>
-                        <h2 class="font-inter text-base text-gray-500">12:00 PM</h2>
-                    </div>
-                </div>
-
-                <div class="flex flex-row gap-x-7">
-                    <!-- ADD ICON THING -->
-                    <div class="flex flex-col gap-y-1">
-                        <h2 class="font-inter font-bold text-lg">Ready for Collection</h2>
-                        <h2 class="font-inter text-base text-gray-500">Order is Complete</h2>
-                    </div>
-                    <div class="flex flex-col gap-y-1 items-end">
-                        <h2 class="font-inter font-bold text-lg">Sep 20</h2>
-                        <h2 class="font-inter text-base text-gray-500">12:00 PM</h2>
-                    </div>
-                </div>
-
-                <div class="flex flex-row gap-x-7">
-                    <!-- ADD ICON THING -->
-                    <div class="flex flex-col gap-y-1">
-                        <h2 class="font-inter font-bold text-lg">Ready for Collection</h2>
-                        <h2 class="font-inter text-base text-gray-500">Order is Complete</h2>
-                    </div>
-                    <div class="flex flex-col gap-y-1 items-end">
-                        <h2 class="font-inter font-bold text-lg">Sep 20</h2>
-                        <h2 class="font-inter text-base text-gray-500">12:00 PM</h2>
-                    </div>
-                </div>
             </div>
-
         </div>
     </div>
     @include('layout.footer')
-</body>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const orderButtons = document.querySelectorAll('.order-button');
+            const orderDetails = document.getElementById('order-details');
+            const orderIdDisplay = document.getElementById('order-id-display');
+            const orderStatusDetails = document.getElementById('order-status-details');
 
+            orderButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const orderId = button.getAttribute('data-order-id');
+                    const orderStatus = button.getAttribute('data-order-status');
+                    const orderCreatedAt = new Date(button.getAttribute('data-order-created-at'));
+                    const formattedDate = orderCreatedAt.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                    });
+                    const formattedTime = orderCreatedAt.toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: 'numeric',
+                    });
+
+                    orderIdDisplay.textContent = orderId;
+                    orderDetails.classList.remove('hidden');
+                    orderDetails.classList.add('flex');
+
+                    // Update the order status section
+                    orderStatusDetails.innerHTML = `
+                    <div class="flex flex-row gap-x-7 justify-between">
+                        <div class="flex flex-col gap-y-1">
+                            <h2 class="font-inter font-bold text-lg">${orderStatus}</h2>
+                            <h2 class="font-inter text-base text-gray-500">Order is in Progress</h2>
+                        </div>
+                        <div class="flex flex-col gap-y-1 items-end">
+                            <h2 class="font-inter font-bold text-lg">${formattedDate}</h2>
+                            <h2 class="font-inter text-base text-gray-500">${formattedTime}</h2>
+                        </div>
+                    </div>
+                `;
+                });
+            });
+        });
+    </script>
+
+</body>
 
 </html>
