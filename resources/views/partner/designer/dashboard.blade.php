@@ -19,12 +19,12 @@
             @include('layout.designer')
             <div class="flex flex-col gap-y-10 p-14 bg-[#F9F9F9] w-full animate-fade-in">
                 <div class="flex flex-col gap-y-1">
-                    <h2 class="font-gilroy font-bold text-3xl text-black">Hello, Janutella Dough</h2>
+                    <h2 class="font-gilroy font-bold text-3xl text-black">Hello, {{$productionCompany->user->name}}</h2>
                     <h4 class="font-inter text-base">Here's what's going on today.</h4>
                 </div>
                 <ul class="flex gap-x-5">
-                    @livewire('dashboard-card', ['svg' => 'svgs.shipping-box', 'heading' => 'Assigned Orders', 'value' => 3])
-                    @livewire('dashboard-card', ['svg' => 'svgs.shredder-device', 'heading' => 'Completed Orders', 'value' => 3])
+                    @livewire('dashboard-card', ['svg' => 'svgs.shipping-box', 'heading' => 'Assigned Orders', 'value' => $assignedOrdersCount])
+                    @livewire('dashboard-card', ['svg' => 'svgs.shredder-device', 'heading' => 'Completed Orders', 'value' => $completedOrdersCount])
                 </ul>
                 <ul class="flex gap-x-5 justify-between">
                     <li class="flex flex-col p-5 bg-white drop-shadow-sm rounded-lg text-base justify-between w-full h-[113px] border border-cGrey">

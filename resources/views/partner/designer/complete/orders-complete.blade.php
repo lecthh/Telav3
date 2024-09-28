@@ -19,7 +19,7 @@
             @include('layout.designer')
             <div class="flex flex-col gap-y-10 p-14 bg-[#F9F9F9] w-full">
                 <div class="flex flex-col gap-y-1">
-                    <h2 class="font-gilroy font-bold text-3xl text-black">Hello, Janutella Dough</h2>
+                    <h2 class="font-gilroy font-bold text-3xl text-black">Hello, {{$productionCompany->user->name}}</h2>
                     <h4 class="font-inter text-base">Here's what's going on today.</h4>
                 </div>
                 <div class="flex flex-col gap-y-5">

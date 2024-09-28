@@ -3,7 +3,7 @@
         <div class="flex p-1 bg-black bg-opacity-10 rounded-sm">
             @include('svgs.home')
         </div>
-        <h4 class="font-gilroy font-bold text-base text-black">Janutella Dough</h4>
+        <h4 class="font-gilroy font-bold text-base text-black">{{ $productionCompany->user->name }}</h4>
     </div>
     <ul class="flex flex-col gap-y-2 px-3 py-2">
         <a wwire:navigate href="{{ route('designer-dashboard') }}">
