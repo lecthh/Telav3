@@ -7,17 +7,7 @@ use Illuminate\Http\Request;
 
 class PrinterOrderController extends Controller
 {
-    public function index()
-    {
-        $pendingOrders = Order::where('status_id', '1')->get();
-        return view('partner.printer.orders', compact('pendingOrders'));
-    }
 
-    public function pendingOrder($order_id)
-    {
-        $order = Order::find($order_id);
-        return view('partner.printer.order', compact('order'));
-    }
 
     public function designInProgress()
     {

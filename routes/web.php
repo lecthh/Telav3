@@ -14,6 +14,8 @@ use App\Http\Controllers\SelectProductionCompanyController;
 use App\Http\Controllers\SelectProductionTypeController;
 use App\Http\Controllers\PrinterOrderController;
 use App\Http\Controllers\DesignerOrderController;
+use App\Http\Controllers\PendingRequestController;
+use App\Http\Middleware\PreventBackHistory;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
@@ -35,8 +37,10 @@ Route::get('/printer-dashboard', function () {
 // Printer Partner Routes
 Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->group(function () {
     Route::prefix('printer')->name('printer.')->group(function () {
-        Route::get('/orders', [PrinterOrderController::class, 'index'])->name('orders');
-        Route::get('/pending-x/{order_id}', [PrinterOrderController::class, 'pendingOrder'])->name('pending-order-x');
+        Route::get('/orders', [PendingRequestController::class, 'index'])->name('orders');
+        Route::get('/pending-x/{order_id}', [PendingRequestController::class, 'pendingOrder'])->name('pending-order-x');
+        Route::post('/assign-designer/{order_id}', [PendingRequestController::class, 'assignDesigner'])->name('assign-designer');
+
         Route::get('/design-in-progress', [PrinterOrderController::class, 'designInProgress'])->name('design-in-progress');
         Route::get('/design-x/{order_id}', [PrinterOrderController::class, 'designOrder'])->name('design-x');
         Route::get('/finalize-order', [PrinterOrderController::class, 'finalize'])->name('finalize-order');
@@ -88,7 +92,7 @@ Route::post('/set-password/store', [BusinessAuthController::class, 'storePasswor
 
 Route::get('/login', [BusinessAuthController::class, 'login'])->name('login');
 Route::post('/login/user', [BusinessAuthController::class, 'loginPost'])->name('login.post');
-Route::get('/logout', [BusinessAuthController::class, 'logout'])->name('logout');
+Route::get('/logout', [BusinessAuthController::class, 'logout'])->name('logout')->middleware(PreventBackHistory::class);
 
 
 //order confirmation

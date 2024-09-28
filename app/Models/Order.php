@@ -61,4 +61,9 @@ class Order extends Model
     {
         return $this->belongsTo(ProductionType::class, 'production_type', 'id');
     }
+
+    public function imagesWithStatusOne()
+    {
+        return $this->hasMany(OrderImages::class, 'order_id', 'order_id')->where('status_id', 1);
+    }
 }
