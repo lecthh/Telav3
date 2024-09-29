@@ -30,6 +30,7 @@ class Order extends Model
         'final_price',
         'custom_design_info',
         'revision_count',
+        'token',
     ];
 
     public function user()
@@ -66,5 +67,14 @@ class Order extends Model
     public function imagesWithStatusOne()
     {
         return $this->hasMany(OrderImages::class, 'order_id', 'order_id')->where('status_id', 1);
+    }
+    public function imagesWithStatusTwo()
+    {
+        return $this->hasMany(OrderImages::class, 'order_id', 'order_id')->where('status_id', 2);
+    }
+
+    public function customizationDetails()
+    {
+        return $this->hasMany(CustomizationDetails::class, 'order_id', 'order_id');
     }
 }

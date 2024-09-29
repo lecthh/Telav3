@@ -16,7 +16,7 @@
     <div class="flex flex-col">
         <div class="flex p-1 bg-cGreen font-gilroy font-bold text-black text-sm justify-center">Designer Hub</div>
         <div class="flex">
-            @include('layout.printer')
+            @include('layout.designer')
             <div class="flex flex-col gap-y-10 p-14 bg-[#F9F9F9] w-full">
                 <div class="flex flex-col gap-y-5">
                     <div class="flex flex-col gap-y-10">
@@ -127,28 +127,47 @@
 
                                 <div class="flex flex-col">
                                     <div class="flex p-3 bg-cGreen font-gilroy font-bold text-black text-base rounded-t-lg">
-                                        <h3>Actions</h3>
+                                        <h3>File Preview</h3>
                                     </div>
-                                    <div class="flex gap-x-3 p-3 bg-white border rounded-b-lg justify-between">
-                                        <div class="flex justify-start">
-                                            <button type="" class="flex bg-red-500 rounded-xl text-white text-base gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-red-600 items-center">
-                                                Cancel Order
-                                            </button>
-                                        </div>
-                                        <div class="flex justify-end gap-x-3">
-                                            <button type="" class="flex bg-white border text-cGreen border-cGreen rounded-xl gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md hover:bg-gray-200 disabled:opacity-30 active:bg-gray-500">
-                                                Message Client
-                                            </button>
-                                            <div class="flex justify-end relative">
-                                                <button class="bg-cGreen hover:bg-cGreen text-black py-2 px-4 w-full inline-flex items-center rounded-lg gap-x-2">
-                                                    @include('svgs.upload')
-                                                    <span id="file-name">Upload Final Design</span>
-                                                </button>
-                                                <input id="file-input" class="cursor-pointer absolute block opacity-0 inset-0" type="file" name="vacancyImageFiles" multiple>
-                                            </div>
+                                    <div class="flex gap-x-3 p-3 bg-white border rounded-b-lg justify-start">
+                                        <div id="preview-container" class="flex gap-x-3 flex-wrap">
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="flex flex-col">
+                                    <div class="flex p-3 bg-cGreen font-gilroy font-bold text-black text-base rounded-t-lg">
+                                        <h3>Actions</h3>
+                                    </div>
+                                    <div class="flex gap-x-3 p-3 bg-white border rounded-b-lg justify-between">
+                                        <div class="flex gap-y-4 justify-start gap-x-3">
+                                            <button type="button" class="flex bg-red-500 rounded-xl text-white text-base px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-red-600 items-center">
+                                                Cancel Order
+                                            </button>
+                                            <button type="button" class="flex bg-white border text-cGreen border-cGreen rounded-xl px-6 py-3 justify-center transition ease-in-out hover:shadow-md hover:bg-gray-200 disabled:opacity-30 active:bg-gray-500 items-center">
+                                                Message Client
+                                            </button>
+                                        </div>
+
+                                        <form id="design-upload-form" action="{{ route('partner.designer.assigned-x-post', ['order_id' => $order->order_id]) }}" method="POST" enctype="multipart/form-data">
+                                            <div class="flex justify-end gap-x-3">
+                                                <div id="confirm-design-container" class="flex justify-end hidden">
+                                                    <button id="confirm-design" class="bg-cGreen hover:bg-cGreen text-black py-2 px-4 rounded-lg gap-x-2">
+                                                        Confirm Design
+                                                    </button>
+                                                </div>
+                                                @csrf
+                                                <div class="flex justify-end relative">
+                                                    <label for="file-input" class="bg-cGreen hover:bg-cGreen text-black py-2 px-4 inline-flex items-center rounded-lg gap-x-2 cursor-pointer">
+                                                        @include('svgs.upload')
+                                                        <span id="file-name">Upload Final Design</span>
+                                                    </label>
+                                                    <input id="file-input" class="hidden" type="file" name="vacancyImageFiles[]" multiple>
+                                                </div>
+                                        </form>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -156,16 +175,42 @@
             </div>
         </div>
     </div>
-
+    </div>
     @include('layout.footer')
     <script>
         document.getElementById('file-input').addEventListener('change', function(event) {
             const input = event.target;
             const fileNameSpan = document.getElementById('file-name');
+            const previewContainer = document.getElementById('preview-container');
+            const confirmDesignContainer = document.getElementById('confirm-design-container');
+
+            // Clear previous previews
+            previewContainer.innerHTML = '';
+
             if (input.files.length > 0) {
                 fileNameSpan.textContent = Array.from(input.files).map(file => file.name).join(', ');
+
+                // Create file previews
+                Array.from(input.files).forEach(file => {
+                    const reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        const previewImage = document.createElement('img');
+                        previewImage.src = e.target.result;
+                        previewImage.classList.add('w-[150px]', 'h-[100px]', 'object-cover', 'border', 'rounded');
+                        previewContainer.appendChild(previewImage);
+                    };
+
+                    reader.readAsDataURL(file);
+                });
+
+                // Show the confirm design button
+                confirmDesignContainer.classList.remove('hidden');
             } else {
                 fileNameSpan.textContent = 'Upload Final Design';
+
+                // Hide the confirm design button
+                confirmDesignContainer.classList.add('hidden');
             }
         });
     </script>

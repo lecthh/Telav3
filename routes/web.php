@@ -3,6 +3,7 @@
 use App\Http\Controllers\BusinessAuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ConfirmationLinkController;
 use App\Http\Controllers\ConfirmationMessageController;
 use App\Http\Controllers\Review;
 use App\Http\Controllers\Customization;
@@ -15,6 +16,7 @@ use App\Http\Controllers\SelectProductionTypeController;
 use App\Http\Controllers\PrinterOrderController;
 use App\Http\Controllers\DesignerOrderController;
 use App\Http\Controllers\DesignInProgressController;
+use App\Http\Controllers\FinalizeOrderController;
 use App\Http\Controllers\PendingRequestController;
 use App\Http\Middleware\PreventBackHistory;
 use Illuminate\Http\Request;
@@ -45,8 +47,9 @@ Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->g
         Route::get('/design-in-progress', [DesignInProgressController::class, 'designInProgress'])->name('design-in-progress');
         Route::get('/design-x/{order_id}', [DesignInProgressController::class, 'designOrder'])->name('design-x');
 
-        Route::get('/finalize-order', [PrinterOrderController::class, 'finalize'])->name('finalize-order');
-        Route::get('/finalize-x/{order_id}', [PrinterOrderController::class, 'finalizeOrder'])->name('finalize-x');
+        Route::get('/finalize-order', [FinalizeOrderController::class, 'finalize'])->name('finalize-order');
+        Route::get('/finalize-x/{order_id}', [FinalizeOrderController::class, 'finalizeOrder'])->name('finalize-x');
+
         Route::get('/awaiting-printing', [PrinterOrderController::class, 'awaitingPrinting'])->name('awaiting-printing');
         Route::get('/awaiting-x/{order_id}', [PrinterOrderController::class, 'awaitingOrder'])->name('awaiting-x');
         Route::get('/printing-in-progress', [PrinterOrderController::class, 'printingInProgress'])->name('printing-in-progress');
@@ -60,10 +63,11 @@ Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->g
 
 //Designer Routes
 Route::get('/designer-dashboard', [DesignerOrderController::class, 'dashboard'])->name('designer-dashboard')->middleware('DesignerOnly');
-Route::prefix('partner')->name('partner.')->group(function () {
+Route::prefix('partner')->name('partner.')->middleware('DesignerOnly')->group(function () {
     Route::prefix('designer')->name('designer.')->group(function () {
         Route::get('/orders', [DesignerOrderController::class, 'index'])->name('orders');
         Route::get('/assigned-x/{order_id}', [DesignerOrderController::class, 'assignedOrder'])->name('assigned-x');
+        Route::post('/assigned-x/{order_id}/post', [DesignerOrderController::class, 'assignedOrderPost'])->name('assigned-x-post');
         Route::get('/completed', [DesignerOrderController::class, 'complete'])->name('complete');
         Route::get('/complete-x', [DesignerOrderController::class, 'completeOrder'])->name('complete-x');
     });
@@ -95,17 +99,9 @@ Route::get('/login', [BusinessAuthController::class, 'login'])->name('login');
 Route::post('/login/user', [BusinessAuthController::class, 'loginPost'])->name('login.post');
 Route::get('/logout', [BusinessAuthController::class, 'logout'])->name('logout')->middleware(PreventBackHistory::class);
 
-
-//order confirmation
-Route::get('/confirm-bulk', function () {
-    return view('customer.order-confirmation.standard-bulk');
-});
-Route::get('/confirm-bulk-custom', function () {
-    return view('customer.order-confirmation.bulk-customized');
-});
-Route::get('/confirm-jerseybulk-custom', function () {
-    return view('customer.order-confirmation.jersey-bulk-customized');
-});
+Route::get('/confirm-bulk', [ConfirmationLinkController::class, 'confirmBulk'])->name('confirm-bulk');
+Route::get('/confirm-bulk-custom', [ConfirmationLinkController::class, 'confirmBulkCustom'])->name('confirm-bulk-custom');
+Route::get('/confirm-jerseybulk-custom', [ConfirmationLinkController::class, 'confirmJerseyBulkCustom'])->name('confirm-jerseybulk-custom');
 
 Route::get('/profile-basics', [ProfileController::class, 'showProfileDetails'])->name('customer.profile.basics');
 Route::get('/profile-orders', [ProfileController::class, 'profileOrders'])->name('customer.profile.orders');
