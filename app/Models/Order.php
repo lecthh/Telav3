@@ -67,4 +67,9 @@ class Order extends Model
     {
         return $this->hasMany(OrderImages::class, 'order_id', 'order_id')->where('status_id', 1);
     }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class, 'order_id', 'order_id');
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AddressInformation;
 use App\Models\Cart;
 use App\Models\CartItem;
+use App\Models\Notification;
 use App\Models\Order;
 use App\Models\OrderImages;
 use Illuminate\Http\Request;
@@ -85,6 +86,13 @@ class CheckoutController extends Controller
                         ]);
                     }
                     $cartItem->delete();
+
+                    Notification::create([
+                        'user_id' => $user->user_id,
+                        'message' => 'Your order has been placed successfully.',
+                        'is_read' => false,
+                        'order_id' => $order->order_id,
+                    ]);
                 }
             }
 

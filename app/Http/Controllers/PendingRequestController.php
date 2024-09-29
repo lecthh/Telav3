@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Designer;
+use App\Models\Notification;
 use App\Models\Order;
 use Illuminate\Http\Request;
 
@@ -30,6 +31,15 @@ class PendingRequestController extends Controller
         $order->assigned_designer_id = intval($request->selected_designer_id);
         $order->status_id = 2;
         $order->save();
+
+        $user_id = $order->user->user_id;
+
+        Notification::create([
+            'user_id' => $user_id,
+            'message' => 'Design in Progress',
+            'is_read' => false,
+            'order_id' => $order->order_id,
+        ]);
 
         return redirect()->route('partner.printer.orders');
     }

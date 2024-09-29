@@ -28,7 +28,7 @@
 
 
             <div class="flex flex-col h-full">
-                <div class="flex flex-row gap-x-[18px] h-full">
+                <div class="flex flex-col gap-x-[18px] h-full">
                     @foreach($orders as $order)
                     <button class="flex flex-col gap-y-2 flex-grow order-button" data-order-id="{{ $order->order_id }}" data-order-status="{{ $order->status->name }}" data-order-created-at="{{ $order->created_at }}">
                         <div class="flex w-full justify-between">
