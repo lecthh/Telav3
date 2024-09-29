@@ -87,5 +87,13 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Revision'],
             ['name' => 'Final Design'],
         ]);
+
+        $sizes = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'];
+
+        foreach ($sizes as $size) {
+            DB::table('sizes')->insert([
+                'name' => $size
+            ]);
+        }
     }
 }

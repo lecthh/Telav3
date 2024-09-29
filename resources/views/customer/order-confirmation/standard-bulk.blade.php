@@ -19,7 +19,7 @@
         <div class="flex flex-col gap-y-[60px] px-[200px] py-[100px] bg-white">
             <div class="flex flex-col gap-y-3">
                 <h3 class="font-gilroy font-bold text-5xl">Order Confirmation</h3>
-                <h5 class="font-inter text-base">Order No. 0981</h5>
+                <h5 class="font-inter text-base">Order No. {{$order->order_id}}</h5>
             </div>
             <div class="flex flex-col gap-y-4 w-[648px]">
                 <h5 class="font-inter font-bold text-lg">Please specify the details for each apparel to be printed.</h5>

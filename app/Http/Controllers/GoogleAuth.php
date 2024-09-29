@@ -19,12 +19,12 @@ class GoogleAuth extends Controller
         try {
             $googleUser = Socialite::driver('google')->user();
             $this->_registerOrLoginUser($googleUser);
-
-            return redirect()->route('home');
+            return redirect()->intended(route('home'));
         } catch (\Exception $e) {
             return redirect()->route('home')->withErrors('Error logging in with Google.');
         }
     }
+
 
     private function _registerOrLoginUser($googleUser)
     {
