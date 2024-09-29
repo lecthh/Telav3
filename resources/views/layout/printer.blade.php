@@ -3,7 +3,7 @@
         <div class="flex p-1 bg-black bg-opacity-10 rounded-sm">
             @include('svgs.home')
         </div>
-        <h4 class="font-gilroy font-bold text-base text-black">{{ $productionCompany->company_name }}</h4>
+        <a href="{{ route('partner.printer.profile.basics') }}" class="font-gilroy font-bold text-base text-black">{{ $productionCompany->company_name }}</a>
     </div>
     <ul class="flex flex-col gap-y-2 px-3 py-2">
         <a href="{{ route('printer-dashboard') }}">

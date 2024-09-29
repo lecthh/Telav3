@@ -32,14 +32,22 @@ Route::get('/', function () {
 Route::get('/partner-registration', [PartnerRegistration::class, 'partnerRegistration'])->name('partner-registration');
 Route::get('/partner-confirmation', [PartnerRegistration::class, 'partnerConfirmation'])->name('partner-confirmation');
 
+// Printer Partner Routes
 Route::get('/printer-dashboard', function () {
     return view('partner.printer.dashboard');
 })->name('printer-dashboard')->middleware('ProductionAdminOnly');
 
-
 // Printer Partner Routes
 Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->group(function () {
     Route::prefix('printer')->name('printer.')->group(function () {
+        Route::get('/profile/basics', function () {
+             return view('partner.printer.profile.basics');
+        })->name('profile.basics');
+
+        Route::get('/profile/pricing', function () {
+            return view('partner.printer.profile.pricing');
+        })->name('profile.pricing');
+
         Route::get('/orders', [PendingRequestController::class, 'index'])->name('orders');
         Route::get('/pending-x/{order_id}', [PendingRequestController::class, 'pendingOrder'])->name('pending-order-x');
         Route::post('/assign-designer/{order_id}', [PendingRequestController::class, 'assignDesigner'])->name('assign-designer');
