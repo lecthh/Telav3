@@ -99,9 +99,9 @@ Route::get('/login', [BusinessAuthController::class, 'login'])->name('login');
 Route::post('/login/user', [BusinessAuthController::class, 'loginPost'])->name('login.post');
 Route::get('/logout', [BusinessAuthController::class, 'logout'])->name('logout')->middleware(PreventBackHistory::class);
 
-Route::get('/confirm-bulk', [ConfirmationLinkController::class, 'confirmBulk'])->name('confirm-bulk');
-Route::get('/confirm-bulk-custom', [ConfirmationLinkController::class, 'confirmBulkCustom'])->name('confirm-bulk-custom');
-Route::get('/confirm-jerseybulk-custom', [ConfirmationLinkController::class, 'confirmJerseyBulkCustom'])->name('confirm-jerseybulk-custom');
+Route::get('/confirm-bulk/{token}', [ConfirmationLinkController::class, 'confirmBulk'])->name('confirm-bulk');
+Route::get('/confirm-bulk-custom/{token}', [ConfirmationLinkController::class, 'confirmBulkCustom'])->name('confirm-bulk-custom');
+Route::get('/confirm-jerseybulk-custom/{token}', [ConfirmationLinkController::class, 'confirmJerseyBulkCustom'])->name('confirm-jerseybulk-custom');
 
 Route::get('/profile-basics', [ProfileController::class, 'showProfileDetails'])->name('customer.profile.basics');
 Route::get('/profile-orders', [ProfileController::class, 'profileOrders'])->name('customer.profile.orders');

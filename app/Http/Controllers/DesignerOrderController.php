@@ -97,9 +97,8 @@ class DesignerOrderController extends Controller
             }
         }
         $name = $user->name;
-
-        // $user->update(['passwordToken' => $token]);
-        // $user->save();
+        $order->update(['token' => $token]);
+        $order->save();
         Mail::send('mail.confirmationLink', ['url' => $url, 'name' => $name, 'Designer' => $designer], function ($message) use ($user) {
             $message->to($user->email);
             $message->subject('Order Is Confirmed');
