@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notification;
 use App\Models\Order;
 use App\Models\OrderImages;
 use Illuminate\Http\Request;
@@ -70,6 +71,15 @@ class DesignerOrderController extends Controller
         }
         $order->status_id = 3;
         $order->save();
+
+        $user_id = $order->user->user_id;
+
+        Notification::create([
+            'user_id' => $user_id,
+            'message' => 'Finalize Order',
+            'is_read' => false,
+            'order_id' => $order->order_id,
+        ]);
 
         $designer = $order->designer->user->name;
         $token = uniqid();
