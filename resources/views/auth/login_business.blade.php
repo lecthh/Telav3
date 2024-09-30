@@ -14,7 +14,7 @@
 <body class="flex flex-col h-screen justify-between">
     @include('layout.auth_nav')
 
-    <div class="flex flex-col justify-center items-center flex-grow">
+    <div class="flex flex-col justify-center items-center flex-grow animate-fade-in">
         <div class="relative">
             <div class="flex flex-col gap-x-[12px] text-center mb-5 relative">
                 <h1 class="font-gilroy font-bold text-5xl mb-6 ">Welcome to Tel-a BusinessHub</h1>
