@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
         rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/pagedone@1.2.2/src/css/pagedone.css " rel="stylesheet" />
     @vite('resources/css/app.css')
 </head>
 @include('layout.nav')
@@ -82,13 +83,13 @@
                         Back
                     </a>
                     @if(Auth::check())
-                        <button type="submit" class="flex bg-cPrimary rounded-xl text-white text-[18px] gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]">
-                            Add Item to Cart
-                        </button>
+                    <button type="submit" class="flex bg-cPrimary rounded-xl text-white text-[18px] gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]">
+                        Add Item to Cart
+                    </button>
                     @else
-                        <button type="button" onclick="Livewire.dispatch('openModal', { component: 'modal-login-signup' })" class="flex bg-cPrimary rounded-xl text-white text-[18px] gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]">
-                            Please sign in to continue
-                        </button>
+                    <button type="button" onclick="Livewire.dispatch('openModal', { component: 'modal-login-signup' })" class="flex bg-cPrimary rounded-xl text-white text-[18px] gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]">
+                        Please sign in to continue
+                    </button>
                     @endif
                 </div>
             </div>

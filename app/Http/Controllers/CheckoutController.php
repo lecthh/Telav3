@@ -61,7 +61,7 @@ class CheckoutController extends Controller
 
                 if ($cartItem) {
                     $isBulkOrder = ($cartItem->orderType == 'bulk') ? true : false;
-                    $isCustomized = ($cartItem->customization == 'custom') ? true : false;
+                    $isCustomized = ($cartItem->customization == 'personalized') ? true : false;
                     $order = Order::create([
                         'order_id' => uniqid(),
                         'user_id' => $user->user_id,
