@@ -41,7 +41,7 @@ Route::get('/printer-dashboard', function () {
 Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->group(function () {
     Route::prefix('printer')->name('printer.')->group(function () {
         Route::get('/profile/basics', function () {
-             return view('partner.printer.profile.basics');
+            return view('partner.printer.profile.basics');
         })->name('profile.basics');
 
         Route::get('/profile/pricing', function () {
@@ -90,15 +90,20 @@ Route::post('/customization/{apparel}/{productionType}/{company}', [Customizatio
 Route::get('/review/{apparel}/{productionType}/{company}', [Review::class, 'review'])->name('customer.place-order.review');
 Route::post('/review/{apparel}/{productionType}/{company}', [Review::class, 'storeReview'])->name('customer.place-order.review-post');
 
-Route::get('/cart', [CartController::class, 'showCart'])->name('customer.cart');
-Route::post('/cart', [CartController::class, 'checkout'])->name('customer.cart.post');
-Route::get('/cart/removeitem/{cartItemId}', [CartController::class, 'removeCartItem'])->name('customer.remove-cart-item');
+Route::middleware(['CustomerOnly'])->group(function () {
+    Route::get('/cart', [CartController::class, 'showCart'])->name('customer.cart');
+    Route::post('/cart', [CartController::class, 'checkout'])->name('customer.cart.post');
+    Route::get('/cart/removeitem/{cartItemId}', [CartController::class, 'removeCartItem'])->name('customer.remove-cart-item');
 
-Route::get('/checkout', [CheckoutController::class, 'checkout'])->name('customer.checkout');
-Route::post('/checkout/create', [CheckoutController::class, 'postCheckout'])->name('customer.checkout.post');
-Route::get('/checkout/delete/{cartItemId}', [CheckoutController::class, 'deleteCartItem'])->name('customer.checkout.delete');
+    Route::get('/checkout', [CheckoutController::class, 'checkout'])->name('customer.checkout');
+    Route::post('/checkout/create', [CheckoutController::class, 'postCheckout'])->name('customer.checkout.post');
+    Route::get('/checkout/delete/{cartItemId}', [CheckoutController::class, 'deleteCartItem'])->name('customer.checkout.delete');
 
-Route::get('/confirmation', [ConfirmationMessageController::class, 'confirmation'])->name('customer.confirmation');
+    Route::get('/profile-basics', [ProfileController::class, 'showProfileDetails'])->name('customer.profile.basics');
+    Route::get('/profile-orders', [ProfileController::class, 'profileOrders'])->name('customer.profile.orders');
+    Route::get('/profile-reviews', [ProfileController::class, 'profileReviews'])->name('customer.profile.reviews');
+    Route::get('/confirmation', [ConfirmationMessageController::class, 'confirmation'])->name('customer.confirmation');
+});
 
 Route::get('/set-password/{token}', [BusinessAuthController::class, 'showSetPasswordForm'])->name('set-password');
 Route::post('/set-password/store', [BusinessAuthController::class, 'storePassword'])->name('password.store');
@@ -108,12 +113,13 @@ Route::post('/login/user', [BusinessAuthController::class, 'loginPost'])->name('
 Route::get('/logout', [BusinessAuthController::class, 'logout'])->name('logout')->middleware(PreventBackHistory::class);
 
 Route::get('/confirm-bulk/{token}', [ConfirmationLinkController::class, 'confirmBulk'])->name('confirm-bulk');
-Route::get('/confirm-bulk-custom/{token}', [ConfirmationLinkController::class, 'confirmBulkCustom'])->name('confirm-bulk-custom');
-Route::get('/confirm-jerseybulk-custom/{token}', [ConfirmationLinkController::class, 'confirmJerseyBulkCustom'])->name('confirm-jerseybulk-custom');
+Route::post('/confirm-bulk/post', [ConfirmationLinkController::class, 'confirmBulkPost'])->name('confirm-bulk-post');
 
-Route::get('/profile-basics', [ProfileController::class, 'showProfileDetails'])->name('customer.profile.basics');
-Route::get('/profile-orders', [ProfileController::class, 'profileOrders'])->name('customer.profile.orders');
-Route::get('/profile-reviews', [ProfileController::class, 'profileReviews'])->name('customer.profile.reviews');
+Route::get('/confirm-bulk-custom/{token}', [ConfirmationLinkController::class, 'confirmBulkCustom'])->name('confirm-bulk-custom');
+Route::post('/confirm-bulk-custom/post', [ConfirmationLinkController::class, 'confirmBulkCustomPost'])->name('confirm-bulk-custom-post');
+
+Route::get('/confirm-jerseybulk-custom/{token}', [ConfirmationLinkController::class, 'confirmJerseyBulkCustom'])->name('confirm-jerseybulk-custom');
+Route::post('/confirm-jerseybulk-custom/post', [ConfirmationLinkController::class, 'confirmJerseyBulkCustomPost'])->name('confirm-jerseybulk-custom-post');
 
 Route::get('/auth/google/redirect', [GoogleAuth::class, 'redirectToGoogle'])->name('google.redirect');
 Route::get('/auth/google/callback', [GoogleAuth::class, 'handleGoogleCallback'])->name('google.callback');
