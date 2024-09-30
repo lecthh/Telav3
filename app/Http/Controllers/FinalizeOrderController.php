@@ -17,6 +17,12 @@ class FinalizeOrderController extends Controller
     {
         $order = Order::find($order_id);
 
-        return view('partner.printer.finalize.order', compact('order'));
+        $customizationDetails = $order->customizationDetails()->get();
+
+        if ($customizationDetails->isEmpty()) {
+            $customizationDetails = null;
+        }
+
+        return view('partner.printer.finalize.order', compact('order', 'customizationDetails'));
     }
 }

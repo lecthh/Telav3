@@ -27,8 +27,6 @@
 
                 <div class="flex flex-col gap-y-4 w-[648px]">
                     <h5 class="font-inter font-bold text-lg">Please specify the details for each apparel to be printed.</h5>
-
-                    <!-- Display validation errors here -->
                     @if ($errors->any())
                     <div class="text-red-500">
                         <ul>
@@ -44,7 +42,6 @@
                         <div class="flex flex-col gap-y-2 text-inter text-base text-start">
                             <h5>{{ $size->name }}</h5>
                             <input type="number" name="sizes[{{ $size->sizes_ID }}]" class="rounded-lg" placeholder="0" value="{{ old('sizes.' . $size->sizes_ID) }}">
-                            <!-- Display error message for each size -->
                             @error('sizes.' . $size->sizes_ID)
                             <span class="text-red-500">{{ $message }}</span>
                             @enderror
