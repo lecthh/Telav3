@@ -6,7 +6,9 @@
             <li class=""><a wire:navigate href="{{ route('customer.place-order.select-apparel') }}">Start Your Custom Order</a></li>
             <li class=""><a href="">Browse Production Services</a></li>
             <li class=""><a wire:navigate href="{{ route('partner-registration') }}">Become a Partner</a></li>
-            <li class=""><a wire:navigate href="{{ route('login') }}">Business Hub</a></li>
+            @guest
+            <li class=""><a href="{{ route('login') }}">Business Hub</a></li>
+            @endguest
         </ul>
     </div>
 </footer>

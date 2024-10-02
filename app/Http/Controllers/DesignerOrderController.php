@@ -92,13 +92,14 @@ class DesignerOrderController extends Controller
                     now()->addMinutes(60),
                     ['token' => $token, 'email' => $user->email, 'order_id' => $order->order_id]
                 );
-            } else if ($order->is_customized) {
+            } else if ($order->is_customized && $order->apparelType->id != 1) {
                 $url = URL::temporarySignedRoute(
                     'confirm-bulk-custom',
                     now()->addMinutes(60),
                     ['token' => $token, 'email' => $user->email, 'order_id' => $order->order_id]
                 );
             } else if ($order->is_customized && $order->apparelType->id == 1) {
+
                 $url = URL::temporarySignedRoute(
                     'confirm-jerseybulk-custom',
                     now()->addMinutes(60),

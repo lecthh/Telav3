@@ -5,6 +5,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ConfirmationLinkController;
 use App\Http\Controllers\ConfirmationMessageController;
+use App\Http\Controllers\ConfirmBulkController;
 use App\Http\Controllers\Review;
 use App\Http\Controllers\Customization;
 use App\Http\Controllers\GoogleAuth;
@@ -112,8 +113,8 @@ Route::get('/login', [BusinessAuthController::class, 'login'])->name('login');
 Route::post('/login/user', [BusinessAuthController::class, 'loginPost'])->name('login.post');
 Route::get('/logout', [BusinessAuthController::class, 'logout'])->name('logout')->middleware(PreventBackHistory::class);
 
-Route::get('/confirm-bulk/{token}', [ConfirmationLinkController::class, 'confirmBulk'])->name('confirm-bulk');
-Route::post('/confirm-bulk/post', [ConfirmationLinkController::class, 'confirmBulkPost'])->name('confirm-bulk-post');
+Route::get('/confirm-bulk/{token}', [ConfirmBulkController::class, 'confirmBulk'])->name('confirm-bulk');
+Route::post('/confirm-bulk/post', [ConfirmBulkController::class, 'confirmBulkPost'])->name('confirm-bulk-post');
 
 Route::get('/confirm-bulk-custom/{token}', [ConfirmationLinkController::class, 'confirmBulkCustom'])->name('confirm-bulk-custom');
 Route::post('/confirm-bulk-custom/post', [ConfirmationLinkController::class, 'confirmBulkCustomPost'])->name('confirm-bulk-custom-post');
