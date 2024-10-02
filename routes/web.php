@@ -103,6 +103,14 @@ Route::middleware(['CustomerOnly'])->group(function () {
     Route::get('/profile-orders', [ProfileController::class, 'profileOrders'])->name('customer.profile.orders');
     Route::get('/profile-reviews', [ProfileController::class, 'profileReviews'])->name('customer.profile.reviews');
     Route::get('/confirmation', [ConfirmationMessageController::class, 'confirmation'])->name('customer.confirmation');
+
+    Route::get('/inbox', function () {
+        return view('customer.inbox.messages');
+    })->name('customer.messages');
+
+    Route::get('/inbox/chat', function () {
+        return view('customer.inbox.chatroom');
+    })->name('customer.chat');
 });
 
 Route::get('/set-password/{token}', [BusinessAuthController::class, 'showSetPasswordForm'])->name('set-password');
