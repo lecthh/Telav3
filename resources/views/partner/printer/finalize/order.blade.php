@@ -152,12 +152,19 @@
                                     </div>
                                     <div class="flex flex-col gap-y-3 p-3 bg-white border rounded-b-lg">
                                         <div class="flex justify-start gap-x-3">
-                                            <button type="" class="flex bg-red-500 rounded-xl text-white text-base gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-red-600">
-                                                Cancel Order
-                                            </button>
-                                            <button type="" class="flex bg-cPrimary rounded-xl text-white text-base gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]">
-                                                Next Stage
-                                            </button>
+                                            <form action="" method="post">
+                                                <button type="button" class="flex bg-red-500 rounded-xl text-white text-base gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-red-600">
+                                                    Cancel Order
+                                                </button>
+                                            </form>
+                                            @if($customizationDetails && !$customizationDetails->isEmpty())
+                                            <form action="{{ route('partner.printer.finalize-x-post', ['order_id' => $order->order_id]) }}" method="post">
+                                                @csrf
+                                                <button type="submit" class="flex bg-cPrimary rounded-xl text-white text-base gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]">
+                                                    Next Stage
+                                                </button>
+                                            </form>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>

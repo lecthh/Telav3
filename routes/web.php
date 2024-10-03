@@ -60,9 +60,11 @@ Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->g
 
         Route::get('/finalize-order', [FinalizeOrderController::class, 'finalize'])->name('finalize-order');
         Route::get('/finalize-x/{order_id}', [FinalizeOrderController::class, 'finalizeOrder'])->name('finalize-x');
+        Route::post('/finalize-x/{order_id}/post', [FinalizeOrderController::class, 'finalizeOrderPost'])->name('finalize-x-post');
 
         Route::get('/awaiting-printing', [PrinterOrderController::class, 'awaitingPrinting'])->name('awaiting-printing');
         Route::get('/awaiting-x/{order_id}', [PrinterOrderController::class, 'awaitingOrder'])->name('awaiting-x');
+
         Route::get('/printing-in-progress', [PrinterOrderController::class, 'printingInProgress'])->name('printing-in-progress');
         Route::get('/printing-x/{order_id}', [PrinterOrderController::class, 'printingOrder'])->name('printing-x');
         Route::get('/ready', [PrinterOrderController::class, 'ready'])->name('ready');

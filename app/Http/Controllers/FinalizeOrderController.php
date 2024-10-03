@@ -25,4 +25,14 @@ class FinalizeOrderController extends Controller
 
         return view('partner.printer.finalize.order', compact('order', 'customizationDetails'));
     }
+
+    public function finalizeOrderPost($order_id)
+    {
+        $order = Order::find($order_id);
+
+        $order->status_id = 4;
+        $order->save();
+
+        return redirect()->route('partner.printer.awaiting-printing');
+    }
 }
