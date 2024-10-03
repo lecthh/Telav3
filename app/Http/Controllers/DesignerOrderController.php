@@ -80,6 +80,12 @@ class DesignerOrderController extends Controller
             'is_read' => false,
             'order_id' => $order->order_id,
         ]);
+        Notification::create([
+            'user_id' => $user_id,
+            'message' => 'A confirmation link has been sent to your email. Please confirm your order.',
+            'is_read' => false,
+            'order_id' => $order->order_id,
+        ]);
 
         $designer = $order->designer->user->name;
         $token = uniqid();
