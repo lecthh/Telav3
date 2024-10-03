@@ -141,12 +141,18 @@
                                     </div>
                                     <div class="flex gap-x-3 p-3 bg-white border rounded-b-lg justify-between">
                                         <div class="flex gap-y-4 justify-start gap-x-3">
-                                            <button type="button" class="flex bg-red-500 rounded-xl text-white text-base px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-red-600 items-center">
-                                                Cancel Order
-                                            </button>
-                                            <button type="button" class="flex bg-white border text-cGreen border-cGreen rounded-xl px-6 py-3 justify-center transition ease-in-out hover:shadow-md hover:bg-gray-200 disabled:opacity-30 active:bg-gray-500 items-center">
-                                                Message Client
-                                            </button>
+                                            @if($order->status_id <= 3 )
+                                                <form action="{{ route('partner.designer.cancel-design-assignment', ['order_id' => $order->order_id]) }}" method="post">
+                                                @csrf
+                                                <button type="submit" class="flex bg-red-500 rounded-xl text-white text-base px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-red-600">
+                                                    Cancel Order
+                                                </button>
+                                                </form>
+                                                @endif
+
+                                                <button type="button" class="flex bg-white border text-cGreen border-cGreen rounded-xl px-6 py-3 justify-center transition ease-in-out hover:shadow-md hover:bg-gray-200 disabled:opacity-30 active:bg-gray-500 items-center">
+                                                    Message Client
+                                                </button>
                                         </div>
 
                                         <form id="design-upload-form" action="{{ route('partner.designer.assigned-x-post', ['order_id' => $order->order_id]) }}" method="POST" enctype="multipart/form-data">

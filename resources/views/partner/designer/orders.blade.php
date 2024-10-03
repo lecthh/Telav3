@@ -39,7 +39,8 @@
                                 <th class="px-5 py-[14px] text-start">Customer</th>
                                 <th class="px-5 py-[14px] text-start">Email</th>
                                 <th class="px-5 py-[14px] text-start">Apparel</th>
-                                <th class="px-5 py-[14px] text-start rounded-tr-lg">Assigned By</th>
+                                <th class="px-5 py-[14px] text-start">Assigned By</th>
+                                <th class="px-5 py-[14px] text-start rounded-tr-lg">Status</th>
                             </tr>
                         </thead>
                         <tbody class="border drop-shadow-sm">
@@ -55,6 +56,7 @@
                                 <td class="px-5 py-[14px]">{{ $order->user->email }}</td>
                                 <td class="px-5 py-[14px]">{{ $order->apparelType->name ?? 'N/A' }}</td>
                                 <td class="px-5 py-[14px]">{{ $order->productionCompany->company_name }}</td>
+                                <td class="px-5 py-[14px]">{{ $order->status->name ?? 'N/A' }}</td>
                             </tr>
                             @empty
                             <tr>

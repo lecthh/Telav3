@@ -32,6 +32,15 @@ class DesignerOrderController extends Controller
         return view('partner.designer.dashboard', compact('assignedOrdersCount', 'completedOrdersCount'));
     }
 
+    public function cancelDesignAssignment($order_id)
+    {
+        $order = Order::find($order_id);
+        $order->assigned_designer_id = null;
+        $order->status_id = 1;
+        $order->save();
+        return redirect()->route('designer-dashboard')->with('success', 'Design assignment cancelled successfully!');
+    }
+
 
     public function index()
     {
