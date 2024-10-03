@@ -22,6 +22,8 @@ use App\Http\Controllers\DesignerOrderController;
 use App\Http\Controllers\DesignInProgressController;
 use App\Http\Controllers\FinalizeOrderController;
 use App\Http\Controllers\PendingRequestController;
+use App\Http\Controllers\PrintingInProgressController;
+use App\Http\Controllers\ReadyController;
 use App\Http\Middleware\PreventBackHistory;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
@@ -67,13 +69,18 @@ Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->g
         Route::get('/awaiting-x/{order_id}', [AwaitingOrderController::class, 'awaitingOrder'])->name('awaiting-x');
         Route::post('/awaiting-x/{order_id}/post', [AwaitingOrderController::class, 'awaitingOrderPost'])->name('awaiting-x-post');
 
-        Route::get('/printing-in-progress', [PrinterOrderController::class, 'printingInProgress'])->name('printing-in-progress');
-        Route::get('/printing-x/{order_id}', [PrinterOrderController::class, 'printingOrder'])->name('printing-x');
+        Route::get('/printing-in-progress', [PrintingInProgressController::class, 'printingInProgress'])->name('printing-in-progress');
+        Route::get('/printing-x/{order_id}', [PrintingInProgressController::class, 'printingOrder'])->name('printing-x');
+        Route::post('/printing-x/{order_id}/post', [PrintingInProgressController::class, 'printingOrderPost'])->name('printing-x-post');
 
-        Route::get('/ready', [PrinterOrderController::class, 'ready'])->name('ready');
-        Route::get('/ready-x/{order_id}', [PrinterOrderController::class, 'readyOrder'])->name('ready-x');
+        Route::get('/ready', [ReadyController::class, 'ready'])->name('ready');
+        Route::get('/ready-x/{order_id}', [ReadyController::class, 'readyOrder'])->name('ready-x');
+        Route::post('/ready-x/{order_id}/post', [ReadyController::class, 'readyOrderPost'])->name('ready-x-post');
+
         Route::get('/completed', [PrinterOrderController::class, 'completed'])->name('completed');
         Route::get('/completed-x/{order_id}', [PrinterOrderController::class, 'completedOrder'])->name('completed-x');
+
+        Route::post('/cancel-order/{order_id}', [PrinterOrderController::class, 'cancelOrder'])->name('cancel-order');
     });
 });
 

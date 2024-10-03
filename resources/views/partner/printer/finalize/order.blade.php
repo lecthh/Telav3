@@ -152,7 +152,7 @@
                                     </div>
                                     <div class="flex flex-col gap-y-3 p-3 bg-white border rounded-b-lg">
                                         <div class="flex justify-start gap-x-3">
-                                            <form action="" method="post">
+                                            <form action="{{ route('partner.printer.cancel-order', ['order_id' => $order->order_id]) }}" method="post">
                                                 <button type="button" class="flex bg-red-500 rounded-xl text-white text-base gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-red-600">
                                                     Cancel Order
                                                 </button>

@@ -7,27 +7,12 @@ use Illuminate\Http\Request;
 
 class PrinterOrderController extends Controller
 {
-    public function printingInProgress()
-    {
-        $printingInProgress = Order::where('status_id', '5')->get();
-        return view('partner.printer.printing.orders-printing', compact('printingInProgress'));
-    }
-
-    public function printingOrder($order_id)
+    public function cancelOrder($order_id)
     {
         $order = Order::find($order_id);
-        return view('partner.printer.printing.order');
-    }
-
-    public function ready()
-    {
-        $readyOrders = Order::where('status_id', '6')->get();
-        return view('partner.printer.ready.orders-ready', compact('readyOrders'));
-    }
-    public function readyOrder($order_id)
-    {
-        $order = Order::find($order_id);
-        return view('partner.printer.ready.order');
+        $order->status_id = 8;
+        $order->save();
+        return redirect()->route('printer-dashboard');
     }
 
     public function completed()
