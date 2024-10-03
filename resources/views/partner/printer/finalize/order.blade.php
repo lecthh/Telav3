@@ -133,12 +133,14 @@
                                     </div>
                                     <div class="flex flex-col gap-y-3 p-3 bg-white border rounded-b-lg">
                                         @if($customizationDetails)
-                                        <div class="flex p-3 gap-x-[18px] w-full rounded-lg cursor-pointer items-center justify-start">
-                                            <div class="flex w-8 h-8 bg-cAccent bg-opacity-20 rounded-lg justify-center items-center">
-                                                @include('svgs.download')
+                                        <a href="{{ route('export.customization', $order->order_id) }}">
+                                            <div class="flex p-3 gap-x-[18px] w-full rounded-lg cursor-pointer items-center justify-start">
+                                                <div class="flex w-8 h-8 bg-cAccent bg-opacity-20 rounded-lg justify-center items-center">
+                                                    @include('svgs.download')
+                                                </div>
+                                                <h3 class="font-gilroy font-bold text-base">{{ $order->order_id }}_JobOrder.xlsx</h3>
                                             </div>
-                                            <h3 class="font-gilroy font-bold text-base">0981_JobOrder.xlsx</h3>
-                                        </div>
+                                        </a>
                                         @else
                                         <h3 class="font-gilroy font-bold text-base text-red-500">Confirmation Form Not Filled Up</h3>
                                         @endif

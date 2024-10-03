@@ -1,5 +1,6 @@
 <?php
 
+use App\Exports\CustomizationDetailsExport;
 use App\Http\Controllers\BusinessAuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\ConfirmationMessageController;
 use App\Http\Controllers\ConfirmBulkController;
 use App\Http\Controllers\Review;
 use App\Http\Controllers\Customization;
+use App\Http\Controllers\CustomizationExportController;
 use App\Http\Controllers\GoogleAuth;
 use App\Http\Controllers\PartnerRegistration;
 use App\Http\Controllers\ProfileController;
@@ -124,3 +126,6 @@ Route::post('/confirm-jerseybulk-custom/post', [ConfirmationLinkController::clas
 
 Route::get('/auth/google/redirect', [GoogleAuth::class, 'redirectToGoogle'])->name('google.redirect');
 Route::get('/auth/google/callback', [GoogleAuth::class, 'handleGoogleCallback'])->name('google.callback');
+
+Route::get('export-customization/{order_id}', [CustomizationExportController::class, 'exportExcel'])->name('export.customization')->withoutMiddleware(PreventBackHistory::class);
+Route::get('/export/customization/{order_id}', [CustomizationExportController::class, 'export'])->name('export.customization');
