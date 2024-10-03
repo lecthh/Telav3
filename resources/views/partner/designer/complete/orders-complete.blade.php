@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -27,11 +28,13 @@
                         <h1 class="font-gilroy font-bold text-2xl">Orders</h1>
                         @include('partner.designer.order-nav')
                     </div>
+
                     <table class="table-auto min-w-full overflow-hidden rounded-lg animate-fade-in">
                         <thead class="border drop-shadow-sm">
                             <tr class="bg-cGreen font-bold text-base text-black">
                                 <th class="px-5 py-[14px] text-start rounded-tl-lg">
-                                    <input type="checkbox" id="select_all" name="select_all" value="" class="cart-checkbox border border-black w-4 h-4 p-1 py-1 rounded checked:bg-cPrimary checked:hover:bg-cPrimary checked:active:bg-cPrimary checked:focus:bg-cPrimary focus:bg-cPrimary focus:outline-none focus:ring-1 focus:ring-cPrimary">
+                                    <input type="checkbox" id="select_all" name="select_all" value=""
+                                        class="cart-checkbox border border-black w-4 h-4 p-1 py-1 rounded checked:bg-cPrimary checked:hover:bg-cPrimary checked:active:bg-cPrimary checked:focus:bg-cPrimary focus:bg-cPrimary focus:outline-none focus:ring-1 focus:ring-cPrimary">
                                 </th>
                                 <th class="px-5 py-[14px] text-start">Date</th>
                                 <th class="px-5 py-[14px] text-start">Order no.</th>
@@ -42,15 +45,22 @@
                             </tr>
                         </thead>
                         <tbody class="border drop-shadow-sm">
-                            <tr class="odd:bg-gray-100 even:bg-white hover:bg-cAccent hover:bg-opacity-10 cursor-pointer">
-                                <td class="px-5 py-[14px]"><input type="checkbox" class="cart-checkbox ..."></td>
-                                <td class="px-5 py-[14px]">9/11/1999</td>
-                                <td class="px-5 py-[14px]">0493</td>
-                                <td class="px-5 py-[14px]">Alexis Paramore</td>
-                                <td class="px-5 py-[14px]">alexis@gmail.com</td>
-                                <td class="px-5 py-[14px]">Jersey</td>
-                                <td class="px-5 py-[14px]">EchoPoint Productions</td>
+                            @forelse($orders as $order)
+                            <tr class="odd:bg-gray-100 even:bg-white hover:bg-cAccent hover:bg-opacity-10 cursor-pointer"
+                                data-url="{{ route('partner.designer.complete-x', ['order_id' => $order->order_id]) }}">
+                                <td class="px-5 py-[14px]"><input type="checkbox" class="cart-checkbox"></td>
+                                <td class="px-5 py-[14px]">{{ $order->created_at->format('m/d/Y') }}</td>
+                                <td class="px-5 py-[14px]">{{ $order->order_id }}</td>
+                                <td class="px-5 py-[14px]">{{ $order->user->name }}</td>
+                                <td class="px-5 py-[14px]">{{ $order->user->email }}</td>
+                                <td class="px-5 py-[14px]">{{ $order->apparelType->name ?? 'N/A' }}</td>
+                                <td class="px-5 py-[14px]">{{ $order->productionCompany->company_name }}</td>
                             </tr>
+                            @empty
+                            <tr>
+                                <td colspan="7" class="text-center py-5">No orders available.</td>
+                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
 
@@ -61,5 +71,16 @@
 
     @include('layout.footer')
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const rows = document.querySelectorAll('tr[data-url]');
+
+        rows.forEach(row => {
+            row.addEventListener('click', function() {
+                window.location.href = row.getAttribute('data-url');
+            });
+        });
+    });
+</script>
 
 </html>

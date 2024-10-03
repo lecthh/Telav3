@@ -190,16 +190,12 @@
             const previewContainer = document.getElementById('preview-container');
             const confirmDesignContainer = document.getElementById('confirm-design-container');
 
-            // Clear previous previews
             previewContainer.innerHTML = '';
 
             if (input.files.length > 0) {
                 fileNameSpan.textContent = Array.from(input.files).map(file => file.name).join(', ');
-
-                // Create file previews
                 Array.from(input.files).forEach(file => {
                     const reader = new FileReader();
-
                     reader.onload = function(e) {
                         const previewImage = document.createElement('img');
                         previewImage.src = e.target.result;
@@ -209,13 +205,9 @@
 
                     reader.readAsDataURL(file);
                 });
-
-                // Show the confirm design button
                 confirmDesignContainer.classList.remove('hidden');
             } else {
                 fileNameSpan.textContent = 'Upload Final Design';
-
-                // Hide the confirm design button
                 confirmDesignContainer.classList.add('hidden');
             }
         });

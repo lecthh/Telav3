@@ -92,11 +92,10 @@ Route::prefix('partner')->name('partner.')->middleware('DesignerOnly')->group(fu
         Route::get('/assigned-x/{order_id}', [DesignerOrderController::class, 'assignedOrder'])->name('assigned-x');
         Route::post('/assigned-x/{order_id}/post', [DesignerOrderController::class, 'assignedOrderPost'])->name('assigned-x-post');
         Route::get('/completed', [DesignerOrderController::class, 'complete'])->name('complete');
-        Route::get('/complete-x', [DesignerOrderController::class, 'completeOrder'])->name('complete-x');
+        Route::get('/complete-x/{order_id}', [DesignerOrderController::class, 'completeOrder'])->name('complete-x');
         Route::post('/cancel-design-assignment/{order_id}', [DesignerOrderController::class, 'cancelDesignAssignment'])->name('cancel-design-assignment');
     });
 });
-
 
 Route::get('/select-apparel', [SelectAparrelController::class, 'selectApparel'])->name('customer.place-order.select-apparel');
 Route::get('/select-production-type/{apparel}', [SelectProductionTypeController::class, 'selectProductionType'])->name('customer.place-order.select-production-type');

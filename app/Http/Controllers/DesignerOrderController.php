@@ -129,11 +129,16 @@ class DesignerOrderController extends Controller
 
     public function complete()
     {
-        return view('partner.designer.complete.orders-complete');
+        $designer = session('admin');
+        $orders = Order::where('assigned_designer_id', $designer->designer_id)
+            ->where('status_id', '=', 7)
+            ->get();
+        return view('partner.designer.complete.orders-complete', compact('orders'));
     }
 
-    public function completeOrder()
+    public function completeOrder($order_id)
     {
-        return view('partner.designer.complete.order');
+        $order = Order::find($order_id);
+        return view('partner.designer.complete.order', compact('order'));
     }
 }
