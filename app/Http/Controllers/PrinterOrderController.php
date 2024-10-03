@@ -7,20 +7,6 @@ use Illuminate\Http\Request;
 
 class PrinterOrderController extends Controller
 {
-
-
-    public function awaitingPrinting()
-    {
-        $awaitingPrinting = Order::where('status_id', '4')->get();
-        return view('partner.printer.awaiting.orders-awaiting', compact('awaitingPrinting'));
-    }
-
-    public function awaitingOrder($order_id)
-    {
-        $order = Order::find($order_id);
-        return view('partner.printer.awaiting.order');
-    }
-
     public function printingInProgress()
     {
         $printingInProgress = Order::where('status_id', '5')->get();

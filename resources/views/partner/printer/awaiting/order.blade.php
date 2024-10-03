@@ -116,10 +116,12 @@
                                         <h3>Final Design</h3>
                                     </div>
                                     <div class="flex gap-x-3 p-3 bg-white border rounded-b-lg">
-                                        <div class="flex flex-col gap-y-3">
-                                            <div class="flex gap-x-3 w-full">
-                                                <div class="w-[300px] h-[300px] bg-cAccent"></div>
+                                        <div class="flex  gap-y-3">
+                                            @foreach ($order->imagesWithStatusFour as $image)
+                                            <div class="w-[245px] h-[186px]">
+                                                <img src="{{ asset('storage/' . $image->image) }}" alt="Order Image" class="w-full h-full object-cover">
                                             </div>
+                                            @endforeach
                                         </div>
                                     </div>
                                 </div>
@@ -128,10 +130,14 @@
                                         <h3>Job Order</h3>
                                     </div>
                                     <div class="flex flex-col gap-y-3 p-3 bg-white border rounded-b-lg">
-                                        <div class="flex p-3 gap-x-[18px] w-full rounded-lg cursor-pointer items-center justify-start">
-                                            <div class="flex w-8 h-8 bg-cAccent bg-opacity-20 rounded-lg justify-center items-center">@include('svgs.download')</div>
-                                            <h3 class="font-gilroy font-bold text-base">0981_JobOrder.xlsx</h3>
-                                        </div>
+                                        <a href="{{ route('export.customization', $order->order_id) }}">
+                                            <div class="flex p-3 gap-x-[18px] w-full rounded-lg cursor-pointer items-center justify-start">
+                                                <div class="flex w-8 h-8 bg-cAccent bg-opacity-20 rounded-lg justify-center items-center">
+                                                    @include('svgs.download')
+                                                </div>
+                                                <h3 class="font-gilroy font-bold text-base">{{ $order->order_id }}_JobOrder.xlsx</h3>
+                                            </div>
+                                        </a>
                                     </div>
                                 </div>
                                 <div class="flex flex-col">
@@ -140,12 +146,17 @@
                                     </div>
                                     <div class="flex flex-col gap-y-3 p-3 bg-white border rounded-b-lg">
                                         <div class="flex justify-start gap-x-3">
-                                            <button type="" class="flex bg-red-500 rounded-xl text-white text-base gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-red-600">
-                                                Cancel Order
-                                            </button>
-                                            <button type="" class="flex bg-cPrimary rounded-xl text-white text-base gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]">
-                                                Next Stage
-                                            </button>
+                                            <form action="" method="post">
+                                                <button type="button" class="flex bg-red-500 rounded-xl text-white text-base gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-red-600">
+                                                    Cancel Order
+                                                </button>
+                                            </form>
+                                            <form action="{{ route('partner.printer.awaiting-x-post', ['order_id' => $order->order_id]) }}" method="post">
+                                                @csrf
+                                                <button type="submit" class="flex bg-cPrimary rounded-xl text-white text-base gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]">
+                                                    Next Stage
+                                                </button>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>

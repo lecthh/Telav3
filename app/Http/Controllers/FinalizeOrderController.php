@@ -29,6 +29,10 @@ class FinalizeOrderController extends Controller
     public function finalizeOrderPost($order_id)
     {
         $order = Order::find($order_id);
+        foreach ($order->imagesWithStatusTwo as $image) {
+            $image->status_id = 4;
+            $image->save();
+        }
 
         $order->status_id = 4;
         $order->save();

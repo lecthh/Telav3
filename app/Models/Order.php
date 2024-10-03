@@ -73,6 +73,11 @@ class Order extends Model
         return $this->hasMany(OrderImages::class, 'order_id', 'order_id')->where('status_id', 2);
     }
 
+    public function imagesWithStatusFour()
+    {
+        return $this->hasMany(OrderImages::class, 'order_id', 'order_id')->where('status_id', 4);
+    }
+
     public function customizationDetails()
     {
         return $this->hasMany(CustomizationDetails::class, 'order_id', 'order_id');
