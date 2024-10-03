@@ -29,7 +29,7 @@
                 <div class="flex flex-col gap-y-4">
                     <h2 class="font-inter font-bold text-lg">Contact Number</h2>
                     <div class="flex flex-col gap-y-2">
-                        <div class="flex flex-col gap-y-2.5 px-5 py-4 border border-black rounded-lg">
+                        <div class="flex flex-col gap-y-2.5 p-3 border border-black rounded-lg">
                             <input type="text" name="contact_number" class="font-inter text-base border-none focus:ring-0 outline-none w-full" placeholder="Enter contact number" value="{{ old('contact_number', $user->addressInformation->phone_number ?? '') }}">
                         </div>
                     </div>
@@ -39,7 +39,7 @@
                     <div class="flex flex-col gap-y-4">
                         <h2 class="font-inter font-bold text-lg">Full Name</h2>
                         <div class="flex flex-col gap-y-2">
-                            <div class="flex flex-col gap-y-2.5 px-5 py-4 border border-black rounded-lg">
+                            <div class="flex flex-col gap-y-2.5 p-3 border border-black rounded-lg">
                                 <input type="text" name="name" class="font-inter text-base border-none focus:ring-0 outline-none w-full" placeholder="Enter full name" value="{{ old('name', $user->name ?? '') }}">
                             </div>
                         </div>
@@ -48,7 +48,7 @@
                     <div class="flex flex-col gap-y-4">
                         <h2 class="font-inter font-bold text-lg">Address</h2>
                         <div class="flex flex-col gap-y-2">
-                            <div class="flex flex-col gap-y-2.5 px-5 py-4 border border-black rounded-lg">
+                            <div class="flex flex-col gap-y-2.5 p-3 border border-black rounded-lg">
                                 <input type="text" name="address" class="font-inter text-base border-none focus:ring-0 outline-none w-full" placeholder="Enter your address" value="{{ old('address', $user->addressInformation->address ?? '') }}">
                             </div>
                         </div>
@@ -58,7 +58,7 @@
                         <div class="flex flex-col gap-y-4">
                             <h2 class="font-inter font-bold text-lg">State/Province</h2>
                             <div class="flex flex-col gap-y-2">
-                                <div class="flex flex-col gap-y-2.5 px-5 py-4 border border-black rounded-lg w-[184px]">
+                                <div class="flex flex-col gap-y-2.5 p-3 border border-black rounded-lg w-[184px]">
                                     <input type="text" name="state" class="font-inter text-base border-none focus:ring-0 outline-none w-full" placeholder="Enter your state/province" value="{{ old('state', $user->addressInformation->state ?? '') }}">
                                 </div>
                             </div>
@@ -67,7 +67,7 @@
                         <div class="flex flex-col gap-y-4">
                             <h2 class="font-inter font-bold text-lg">City</h2>
                             <div class="flex flex-col gap-y-2">
-                                <div class="flex flex-col gap-y-2.5 px-5 py-4 border border-black rounded-lg w-[184px]">
+                                <div class="flex flex-col gap-y-2.5 p-3 border border-black rounded-lg w-[184px]">
                                     <input type="text" name="city" class="font-inter text-base border-none focus:ring-0 outline-none w-full" placeholder="Enter your city" value="{{ old('city', $user->addressInformation->city ?? '') }}">
                                 </div>
                             </div>
@@ -76,7 +76,7 @@
                         <div class="flex flex-col gap-y-4">
                             <h2 class="font-inter font-bold text-lg">Zip Code</h2>
                             <div class="flex flex-col gap-y-2">
-                                <div class="flex flex-col gap-y-2.5 px-5 py-4 border border-black rounded-lg w-[184px]">
+                                <div class="flex flex-col gap-y-2.5 p-3 border border-black rounded-lg w-[184px]">
                                     <input type="text" name="zip_code" class="font-inter text-base border-none focus:ring-0 outline-none w-full" placeholder="Enter your zip code" value="{{ old('zip_code', $user->addressInformation->zip_code ?? '') }}">
                                 </div>
                             </div>
@@ -107,30 +107,30 @@
             @foreach ($cartItems as $cartItem)
             <div class="flex flex-col gap-y-2">
                 <div class="flex flex-col gap-y-8 py-6">
-                    <div class="flex flex-row gap-x-3 items-center">
-                        <div class="flex flex-col gap-y-4 px-6 py-6 border border-black rounded-lg bg-[#F3F3F3]">
-                            <img src="{{ asset('storage/' . $cartItem->cartItemImages[0]->image) }}" alt="Apparel Image" class="w-full h-auto">
+                    <div class="flex flex-row gap-x-5 items-start justify-start">
+                        <div class="flex flex-col gap-y-4 px-6 py-6 border border-black rounded-lg bg-[#F3F3F3] w-[100px] h-[120px] items-center justify-center">
+                            <img src="{{ asset('storage/' . $cartItem->cartItemImages[0]->image) }}" alt="Apparel Image" class="">
                         </div>
-                        <div class="flex flex-col gap-y-2 flex-grow">
+                        <div class="flex flex-col gap-y-2 flex-grow text-base">
                             <div class="flex flex-row justify-between">
-                                <h2 class="font-inter text-lg">Apparel Selected:</h2>
-                                <h2 class="font-inter font-bold text-lg">{{ $cartItem->apparelType->name }}</h2>
+                                <h2 class="font-inter">Apparel Selected:</h2>
+                                <h2 class="font-inter font-bold">{{ $cartItem->apparelType->name }}</h2>
                             </div>
                             <div class="flex flex-row justify-between">
-                                <h2 class="font-inter text-lg">Production Company:</h2>
-                                <h2 class="font-inter font-bold text-lg">{{ $cartItem->productionCompany->company_name }}</h2>
+                                <h2 class="font-inter">Production Company:</h2>
+                                <h2 class="font-inter font-bold">{{ $cartItem->productionCompany->company_name }}</h2>
                             </div>
                             <div class="flex flex-row justify-between">
-                                <h2 class="font-inter text-lg">Production Type:</h2>
-                                <h2 class="font-inter font-bold text-lg">{{ $cartItem->productionType->name }}</h2>
+                                <h2 class="font-inter ">Production Type:</h2>
+                                <h2 class="font-inter font-bold">{{ $cartItem->productionType->name }}</h2>
                             </div>
                             <div class="flex flex-row justify-between">
-                                <h2 class="font-inter text-lg">Order Type:</h2>
-                                <h2 class="font-inter font-bold text-lg">{{ ucfirst($cartItem->orderType) }}</h2>
+                                <h2 class="font-inter ">Order Type:</h2>
+                                <h2 class="font-inter font-bold">{{ ucfirst($cartItem->orderType) }}</h2>
                             </div>
                             <div class="flex flex-row justify-between">
-                                <h2 class="font-inter text-lg">Customization:</h2>
-                                <h2 class="font-inter font-bold text-lg">{{ ucfirst($cartItem->customization) }}</h2>
+                                <h2 class="font-inter ">Customization:</h2>
+                                <h2 class="font-inter font-bold">{{ ucfirst($cartItem->customization) }}</h2>
                             </div>
                         </div>
                     </div>
@@ -141,7 +141,7 @@
                         </div>
                     </div>
                 </div>
-                <hr>
+                <hr class="mb-5">
             </div>
             @endforeach
 

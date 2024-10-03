@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Designer;
 use App\Models\ProductionCompany;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -78,6 +79,8 @@ class BusinessAuthController extends Controller
                 session(['admin' => $admin]);
                 return redirect()->intended('printer-dashboard')->with('success', 'Logged in successfully');
             } else if ($user->role_type_id == 3) {
+                $admin = Designer::where('user_id', $user->user_id)->first();
+                session(['admin' => $admin]);
                 return redirect()->intended('designer-dashboard')->with('success', 'Logged in successfully');
             }
         } else {

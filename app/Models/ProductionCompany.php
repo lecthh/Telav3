@@ -20,4 +20,8 @@ class ProductionCompany extends Model
     {
         return $this->hasOne(ProductionType::class, 'id', 'production_type');
     }
+    public function productionCompanyPricing()
+    {
+        return $this->hasMany(ProductionCompanyPricing::class, 'production_company_id', 'id');
+    }
 }

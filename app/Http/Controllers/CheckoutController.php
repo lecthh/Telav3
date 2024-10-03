@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\AddressInformation;
 use App\Models\Cart;
 use App\Models\CartItem;
+use App\Models\Notification;
 use App\Models\Order;
 use App\Models\OrderImages;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\OrderStatus;
 
 class CheckoutController extends Controller
 {
@@ -59,7 +61,7 @@ class CheckoutController extends Controller
 
                 if ($cartItem) {
                     $isBulkOrder = ($cartItem->orderType == 'bulk') ? true : false;
-                    $isCustomized = ($cartItem->customization == 'custom') ? true : false;
+                    $isCustomized = ($cartItem->customization == 'personalized') ? true : false;
                     $order = Order::create([
                         'order_id' => uniqid(),
                         'user_id' => $user->user_id,
@@ -68,7 +70,7 @@ class CheckoutController extends Controller
                         'is_customized' => $isCustomized,
                         'is_bulk_order' => $isBulkOrder,
                         'quantity' => $cartItem->quantity,
-                        'status_id' => 1,
+                        'status_id' => OrderStatus::STATUS_ORDER_PLACED,
                         'apparel_type' => $cartItem->apparel_type_id,
                         'production_type' => $cartItem->production_type,
                         'downpayment_amount' => $cartItem->price,
@@ -84,6 +86,13 @@ class CheckoutController extends Controller
                         ]);
                     }
                     $cartItem->delete();
+
+                    Notification::create([
+                        'user_id' => $user->user_id,
+                        'message' => 'Your order has been placed successfully.',
+                        'is_read' => false,
+                        'order_id' => $order->order_id,
+                    ]);
                 }
             }
 

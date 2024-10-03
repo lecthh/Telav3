@@ -27,6 +27,7 @@ return new class extends Migration
             $table->decimal('final_price', 10, 2)->nullable();
             $table->text('custom_design_info')->nullable();
             $table->integer('revision_count')->default(0);
+            $table->string('token')->nullable();
             $table->timestamps();
         });
     }

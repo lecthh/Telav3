@@ -30,6 +30,7 @@ class Order extends Model
         'final_price',
         'custom_design_info',
         'revision_count',
+        'token',
     ];
 
     public function user()
@@ -39,8 +40,9 @@ class Order extends Model
 
     public function productionCompany()
     {
-        return $this->belongsTo(ProductionCompany::class, 'production_company_id', 'production_company_id');
+        return $this->belongsTo(ProductionCompany::class, 'production_company_id', 'id');
     }
+
 
     public function designer()
     {
@@ -60,5 +62,29 @@ class Order extends Model
     public function productionType()
     {
         return $this->belongsTo(ProductionType::class, 'production_type', 'id');
+    }
+
+    public function imagesWithStatusOne()
+    {
+        return $this->hasMany(OrderImages::class, 'order_id', 'order_id')->where('status_id', 1);
+    }
+    public function imagesWithStatusTwo()
+    {
+        return $this->hasMany(OrderImages::class, 'order_id', 'order_id')->where('status_id', 2);
+    }
+
+    public function imagesWithStatusFour()
+    {
+        return $this->hasMany(OrderImages::class, 'order_id', 'order_id')->where('status_id', 4);
+    }
+
+    public function customizationDetails()
+    {
+        return $this->hasMany(CustomizationDetails::class, 'order_id', 'order_id');
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class, 'order_id', 'order_id');
     }
 }

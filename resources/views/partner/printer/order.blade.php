@@ -22,17 +22,17 @@
                     <div class="flex flex-col gap-y-10">
                         <h1 class="font-gilroy font-bold text-2xl">Orders</h1>
                         @include('partner.printer.order-nav')
-                        <h1 class="font-gilroy font-bold text-xl text-black">Pending Request - Order No.0981</h1>
+                        <h1 class="font-gilroy font-bold text-xl text-black">Pending Request - Order No.{{$order->order_id}}</h1>
                         <div class="flex gap-x-10">
                             <div class="flex flex-col">
-                                <div class="flex w-full">
+                                <div class="flex">
                                     <div class="w-[10px] bg-cPrimary"></div>
-                                    <div class="flex flex-col bg-white rounded-tr-lg p-5 border-t border-r borer-l">
+                                    <div class="flex flex-col bg-white rounded-tr-lg p-5 border-t border-r borer-l w-full">
                                         <div class="flex gap-x-6">
                                             <div class="flex gap-x-2 px-3 rounded-lg bg-cPrimary bg-opacity-20 items-center justify-center w-[45px] h-[50px]">@include('svgs.calendar')</div>
                                             <div class="flex flex-col gap-y-2">
                                                 <h4 class="font-inter font-bold text-base">Date Requested</h4>
-                                                <h4 class="font-inter text-base">September 12, 2024</h4>
+                                                <h4 class="font-inter text-base">{{ $order->created_at->format('F j, Y') }}</h4>
                                             </div>
                                         </div>
                                     </div>
@@ -44,7 +44,7 @@
                                             <div class="flex gap-x-2 px-3 py-3 rounded-lg bg-cPrimary bg-opacity-20 items-center justify-center w-[45px] h-[50px]">@include('svgs.user-single')</div>
                                             <div class="flex flex-col gap-y-2">
                                                 <h4 class="font-inter font-bold text-base">Customer Name</h4>
-                                                <h4 class="font-inter text-base">Alexis Paramore</h4>
+                                                <h4 class="font-inter text-base">{{$order->user->name}}</h4>
                                             </div>
                                         </div>
                                     </div>
@@ -56,7 +56,7 @@
                                             <div class="flex gap-x-2 px-3 py-3 rounded-lg bg-cPrimary bg-opacity-20 items-center justify-center w-[45px] h-[50px]">@include('svgs.email')</div>
                                             <div class="flex flex-col gap-y-2">
                                                 <h4 class="font-inter font-bold text-base">Email</h4>
-                                                <h4 class="font-inter text-base">alexis@gmail.com</h4>
+                                                <h4 class="font-inter text-base">{{$order->user->email}}</h4>
                                             </div>
                                         </div>
                                     </div>
@@ -68,7 +68,7 @@
                                             <div class="flex gap-x-2 px-3 py-3 rounded-lg bg-cPrimary bg-opacity-20 items-center justify-center w-[45px] h-[50px]">@include('svgs.shirt')</div>
                                             <div class="flex flex-col gap-y-2">
                                                 <h4 class="font-inter font-bold text-base">Apparel Type</h4>
-                                                <h4 class="font-inter text-base">T-shirt</h4>
+                                                <h4 class="font-inter text-base">{{$order->apparelType->name}}</h4>
                                             </div>
                                         </div>
                                     </div>
@@ -80,8 +80,9 @@
                                             <div class="flex gap-x-2 px-3 py-3 rounded-lg bg-cPrimary bg-opacity-20 items-center justify-center w-[45px] h-[50px]">@include('svgs.receipt-check')</div>
                                             <div class="flex flex-col gap-y-2">
                                                 <h4 class="font-inter font-bold text-base">Order Type</h4>
-                                                <h4 class="font-inter text-base">Bulk</h4>
+                                                <h4 class="font-inter text-base">{{ $order->is_bulk_order ? 'Bulk' : 'Single' }}</h4>
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -92,8 +93,9 @@
                                             <div class="flex gap-x-2 px-3 py-3 rounded-lg bg-cPrimary bg-opacity-20 items-center justify-center w-[45px] h-[50px]">@include('svgs.paintbrush')</div>
                                             <div class="flex flex-col gap-y-2">
                                                 <h4 class="font-inter font-bold text-base">Customization</h4>
-                                                <h4 class="font-inter text-base">Personalized</h4>
+                                                <h4 class="font-inter text-base">{{ $order->is_customized ? 'Personalized' : 'Standard' }}</h4>
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -107,8 +109,11 @@
                                         <div class="flex flex-col gap-y-3">
                                             <h3 class="font-gilroy font-bold text-black text-base">Media</h3>
                                             <div class="flex gap-x-3">
-                                                <div class="w-[245px] h-[186px] bg-cAccent"></div>
-                                                <div class="w-[245px] h-[186px] bg-cAccent"></div>
+                                                @foreach ($order->imagesWithStatusOne as $image)
+                                                <div class="w-[245px] h-[186px]">
+                                                    <img src="{{ asset('storage/' . $image->image) }}" alt="Order Image" class="w-full h-full object-cover">
+                                                </div>
+                                                @endforeach
                                             </div>
                                         </div>
                                     </div>
@@ -116,7 +121,7 @@
                                         <div class="flex flex-col gap-y-3 w-full">
                                             <h3 class="font-gilroy font-bold text-black text-base">Description</h3>
                                             <div class="flex p-3 border border-gray-200 rounded-lg w-fill h-fill">
-                                                <p class="font-inter text-gray-600">I want a super cool design</p>
+                                                <p class="font-inter text-gray-600">{{$order->custom_design_info}}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -126,24 +131,38 @@
                                         <h3>Assign Designer</h3>
                                     </div>
                                     <div class="flex flex-col gap-y-3 p-3 bg-white border rounded-b-lg">
-                                        <div class="flex">
-                                            <div class="flex flex-col gap-y-3 hover:bg-cAccent hover:bg-opacity-20 rounded-lg w-full">
-                                                <div class="flex p-3 rounded-lg w-fill h-fill items-center">
-                                                    <div class="flex gap-x-[18px] p-3">
-                                                        <div class="w-[52px] h-[52px] bg-cAccent rounded-full"><img src="" alt=""></div>
-                                                    </div>
-                                                    <div class="flex flex-col">
-                                                        <h4 class="font-gilroy font-bold text-base">Dunkit Jonathan</h4>
-                                                        <h4 class="font-gilroy font-semibold text-sm text-cDarkGrey">EchoPoint Productions</h4>
+                                        <div class="flex flex-col">
+                                            <div id="designer-list">
+                                                @foreach ($designers as $designer)
+                                                <div class="flex flex-col gap-y-3 hover:bg-cAccent hover:bg-opacity-20 rounded-lg w-full designer-item"
+                                                    data-designer-id="{{ $designer->designer_id }}"
+                                                    onclick="selectDesigner(this)">
+                                                    <div class="flex p-3 rounded-lg w-fill h-fill items-center">
+                                                        <div class="flex gap-x-[18px] p-3">
+                                                            <div class="w-[52px] h-[52px] bg-cAccent rounded-full">
+                                                                <img src="{{ asset($designer->profile_image ? 'storage/' . $designer->profile_image : 'images/default.png') }}" alt="{{ $designer->first_name }} {{ $designer->last_name }}" class="w-full h-full object-fill rounded-full">
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex flex-col">
+                                                            <h4 class="font-gilroy font-bold text-base text-red">{{$designer->user->name}}</h4>
+                                                            <h4 class="font-gilroy font-semibold text-sm text-[#616161]">
+                                                                Affiliation: {{ $designer->productionCompany->company_name ?? 'Freelancer' }}
+                                                            </h4>
+                                                        </div>
                                                     </div>
                                                 </div>
+                                                @endforeach
                                             </div>
                                         </div>
-                                        <div class="flex justify-end">
-                                            <button type="" class="flex bg-cPrimary rounded-xl text-white text-base gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]">
-                                                Assign Designer
-                                            </button>
-                                        </div>
+                                        <form action="{{ route('partner.printer.assign-designer', ['order_id' => $order->order_id])}}" method="post">
+                                            @csrf
+                                            <input type="hidden" name="selected_designer_id" id="selected-designer-id" value="">
+                                            <div class="flex justify-end">
+                                                <button type="" class="flex bg-cPrimary rounded-xl text-white text-base gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]">
+                                                    Assign Designer
+                                                </button>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
                                 <div class="flex flex-col">
@@ -167,6 +186,18 @@
     </div>
 
     @include('layout.footer')
+    <script>
+        function selectDesigner(selectedElement) {
+
+            document.querySelectorAll('.designer-item').forEach(item => {
+                item.classList.remove('ring-2', 'ring-cPrimary', 'bg-cAccent', 'bg-opacity-10');
+            });
+            selectedElement.classList.add('ring-2', 'ring-cPrimary', 'bg-cAccent', 'bg-opacity-10');
+            const designerId = selectedElement.getAttribute('data-designer-id');
+            document.getElementById('selected-designer-id').value = designerId;
+        }
+    </script>
 </body>
+
 
 </html>

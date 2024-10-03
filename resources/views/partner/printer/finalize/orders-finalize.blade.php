@@ -56,8 +56,8 @@
                                 <td class="px-5 py-[14px]">{{ $order->order_id }}</td>
                                 <td class="px-5 py-[14px]">{{ $order->user->name }}</td>
                                 <td class="px-5 py-[14px]">{{ $order->user->email }}</td>
-                                <td class="px-5 py-[14px]">{{ $order->is_filled ? 'Yes' : 'No' }}</td>
-                                <td class="px-5 py-[14px]">{{ $order->designer->name ?? 'N/A' }}</td>
+                                <td class="px-5 py-[14px]">{{ $order->customizationDetails->isEmpty() ? 'No' : 'Yes' }}</td>
+                                <td class="px-5 py-[14px]">{{ $order->designer->user->name ?? 'N/A' }}</td>
                             </tr>
                             @endforeach
                             @endif

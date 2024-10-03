@@ -80,6 +80,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Printing in Progress'],
             ['name' => 'Ready for Collection'],
             ['name' => 'Order Completed'],
+            ['name' => 'Order Cancelled'],
         ]);
         DB::table('order_image_statuses')->insert([
             ['name' => 'Initial Design'],
@@ -87,5 +88,13 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Revision'],
             ['name' => 'Final Design'],
         ]);
+
+        $sizes = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'];
+
+        foreach ($sizes as $size) {
+            DB::table('sizes')->insert([
+                'name' => $size
+            ]);
+        }
     }
 }

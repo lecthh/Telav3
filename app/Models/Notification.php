@@ -15,6 +15,7 @@ class Notification extends Model
         'user_id',
         'message',
         'is_read',
+        'order_id',
     ];
 
     public function user()
@@ -30,5 +31,8 @@ class Notification extends Model
     {
         $this->is_read = false;
         $this->save();
+    }
+    public function orders(){
+        return $this->belongsTo(Order::class, 'order_id');
     }
 }

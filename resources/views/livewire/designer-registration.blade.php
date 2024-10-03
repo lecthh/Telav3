@@ -5,35 +5,51 @@
     </div>
     @endif
 
+    @if ($errors->any())
+    <div class="flex flex-col gap-y-2.5">
+        <div class="flex flex-col gap-y-2.5 px-6 py-3.5 rounded-lg bg-[rgba(255,0,0,0.1)]">
+            <h2 class="font-inter text-lg text-[rgba(255,0,0,0.5)]">There are errors with your submission:</h2>
+            <ul class="list-disc list-inside text-[rgba(255,0,0,0.5)]">
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+    @endif
+
     <form wire:submit.prevent="submit">
         <div class="flex flex-col gap-y-4">
             <h2 class="font-inter font-bold text-lg">Are you affiliated with a producer that is currently partnered with us?</h2>
             <div class="flex flex-col gap-y-2">
                 <div class="flex flex-row gap-x-8">
                     <div class="flex flex-row gap-x-2 items-center">
-                        <input type="radio" id="affiliate-yes" name="affiliate" value="yes" class="form-radio border border-black w-4 h-4 p-1 py-1 rounded-full checked:bg-cPrimary checked:hover:bg-cPrimary checked:active:bg-cPrimary checked:focus:bg-cPrimary focus:bg-cPrimary focus:outline-none focus:ring-1 focus:ring-cPrimary" onclick="toggleSections()" checked>
+                        <input type="radio" id="affiliate-yes" name="affiliate" value="yes" wire:model="affiliate" class="form-radio border border-black w-4 h-4 p-1 py-1 rounded-full checked:bg-cPrimary checked:hover:bg-cPrimary checked:active:bg-cPrimary checked:focus:bg-cPrimary focus:bg-cPrimary focus:outline-none focus:ring-1 focus:ring-cPrimary" onclick="toggleSections()" checked>
                         <label for="affiliate-yes" class="font-inter text-base">Yes</label>
                     </div>
                     <div class="flex flex-row gap-x-2 items-center">
-                        <input type="radio" id="affiliate-no" name="affiliate" value="no" class="form-radio border border-black w-4 h-4 p-1 py-1 rounded-full checked:bg-cPrimary checked:hover:bg-cPrimary checked:active:bg-cPrimary checked:focus:bg-cPrimary focus:bg-cPrimary focus:outline-none focus:ring-1 focus:ring-cPrimary" onclick="toggleSections()">
+                        <input type="radio" id="affiliate-no" name="affiliate" value="no" wire:model="affiliate" class="form-radio border border-black w-4 h-4 p-1 py-1 rounded-full checked:bg-cPrimary checked:hover:bg-cPrimary checked:active:bg-cPrimary checked:focus:bg-cPrimary focus:bg-cPrimary focus:outline-none focus:ring-1 focus:ring-cPrimary" onclick="toggleSections()">
                         <label for="affiliate-no" class="font-inter text-base">No</label>
-                    </div>                  
+                    </div>
                 </div>
             </div>
         </div>
         <br>
-
         <div id="producer-section" class="flex flex-col gap-y-4 flex-grow" style="display: none;">
-            <div class="flex flex-col gap-y-4">
+            <div class="flex flex-col gap-y-4 mb-5">
                 <h2 class="font-inter font-bold text-lg">Please select a producer</h2>
                 <div class="flex flex-col gap-y-2">
-                    <input type="text" wire:model="affiliated_producer" class="flex flex-row gap-y-2.5 px-5 py-4 border border-black rounded-lg h-[50px]" />
+                    <select wire:model="affiliated_producer" class="flex flex-row gap-y-2.5 px-5  border border-black rounded-lg h-[50px]">
+                        <option value="">Select a producer</option>
+                        @foreach($productionCompanies as $producer)
+                        <option value="{{ $producer->id }}">{{ $producer->company_name }}</option>
+                        @endforeach
+                    </select>
                     @error('affiliated_producer') <span class="text-red-500">{{ $message }}</span> @enderror
                 </div>
             </div>
         </div>
-
-        <div id="name-section" class="flex flex-col gap-y-6 flex-grow" style="display: none;">
+        <div id="name-section" class="flex flex-col gap-y-2 flex-grow">
             <div class="flex flex-col gap-y-4">
                 <h2 class="font-inter font-bold text-lg">Display name</h2>
                 <div class="flex flex-col gap-y-2">
@@ -59,7 +75,7 @@
                 </div>
             </div>
         </div>
-        <br>       
+        <br>
 
         <div class="flex flex-col gap-y-4">
             <h2 class="font-inter font-bold text-lg">Email address</h2>
@@ -67,36 +83,33 @@
             @error('address') <span class="text-red-500">{{ $message }}</span> @enderror
         </div>
         <br><br>
-        
-        <div class="flex flex-row gap-x-3 h-[50px]">
-            <div class="flex flex-col gap-y-2.5 px-6 py-3.5 rounded-lg bg-[rgba(156,163,175,0.21)]">
-                <h2 class="font-inter text-lg text-[rgba(0,0,0,0.5)]">Cancel</h2>
-            </div>
-            <div class="flex flex-col gap-y-2.5">
-                @livewire('button', ['text' => 'Checkout'])
-            </div>            
-        </div>
 
+        <div class="flex flex-row gap-x-3 h-[50px]">
+            <div class="flex flex-col gap-y-2.5">
+                <button wire:click="submit" class="flex bg-cPrimary rounded-xl text-white text-[18px] gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]">
+                    Continue
+                </button>
+            </div>
+        </div>
     </form>
 </div>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        toggleSections();
+        Livewire.on('updated', () => {
+            toggleSections();
+        });
+    });
+
     function toggleSections() {
         const affiliateYes = document.getElementById('affiliate-yes').checked;
         const producerSection = document.getElementById('producer-section');
-        const nameSection = document.getElementById('name-section');
 
         if (affiliateYes) {
             producerSection.style.display = 'block';
-            nameSection.style.display = 'none';
         } else {
             producerSection.style.display = 'none';
-            nameSection.style.display = 'block';
         }
     }
-
-    // Initialize the sections based on the default selection
-    document.addEventListener('DOMContentLoaded', function() {
-        toggleSections();
-    });
 </script>
