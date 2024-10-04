@@ -51,11 +51,10 @@ Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->g
             return view('partner.printer.profile.basics');
         })->name('profile.basics');
 
-        Route::get('/profile/pricing', function () {
-            return view('partner.printer.profile.pricing');
-        })->name('profile.pricing');
+        Route::get('/profile/pricing', [EditProducerAccountController::class, 'index'])->name('profile.pricing');
 
         Route::post('/profile/update', [EditProducerAccountController::class, 'update'])->name('profile.update');
+        Route::post('/profile/pricing/update', [EditProducerAccountController::class, 'updatePricing'])->name('profile.pricing.update');
 
         Route::get('/orders', [PendingRequestController::class, 'index'])->name('orders');
         Route::get('/pending-x/{order_id}', [PendingRequestController::class, 'pendingOrder'])->name('pending-order-x');
