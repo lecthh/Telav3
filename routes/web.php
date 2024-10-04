@@ -23,6 +23,7 @@ use App\Http\Controllers\DesignInProgressController;
 use App\Http\Controllers\FinalizeOrderController;
 use App\Http\Controllers\PendingRequestController;
 use App\Http\Controllers\PrintingInProgressController;
+use App\Http\Controllers\EditProducerAccountController;
 use App\Http\Controllers\ReadyController;
 use App\Http\Middleware\PreventBackHistory;
 use Illuminate\Http\Request;
@@ -53,6 +54,8 @@ Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->g
         Route::get('/profile/pricing', function () {
             return view('partner.printer.profile.pricing');
         })->name('profile.pricing');
+
+        Route::post('/profile/update', [EditProducerAccountController::class, 'update'])->name('profile.update');
 
         Route::get('/orders', [PendingRequestController::class, 'index'])->name('orders');
         Route::get('/pending-x/{order_id}', [PendingRequestController::class, 'pendingOrder'])->name('pending-order-x');
