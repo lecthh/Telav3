@@ -68,4 +68,22 @@ class EditProducerAccountController extends Controller
         
         return redirect()->route('partner.printer.profile.basics')->with('success', 'Profile updated successfully.');
     }
+
+    public function updatePricing(Request $request)
+    {
+        $request->validate([
+            'base_price.*' => 'required|numeric',
+            'bulk_price.*' => 'required|numeric',
+        ]);
+    
+        foreach ($request->input('selected_records', []) as $recordId) {
+            $pricingRecord = ProductionCompanyPricing::findOrFail($recordId);
+            $pricingRecord->update([
+                'base_price' => $request->input("base_price.$recordId"),
+                'bulk_price' => $request->input("bulk_price.$recordId"),
+            ]);
+        }
+    
+        return redirect()->route('partner.printer.profile.pricing')->with('success', 'Prices updated successfully.');
+    } 
 }
