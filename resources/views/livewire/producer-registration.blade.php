@@ -11,15 +11,15 @@
                 <h2 class="font-inter font-bold text-lg">Please select the types of services you offer</h2>
                 <div class="flex flex-row gap-x-8">
                     <div class="flex flex-row gap-x-3 items-center">
-                        <input type="checkbox" id="sublimation" wire:model="production_type" value="sublimation" class="form-checkbox">
+                        <input type="checkbox" id="sublimation" wire:model="production_type" value="1" class="form-checkbox">
                         <label for="sublimation" class="font-inter text-base">Sublimation</label>
                     </div>
                     <div class="flex flex-row gap-x-3 items-center">
-                        <input type="checkbox" id="heat-transfer" wire:model="production_type" value="heat-transfer" class="form-checkbox">
+                        <input type="checkbox" id="heat-transfer" wire:model="production_type" value="2" class="form-checkbox">
                         <label for="heat-transfer" class="font-inter text-base">Heat Transfer</label>
                     </div>
                     <div class="flex flex-row gap-x-3 items-center">
-                        <input type="checkbox" id="embroidery" wire:model="production_type" value="embroidery" class="form-checkbox">
+                        <input type="checkbox" id="embroidery" wire:model="production_type" value="3" class="form-checkbox">
                         <label for="embroidery" class="font-inter text-base">Embroidery</label>
                     </div>
                 </div>
@@ -35,7 +35,7 @@
                     @foreach($apparelTypes as $apparel_type)
 
                     <div class="flex flex-row gap-x-3 items-center">
-                        <input type="checkbox" id="{{ $apparel_type->name }}" wire:model="apparel_type" value="{{ $apparel_type->name }}" class="form-checkbox">
+                        <input type="checkbox" id="{{ $apparel_type->name }}" wire:model="apparel_type" value="{{ $apparel_type->id }}" class="form-checkbox">
                         <label for="{{ $apparel_type->name }}" class="font-inter text-base">{{ $apparel_type->name }}</label>
                     </div>
                     @endforeach

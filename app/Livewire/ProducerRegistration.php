@@ -5,11 +5,11 @@ namespace App\Livewire;
 use App\Models\AddressInformation;
 use App\Models\ApparelType;
 use App\Models\ProductionCompany;
+use App\Models\ProductionCompanyPricing;
 use App\Models\User;
-use Livewire\Attributes\Rule;
+use Livewire\Component;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
-use Livewire\Component;
 
 class ProducerRegistration extends Component
 {
@@ -37,9 +37,10 @@ class ProducerRegistration extends Component
             'city' => 'required|string',
             'zip_code' => 'required|string',
         ]);
+
         $address = $validatedData['address'] . ', ' . $validatedData['city'] . ', ' . $validatedData['state'] . ', ' . $validatedData['zip_code'];
 
-
+        // Create User
         $user = User::create([
             'user_id' => uniqid(),
             'name' => $validatedData['company_name'],
@@ -47,6 +48,7 @@ class ProducerRegistration extends Component
             'role_type_id' => 2,
         ]);
 
+        // Create Address Information
         AddressInformation::create([
             'user_id' => $user->user_id,
             'address' => $validatedData['address'],
@@ -56,6 +58,7 @@ class ProducerRegistration extends Component
             'phone_number' => $validatedData['mobile'],
         ]);
 
+        // Create Production Company
         $productionCompany = ProductionCompany::create([
             'production_type' => json_encode($validatedData['production_type']),
             'apparel_type' => json_encode($validatedData['apparel_type']),
@@ -69,8 +72,21 @@ class ProducerRegistration extends Component
             'user_id' => $user->user_id,
         ]);
 
-        $token = uniqid();
+        // Create Production Company Pricing
+        foreach ($validatedData['production_type'] as $productionType) {
+            foreach ($validatedData['apparel_type'] as $apparelType) {
+                ProductionCompanyPricing::create([
+                    'production_company_id' => $productionCompany->id,
+                    'production_type' => $productionType,
+                    'apparel_type' => $apparelType,
+                    'base_price' => 0.00,
+                    'bulk_price' => 0.00,
+                ]);
+            }
+        }
 
+        // Generate Token and Send Email
+        $token = uniqid();
         $url = URL::temporarySignedRoute(
             'set-password',
             now()->addMinutes(60),
@@ -80,15 +96,15 @@ class ProducerRegistration extends Component
 
         $user->update(['passwordToken' => $token]);
         $user->save();
+
         Mail::send('mail.verify', ['url' => $url, 'name' => $name], function ($message) use ($user) {
             $message->to($user->email);
             $message->subject('Set Your Password');
         });
 
-
-        redirect()->route('partner-confirmation');
+        // Redirect to Confirmation Page
+        return redirect()->route('partner-confirmation');
     }
-
 
     public function mount()
     {
