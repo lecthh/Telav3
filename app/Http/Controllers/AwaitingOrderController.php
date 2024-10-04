@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notification;
 use App\Models\Order;
 use Illuminate\Http\Request;
 
@@ -25,6 +26,12 @@ class AwaitingOrderController extends Controller
         $order->status_id = 5;
         $order->save();
 
+        Notification::create([
+            'user_id' => $order->user->user_id,
+            'message' => 'Your Order Is Being Printed',
+            'is_read' => false,
+            'order_id' => $order->order_id,
+        ]);
         return redirect()->route('partner.printer.printing-in-progress');
     }
 }

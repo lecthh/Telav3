@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notification;
 use App\Models\Order;
 use Illuminate\Http\Request;
 
@@ -23,6 +24,12 @@ class ReadyController extends Controller
         $order = Order::find($order_id);
         $order->status_id = 7;
         $order->save();
+        Notification::create([
+            'user_id' => $order->user->user_id,
+            'message' => 'Your Order is Completed',
+            'is_read' => false,
+            'order_id' => $order->order_id,
+        ]);
         return redirect()->route('partner.printer.completed');
     }
 }
