@@ -23,12 +23,19 @@
                 @include('svgs.shelf-drawer')
                 <h3>Orders</h3>
             </li>
-        </a><a href="">
+        </a>
+        <a href="">
             <li class="flex gap-x-2 p-1 rounded-sm text-black hover:bg-cGreen hover:bg-opacity-20 cursor-pointer items-center">
                 @include('svgs.chat-bubble-smiley')
                 <h3>Reviews</h3>
             </li>
         </a>
+        <a href="">
+            <li class="flex gap-x-2 p-1 rounded-sm text-black hover:bg-cGreen hover:bg-opacity-20 cursor-pointer items-center">
+                @include('svgs.cog')
+                <h3>Account</h3>
+            </li>
+        </a>        
         <a href="{{ route('logout') }}">
             <li class="flex gap-x-2 p-1 rounded-sm text-black hover:bg-cGreen hover:bg-opacity-20 cursor-pointer items-center">
                 @include('svgs.logout')

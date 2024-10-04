@@ -35,6 +35,12 @@
                 <h3>Designers</h3>
             </li>
         </a>
+        <a href="">
+            <li class="flex gap-x-2 p-1 rounded-sm text-black hover:bg-cAccent hover:bg-opacity-20 cursor-pointer items-center">
+                @include('svgs.cog')
+                <h3>Account</h3>
+            </li>
+        </a>        
         <a href="{{ route('logout') }}">
             <li class="flex gap-x-2 p-1 rounded-sm text-black hover:bg-cAccent hover:bg-opacity-20 cursor-pointer items-center">
                 @include('svgs.logout')
