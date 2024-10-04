@@ -17,17 +17,15 @@ class ProfileController extends Controller
     {
         $user = Auth::user(); 
         $orders = $user->orders;
-
+        $notifications = $user->notifications;
+    
         return view('customer.profile.profile-orders', compact('orders'));
     }
+    
+    
 
     public function profileReviews()
     {
         return view('customer.profile.profile-reviews');
     }
-
-    public function showOrder($orderId) {
-        $order = Order::with('status')->findOrFail($orderId);
-        return view('customer.profile.profile-order', compact('order'));
-    }
-}
+}   
