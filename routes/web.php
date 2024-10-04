@@ -51,9 +51,7 @@ Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->g
             return view('partner.printer.profile.basics');
         })->name('profile.basics');
 
-        Route::get('/profile/pricing', function () {
-            return view('partner.printer.profile.pricing');
-        })->name('profile.pricing');
+        Route::get('/profile/pricing', [EditProducerAccountController::class, 'index'])->name('profile.pricing');
 
         Route::post('/profile/update', [EditProducerAccountController::class, 'update'])->name('profile.update');
 

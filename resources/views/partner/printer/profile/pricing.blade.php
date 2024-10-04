@@ -41,22 +41,22 @@
                                     <th class="px-5 py-[14px] text-start rounded-tl-lg">
                                         <input type="checkbox" id="select_all" name="select_all" value="" class="cart-checkbox border border-black w-4 h-4 p-1 py-1 rounded checked:bg-cPrimary checked:hover:bg-cPrimary checked:active:bg-cPrimary checked:focus:bg-cPrimary focus:bg-cPrimary focus:outline-none focus:ring-1 focus:ring-cPrimary">
                                     </th>
-                                    <th class="px-5 py-[14px] text-start">Item</th>
+                                    <th class="px-5 py-[14px] text-start">Apparel Type</th>
                                     <th class="px-5 py-[14px] text-start">Production Type</th>
-                                    <th class="px-5 py-[14px] text-start">Order Type</th>
-                                    <th class="px-5 py-[14px] text-start">Customization Type</th>
-                                    <th class="px-5 py-[14px] text-start">Price</th>
+                                    <th class="px-5 py-[14px] text-start">Base Price</th>
+                                    <th class="px-5 py-[14px] text-start">Bulk Price</th>
                                 </tr>
                             </thead>
                             <tbody class="border drop-shadow-sm">
+                            @foreach ($pricingRecords as $record)
                                 <tr class="odd:bg-gray-100 even:bg-white hover:bg-cAccent hover:bg-opacity-10 cursor-pointer">
                                     <td class="px-5 py-[14px]"><input type="checkbox"></td>
-                                    <td class="px-5 py-[14px]">Jersey</td>
-                                    <td class="px-5 py-[14px]">Sublimation</td>
-                                    <td class="px-5 py-[14px]">Single</td>
-                                    <td class="px-5 py-[14px]">No</td>
-                                    <td class="px-5 py-[14px]">500 PHP</td>
+                                    <td class="px-5 py-[14px]">{{ $record->apparelType->name }}</td>
+                                    <td class="px-5 py-[14px]">{{ $record->productionType->name }}</td>
+                                    <td class="px-5 py-[14px]">{{ $record->base_price }}</td>
+                                    <td class="px-5 py-[14px]">{{ $record->bulk_price }}</td>
                                 </tr>
+                            @endforeach
                             </tbody>
                         </table>
                     </div>
