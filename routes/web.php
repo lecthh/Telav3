@@ -131,3 +131,4 @@ Route::post('/confirm-jerseybulk-custom/post', [ConfirmationLinkController::clas
 
 Route::get('/auth/google/redirect', [GoogleAuth::class, 'redirectToGoogle'])->name('google.redirect');
 Route::get('/auth/google/callback', [GoogleAuth::class, 'handleGoogleCallback'])->name('google.callback');
+
