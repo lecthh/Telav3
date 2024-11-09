@@ -138,3 +138,8 @@ Route::post('/chat/setActiveStatus', [MessagesController::class, 'setActiveStatu
     ->name('chat.active.status')
     ->middleware('auth');
 
+// Add this with your other Chatify routes
+Route::post('/chat/idInfo', [MessagesController::class, 'idInfo'])
+    ->name('chat.idInfo')
+    ->middleware('auth');
+

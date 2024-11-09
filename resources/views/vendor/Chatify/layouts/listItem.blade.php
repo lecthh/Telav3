@@ -1,6 +1,6 @@
 {{-- -------------------- Saved Messages -------------------- --}}
 @if($get == 'saved')
-    <table class="messenger-list-item" data-contact="{{ Auth::user()->id }}">
+    <table class="messenger-list-item" data-contact="{{ Auth::user()->user_id }}">
         <tr data-action="0">
             {{-- Avatar side --}}
             <td>
@@ -10,7 +10,7 @@
             </td>
             {{-- center side --}}
             <td>
-                <p data-id="{{ Auth::user()->id }}" data-type="user">Saved Messages <span>You</span></p>
+                <p data-id="{{ Auth::user()->user_id }}" data-type="user">Saved Messages <span>You</span></p>
                 <span>Save messages secretly</span>
             </td>
         </tr>
@@ -23,7 +23,7 @@
 $lastMessageBody = mb_convert_encoding($lastMessage->body, 'UTF-8', 'UTF-8');
 $lastMessageBody = strlen($lastMessageBody) > 30 ? mb_substr($lastMessageBody, 0, 30, 'UTF-8').'..' : $lastMessageBody;
 ?>
-<table class="messenger-list-item" data-contact="{{ $user->id }}">
+<table class="messenger-list-item" data-contact="{{ $user->user_id }}">
     <tr data-action="0">
         {{-- Avatar side --}}
         <td style="position: relative">
@@ -36,13 +36,13 @@ $lastMessageBody = strlen($lastMessageBody) > 30 ? mb_substr($lastMessageBody, 0
         </td>
         {{-- center side --}}
         <td>
-        <p data-id="{{ $user->id }}" data-type="user">
+        <p data-id="{{ $user->user_id }}" data-type="user">
             {{ strlen($user->name) > 12 ? trim(substr($user->name,0,12)).'..' : $user->name }}
             <span class="contact-item-time" data-time="{{$lastMessage->created_at}}">{{ $lastMessage->timeAgo }}</span></p>
         <span>
             {{-- Last Message user indicator --}}
             {!!
-                $lastMessage->from_id == Auth::user()->id
+                $lastMessage->from_id == Auth::user()->user_id
                 ? '<span class="lastMessageIndicator">You :</span>'
                 : ''
             !!}
@@ -64,7 +64,7 @@ $lastMessageBody = strlen($lastMessageBody) > 30 ? mb_substr($lastMessageBody, 0
 
 {{-- -------------------- Search Item -------------------- --}}
 @if($get == 'search_item')
-<table class="messenger-list-item" data-contact="{{ $user->id }}">
+<table class="messenger-list-item" data-contact="{{ $user->user_id }}">
     <tr data-action="0">
         {{-- Avatar side --}}
         <td>
@@ -74,7 +74,7 @@ $lastMessageBody = strlen($lastMessageBody) > 30 ? mb_substr($lastMessageBody, 0
         </td>
         {{-- center side --}}
         <td>
-            <p data-id="{{ $user->id }}" data-type="user">
+            <p data-id="{{ $user->user_id }}" data-type="user">
             {{ strlen($user->name) > 12 ? trim(substr($user->name,0,12)).'..' : $user->name }}
         </td>
 

@@ -442,4 +442,22 @@ class MessagesController extends Controller
             ], 500);
         }
     }
+
+    public function idInfo(Request $request)
+    {
+        $user = User::where('user_id', $request['user_id'])->first();
+        
+        if(!$user){
+            return Response::json([
+                'message' => 'User not found!',
+            ], 401);
+        }
+
+        return Response::json([
+            'fetch' => array_merge(
+                $user->toArray(),
+                ['avatar' => Chatify::getUserWithAvatar($user)->avatar]
+            ),
+        ], 200);
+    }
 }

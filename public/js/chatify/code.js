@@ -72,13 +72,53 @@ function routerPush(title, url) {
   return window.history.pushState({}, title || document.title, url);
 }
 function updateSelectedContact(user_id) {
-  $(document).find(".messenger-list-item").removeClass("m-list-active");
-  $(document)
-    .find(
-      ".messenger-list-item[data-contact=" + (user_id || getMessengerId()) + "]"
-    )
-    .addClass("m-list-active");
+  if (user_id) {
+      console.log("Updating selected contact:", user_id);
+      $(".messenger-list-item").removeClass("m-list-active");
+      $(".messenger-list-item[data-contact='" + user_id + "']").addClass("m-list-active");  
+  }
 }
+
+$(document).on('click', '.messenger-list-item', function () {
+    const user_id = $(this).attr('data-contact');
+    if (user_id) {
+        console.log("Clicked user:", user_id);
+        updateSelectedContact(user_id);
+        
+        // Add message loading
+        messagesContainer.html(loadingWithContainer('messenger-messagingView-loading'));
+        
+        // Get user data
+        $.ajax({
+            url: url + '/idInfo',
+            method: 'POST',
+            data: { _token: csrfToken, user_id: user_id },
+            dataType: 'JSON',
+            success: (data) => {
+                console.log("User data loaded:", data);
+                // Allow messaging if data was loaded
+                if (data.fetch) {
+                    setMessengerId(user_id);
+                    updateSelectedContact(user_id);
+                    
+                    // Fetch messages
+                    fetchMessages(user_id);
+                    
+                    // Update info in view
+                    $('.messenger-infoView-btns .delete-conversation').attr('data-id', user_id);
+                    $('.messenger-infoView').removeClass('d-none');
+                    $('.messenger-infoView-name').text(data.fetch.name);
+                }
+            },
+            error: (error) => {
+                console.error("Error loading user data:", error);
+                messagesContainer.html('');
+            }
+        });
+    } else {
+        console.error("No user_id found in data-contact attribute");
+    }
+});
 /**
  *-------------------------------------------------------------
  * Global Templates
