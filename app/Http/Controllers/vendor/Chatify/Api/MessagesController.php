@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 
 class MessagesController extends Controller
@@ -391,10 +392,27 @@ class MessagesController extends Controller
      */
     public function setActiveStatus(Request $request)
     {
-        $activeStatus = $request['status'] > 0 ? 1 : 0;
-        $status = User::where('user_id', Auth::user()->user_id)->update(['active_status' => $activeStatus]);
-        return Response::json([
-            'status' => $status,
-        ], 200);
+        try {
+            $activeStatus = $request['status'] > 0 ? 1 : 0;
+            $status = User::where('user_id', Auth::user()->user_id)
+                        ->update(['active_status' => $activeStatus]);
+            
+            // Broadcast the status change
+            broadcast(new \App\Events\UserActiveStatus(Auth::user()->user_id, $activeStatus))->toOthers();
+            
+            return Response::json([
+                'status' => $status,
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Active Status Update Error', [
+                'error' => $e->getMessage(),
+                'user' => Auth::user()->user_id
+            ]);
+            
+            return Response::json([
+                'status' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

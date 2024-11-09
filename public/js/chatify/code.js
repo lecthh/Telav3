@@ -697,7 +697,13 @@ clientListenChannel.bind("client-deleteConversation", function (data) {
 });
 // -------------------------------------
 // presence channel [User Active Status]
-var activeStatusChannel = pusher.subscribe("presence-activeStatus");
+var activeStatusChannel = pusher.subscribe('presence-activeStatus');
+
+activeStatusChannel.bind('pusher:subscription_succeeded', function() {
+    console.log('Successfully subscribed to presence-activeStatus');
+    // Set initial active status when successfully subscribed
+    setActiveStatus(1);
+});
 
 // Joined
 activeStatusChannel.bind("pusher:member_added", function (member) {
@@ -1231,18 +1237,20 @@ function updateSettings() {
  *-------------------------------------------------------------
  */
 function setActiveStatus(status) {
-  $.ajax({
-    url: url + "/setActiveStatus",
-    method: "POST",
-    data: { _token: csrfToken, status: status },
-    dataType: "JSON",
-    success: (data) => {
-      // Nothing to do
-    },
-    error: () => {
-      console.error("Server error, check your response");
-    },
-  });
+    $.ajax({
+        url: '/chat/setActiveStatus',
+        method: 'POST',
+        data: { 
+            _token: csrfToken,
+            status: status 
+        },
+        success: function(response) {
+            console.log('Active status updated:', response);
+        },
+        error: function(error) {
+            console.error('Error updating active status:', error);
+        }
+    });
 }
 
 /**
@@ -1709,3 +1717,11 @@ function updateElementsDateToTimeAgo() {
 setInterval(() => {
   updateElementsDateToTimeAgo();
 }, 60000);
+
+$(window).on('focus', function() {
+    setActiveStatus(1);
+});
+
+$(window).on('blur', function() {
+    setActiveStatus(0);
+});

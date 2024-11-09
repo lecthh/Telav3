@@ -23,6 +23,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
+use App\Http\Controllers\vendor\Chatify\Api\MessagesController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -131,4 +132,9 @@ Route::post('/confirm-jerseybulk-custom/post', [ConfirmationLinkController::clas
 
 Route::get('/auth/google/redirect', [GoogleAuth::class, 'redirectToGoogle'])->name('google.redirect');
 Route::get('/auth/google/callback', [GoogleAuth::class, 'handleGoogleCallback'])->name('google.callback');
+
+// Add this with your other Chatify routes
+Route::post('/chat/setActiveStatus', [MessagesController::class, 'setActiveStatus'])
+    ->name('chat.active.status')
+    ->middleware('auth');
 
