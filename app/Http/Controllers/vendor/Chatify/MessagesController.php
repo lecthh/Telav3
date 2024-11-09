@@ -306,10 +306,10 @@ class MessagesController extends Controller
     public function getFavorites(Request $request)
     {
         $favoritesList = null;
-        $favorites = Favorite::where('user_id', Auth::user()->id);
+        $favorites = Favorite::where('user_id', Auth::user()->user_id);
         foreach ($favorites->get() as $favorite) {
             // get user data
-            $user = User::where('id', $favorite->favorite_id)->first();
+            $user = User::where('user_id', $favorite->favorite_id)->first();
             $favoritesList .= view('Chatify::layouts.favorite', [
                 'user' => $user,
             ]);
@@ -333,7 +333,7 @@ class MessagesController extends Controller
     {
         $getRecords = null;
         $input = trim(filter_var($request['input']));
-        $records = User::where('id','!=',Auth::user()->id)
+        $records = User::where('user_id','!=',Auth::user()->user_id)
                     ->where('name', 'LIKE', "%{$input}%")
                     ->paginate($request->per_page ?? $this->perPage);
         foreach ($records->items() as $record) {
@@ -419,14 +419,14 @@ class MessagesController extends Controller
         // dark mode
         if ($request['dark_mode']) {
             $request['dark_mode'] == "dark"
-                ? User::where('id', Auth::user()->id)->update(['dark_mode' => 1])  // Make Dark
-                : User::where('id', Auth::user()->id)->update(['dark_mode' => 0]); // Make Light
+                ? User::where('user_id', Auth::user()->user_id)->update(['dark_mode' => 1])
+                : User::where('user_id', Auth::user()->user_id)->update(['dark_mode' => 0]);
         }
 
         // If messenger color selected
         if ($request['messengerColor']) {
             $messenger_color = trim(filter_var($request['messengerColor']));
-            User::where('id', Auth::user()->id)
+            User::where('user_id', Auth::user()->user_id)
                 ->update(['messenger_color' => $messenger_color]);
         }
         // if there is a [file]
@@ -447,7 +447,7 @@ class MessagesController extends Controller
                     }
                     // upload
                     $avatar = Str::uuid() . "." . $file->extension();
-                    $update = User::where('id', Auth::user()->id)->update(['avatar' => $avatar]);
+                    $update = User::where('user_id', Auth::user()->user_id)->update(['avatar' => $avatar]);
                     $file->storeAs(config('chatify.user_avatar.folder'), $avatar, config('chatify.storage_disk_name'));
                     $success = $update ? 1 : 0;
                 } else {
@@ -478,19 +478,32 @@ class MessagesController extends Controller
     {
         try {
             $activeStatus = $request['status'] > 0 ? 1 : 0;
-            $status = User::where('user_id', Auth::user()->user_id)
+            $user = Auth::user();
+            
+            Log::info('Attempting to update active status', [
+                'user_id' => $user->user_id,
+                'current_status' => $user->active_status,
+                'new_status' => $activeStatus
+            ]);
+
+            $status = User::where('user_id', $user->user_id)
                         ->update(['active_status' => $activeStatus]);
             
-            // Broadcast the status change
-            broadcast(new \App\Events\UserActiveStatus(Auth::user()->user_id, $activeStatus))->toOthers();
+            Log::info('Active Status Update Result', [
+                'update_success' => $status,
+                'user_id' => $user->user_id,
+                'new_status' => $activeStatus
+            ]);
             
             return Response::json([
                 'status' => $status,
+                'active_status' => $activeStatus
             ], 200);
         } catch (\Exception $e) {
             Log::error('Active Status Update Error', [
                 'error' => $e->getMessage(),
-                'user' => Auth::user()->user_id
+                'user_id' => Auth::user()->user_id,
+                'trace' => $e->getTraceAsString()
             ]);
             
             return Response::json([

@@ -257,13 +257,21 @@ class MessagesController extends Controller
      */
     public function getFavorites(Request $request)
     {
-        $favorites = Favorite::where('user_id', Auth::user()->user_id)->get();
-        foreach ($favorites as $favorite) {
-            $favorite->user = User::where('user_id', $favorite->favorite_id)->first();
+        $favoritesList = null;
+        $favorites = Favorite::where('user_id', Auth::user()->user_id);
+        foreach ($favorites->get() as $favorite) {
+            // get user data
+            $user = User::where('user_id', $favorite->favorite_id)->first();
+            $favoritesList .= view('Chatify::layouts.favorite', [
+                'user' => $user,
+            ]);
         }
+        // send the response
         return Response::json([
-            'total' => count($favorites),
-            'favorites' => $favorites ?? [],
+            'count' => $favorites->count(),
+            'favorites' => $favorites->count() > 0
+                ? $favoritesList
+                : 0,
         ], 200);
     }
 
@@ -275,17 +283,23 @@ class MessagesController extends Controller
      */
     public function search(Request $request)
     {
+        $getRecords = null;
         $input = trim(filter_var($request['input']));
         $records = User::where('user_id','!=',Auth::user()->user_id)
                     ->where('name', 'LIKE', "%{$input}%")
                     ->paginate($request->per_page ?? $this->perPage);
-
-        foreach ($records->items() as $index => $record) {
-            $records[$index] += Chatify::getUserWithAvatar($record);
+        foreach ($records->items() as $record) {
+            $getRecords .= view('Chatify::layouts.listItem', [
+                'get' => 'search_item',
+                'user' => Chatify::getUserWithAvatar($record),
+            ])->render();
         }
-
+        if($records->total() < 1){
+            $getRecords = '<p class="message-hint center-el"><span>Nothing to show.</span></p>';
+        }
+        // send the response
         return Response::json([
-            'records' => $records->items(),
+            'records' => $getRecords,
             'total' => $records->total(),
             'last_page' => $records->lastPage()
         ], 200);
@@ -335,8 +349,8 @@ class MessagesController extends Controller
         // dark mode
         if ($request['dark_mode']) {
             $request['dark_mode'] == "dark"
-                ? User::where('uesr_id', Auth::user()->user_id)->update(['dark_mode' => 1])  // Make Dark
-                : User::where('user_id', Auth::user()->user_id)->update(['dark_mode' => 0]); // Make Light
+                ? User::where('user_id', Auth::user()->user_id)->update(['dark_mode' => 1])
+                : User::where('user_id', Auth::user()->user_id)->update(['dark_mode' => 0]);
         }
 
         // If messenger color selected
@@ -356,9 +370,9 @@ class MessagesController extends Controller
                 if (in_array(strtolower($file->extension()), $allowed_images)) {
                     // delete the older one
                     if (Auth::user()->avatar != config('chatify.user_avatar.default')) {
-                        $path = Chatify::getUserAvatarUrl(Auth::user()->avatar);
-                        if (Chatify::storage()->exists($path)) {
-                            Chatify::storage()->delete($path);
+                        $avatar = Auth::user()->avatar;
+                        if (Chatify::storage()->exists($avatar)) {
+                            Chatify::storage()->delete($avatar);
                         }
                     }
                     // upload
@@ -394,19 +408,32 @@ class MessagesController extends Controller
     {
         try {
             $activeStatus = $request['status'] > 0 ? 1 : 0;
-            $status = User::where('user_id', Auth::user()->user_id)
+            $user = Auth::user();
+            
+            Log::info('Attempting to update active status', [
+                'user_id' => $user->user_id,
+                'current_status' => $user->active_status,
+                'new_status' => $activeStatus
+            ]);
+
+            $status = User::where('user_id', $user->user_id)
                         ->update(['active_status' => $activeStatus]);
             
-            // Broadcast the status change
-            broadcast(new \App\Events\UserActiveStatus(Auth::user()->user_id, $activeStatus))->toOthers();
+            Log::info('Active Status Update Result', [
+                'update_success' => $status,
+                'user_id' => $user->user_id,
+                'new_status' => $activeStatus
+            ]);
             
             return Response::json([
                 'status' => $status,
+                'active_status' => $activeStatus
             ], 200);
         } catch (\Exception $e) {
             Log::error('Active Status Update Error', [
                 'error' => $e->getMessage(),
-                'user' => Auth::user()->user_id
+                'user_id' => Auth::user()->user_id,
+                'trace' => $e->getTraceAsString()
             ]);
             
             return Response::json([

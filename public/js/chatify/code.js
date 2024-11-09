@@ -1237,6 +1237,7 @@ function updateSettings() {
  *-------------------------------------------------------------
  */
 function setActiveStatus(status) {
+    console.log('Setting active status:', status);
     $.ajax({
         url: '/chat/setActiveStatus',
         method: 'POST',
@@ -1718,10 +1719,30 @@ setInterval(() => {
   updateElementsDateToTimeAgo();
 }, 60000);
 
+let windowFocused = true;
+
 $(window).on('focus', function() {
-    setActiveStatus(1);
+    if (!windowFocused) {
+        windowFocused = true;
+        setActiveStatus(1);
+    }
 });
 
 $(window).on('blur', function() {
-    setActiveStatus(0);
+    // Only set to inactive if we're actually leaving the window
+    if (document.visibilityState === 'hidden') {
+        windowFocused = false;
+        setActiveStatus(0);
+    }
+});
+
+// Add visibility change handler
+document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'visible') {
+        windowFocused = true;
+        setActiveStatus(1);
+    } else {
+        windowFocused = false;
+        setActiveStatus(0);
+    }
 });
