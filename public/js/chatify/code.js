@@ -10,7 +10,8 @@ var messenger,
   defaultAvatarInSettings = null,
   messengerColor,
   dark_mode,
-  messages_page = 1;
+  messages_page = 1,
+  attachmentFiles = [];
 
 const messagesContainer = $(".messenger-messagingView .m-body"),
   messengerTitleDefault = $(".messenger-headTitle").text(),
@@ -483,81 +484,69 @@ function IDinfo(id) {
  *-------------------------------------------------------------
  */
 function sendMessage() {
-  temporaryMsgId += 1;
-  let tempID = `temp_${temporaryMsgId}`;
-  let hasFile = !!$(".upload-attachment").val();
-  const inputValue = $.trim(messageInput.val());
-  if (inputValue.length > 0 || hasFile) {
-    const formData = new FormData($("#message-form")[0]);
-    formData.append("id", getMessengerId());
-    formData.append("temporaryMsgId", tempID);
-    formData.append("_token", csrfToken);
+    temporaryMsgId += 1;
+    let tempID = `temp_${temporaryMsgId}`;
+    let messageText = $(".m-send").val().trim();
+    let hasFile = attachmentFiles && attachmentFiles.length > 0;
+
+    // Don't proceed if no message and no file
+    if (!messageText && !hasFile) {
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('user_id', getMessengerId());
+    formData.append('temporaryMsgId', tempID);
+    formData.append('type', 'user');
+    formData.append('_token', csrfToken);
+    
+    if (hasFile) {
+        formData.append('file', attachmentFiles[0]);
+    }
+    
+    if (messageText) {
+        formData.append('message', messageText);
+    }
+    
     $.ajax({
-      url: $("#message-form").attr("action"),
-      method: "POST",
-      data: formData,
-      dataType: "JSON",
-      processData: false,
-      contentType: false,
-      beforeSend: () => {
-        // remove message hint
-        $(".messages").find(".message-hint").hide();
-        // append a temporary message card
-        if (hasFile) {
-          messagesContainer
-            .find(".messages")
-            .append(
-              sendTempMessageCard(
-                inputValue + "\n" + loadingSVG("28px"),
-                tempID
-              )
+        url: '/chatify/sendMessage',
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        beforeSend: () => {
+            // Show temp message
+            let tempMessage = hasFile 
+                ? `<div class="message-card mc-sender"><div class="message-card-content"><div class="attachment"><div class="attachment-file"><span class="fas fa-file"></span> Sending File...</div></div></div></div>`
+                : `<div class="message-card mc-sender" id="${tempID}"><div class="message-card-content"><div class="message">${messageText}</div></div></div>`;
+            
+            $('.messages').append(tempMessage);
+            
+            // Clear input and reset attachment
+            $('.m-send').val('');
+            $('.attachment-preview').empty();
+            attachmentFiles = [];
+        },
+        success: (response) => {
+            if (response.status === '200') {
+                console.log("Message sent successfully", response);
+                $(`#${tempID}`).remove();
+                messagesContainer.find('.messages').append(response.message.html);
+            }
+        },
+        error: (error) => {
+            console.error("Send message error:", error);
+            $(`#${tempID}`).remove();
+            // Show error message
+            messagesContainer.find('.messages').append(
+                `<div class="message-card mc-sender message-error">
+                    <div class="message-card-content">
+                        <div class="message">Error sending message. Please try again.</div>
+                    </div>
+                </div>`
             );
-        } else {
-          messagesContainer
-            .find(".messages")
-            .append(sendTempMessageCard(inputValue, tempID));
         }
-        // scroll to bottom
-        scrollToBottom(messagesContainer);
-        messageInput.css({ height: "42px" });
-        // form reset and focus
-        $("#message-form").trigger("reset");
-        cancelAttachment();
-        messageInput.focus();
-      },
-      success: (data) => {
-        if (data.error > 0) {
-          // message card error status
-          errorMessageCard(tempID);
-          console.error(data.error_msg);
-        } else {
-          // update contact item
-          updateContactItem(getMessengerId());
-          // temporary message card
-          const tempMsgCardElement = messagesContainer.find(
-            `.message-card[data-id=${data.tempID}]`
-          );
-          // add the message card coming from the server before the temp-card
-          tempMsgCardElement.before(data.message);
-          // then, remove the temporary message card
-          tempMsgCardElement.remove();
-          // scroll to bottom
-          scrollToBottom(messagesContainer);
-          // send contact item updates
-          sendContactItemUpdates(true);
-        }
-      },
-      error: () => {
-        // message card error status
-        errorMessageCard(tempID);
-        // error log
-        console.error(
-          "Failed sending the message! Please, check your server response."
-        );
-      },
     });
-  }
-  return false;
 }
 
 /**
@@ -1653,6 +1642,27 @@ $(document).ready(function () {
   //Search pagination
   actionOnScroll(".messenger-tab.search-tab", function () {
     messengerSearch($(".messenger-search").val());
+  });
+
+  // Add this to handle file attachments
+  $(document).on('change', '.upload-attachment', function(e) {
+    let file = e.target.files[0];
+    if (file) {
+        attachmentFiles = [file];
+        $('.attachment-preview').html(`
+            <div class="attachment-preview-item">
+                <span class="fas fa-file"></span>
+                <p>${file.name}</p>
+                <span class="remove-attachment fas fa-times"></span>
+            </div>
+        `);
+    }
+  });
+
+  $(document).on('click', '.remove-attachment', function() {
+    attachmentFiles = [];
+    $('.attachment-preview').empty();
+    $('.upload-attachment').val('');
   });
 });
 

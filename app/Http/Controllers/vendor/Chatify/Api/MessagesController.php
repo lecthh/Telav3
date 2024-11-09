@@ -94,73 +94,80 @@ class MessagesController extends Controller
      */
     public function send(Request $request)
     {
-        // default variables
-        $error = (object)[
-            'status' => 0,
-            'message' => null
-        ];
-        $attachment = null;
-        $attachment_title = null;
-
-        // if there is attachment [file]
-        if ($request->hasFile('file')) {
-            // allowed extensions
-            $allowed_images = Chatify::getAllowedImages();
-            $allowed_files  = Chatify::getAllowedFiles();
-            $allowed        = array_merge($allowed_images, $allowed_files);
-
-            $file = $request->file('file');
-            // check file size
-            if ($file->getSize() < Chatify::getMaxUploadSize()) {
-                if (in_array(strtolower($file->extension()), $allowed)) {
-                    // get attachment name
-                    $attachment_title = $file->getClientOriginalName();
-                    // upload attachment and store the new name
-                    $attachment = Str::uuid() . "." . $file->extension();
-                    $file->storeAs(config('chatify.attachments.folder'), $attachment, config('chatify.storage_disk_name'));
-                } else {
-                    $error->status = 1;
-                    $error->message = "File extension not allowed!";
-                }
-            } else {
-                $error->status = 1;
-                $error->message = "File size you are trying to upload is too large!";
+        try {
+            // Get user info
+            $user = Auth::user();
+            
+            // Validate request
+            if (!$request->has('message') && !$request->has('file')) {
+                return Response::json([
+                    'error' => 'Please provide a message or file to send',
+                ], 400);
             }
-        }
 
-        if (!$error->status) {
-            // send to database
-            $message = Chatify::newMessage([
+            $error = (object)[
+                'status' => 0,
+                'message' => null
+            ];
+            $attachment = null;
+            $attachment_title = null;
+
+            // If there is a file in the request
+            if ($request->hasFile('file')) {
+                // Store the file
+                $attachment = Str::uuid() . "." . $request->file('file')->extension();
+                $attachment_title = $request->file('file')->getClientOriginalName();
+                $request->file('file')->storeAs(config('chatify.attachments.folder'), $attachment, config('chatify.storage_disk_name'));
+            }
+
+            // Send message to database
+            $messageData = [
                 'type' => $request['type'],
-                'from_id' => Auth::user()->user_id,
+                'from_id' => $user->user_id,
                 'to_id' => $request['user_id'],
                 'body' => htmlentities(trim($request['message']), ENT_QUOTES, 'UTF-8'),
                 'attachment' => ($attachment) ? json_encode((object)[
                     'new_name' => $attachment,
                     'old_name' => htmlentities(trim($attachment_title), ENT_QUOTES, 'UTF-8'),
                 ]) : null,
-            ]);
+            ];
 
-            // fetch message to send it with the response
+            $message = Chatify::newMessage($messageData);
+
+            // Parse the message for the response
             $messageData = Chatify::parseMessage($message);
 
-            // send to user using pusher
-            if (Auth::user()->user_id != $request['user_id']) {
-                Chatify::push("private-chatify.".$request['user_id'], 'messaging', [
-                    'from_id' => Auth::user()->user_id,
-                    'to_id' => $request['id'],
+            // Send to user using pusher
+            if ($request['user_id'] != $user->user_id) {
+                Chatify::push("private-chatify." . $request['user_id'], 'messaging', [
+                    'from_id' => $user->user_id,
+                    'to_id' => $request['user_id'],
                     'message' => $messageData
                 ]);
             }
-        }
 
-        // send the response
-        return Response::json([
-            'status' => '200',
-            'error' => $error,
-            'message' => $messageData ?? [],
-            'tempID' => $request['temporaryMsgId'],
-        ]);
+            return Response::json([
+                'status' => '200',
+                'error' => $error,
+                'message' => $messageData,
+                'tempID' => $request['temporaryMsgId'],
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Message Send Error: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return Response::json([
+                'status' => '500',
+                'error' => (object)[
+                    'status' => 1,
+                    'message' => $e->getMessage()
+                ]
+            ], 500);
+        }
     }
 
     /**

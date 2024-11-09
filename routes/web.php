@@ -134,12 +134,13 @@ Route::get('/auth/google/redirect', [GoogleAuth::class, 'redirectToGoogle'])->na
 Route::get('/auth/google/callback', [GoogleAuth::class, 'handleGoogleCallback'])->name('google.callback');
 
 // Add this with your other Chatify routes
-Route::post('/chat/setActiveStatus', [MessagesController::class, 'setActiveStatus'])
-    ->name('chat.active.status')
-    ->middleware('auth');
-
-// Add this with your other Chatify routes
-Route::post('/chat/idInfo', [MessagesController::class, 'idInfo'])
-    ->name('chat.idInfo')
-    ->middleware('auth');
-
+Route::middleware('auth')->group(function() {
+    Route::post('/chatify/sendMessage', [MessagesController::class, 'send'])
+        ->name('chatify.send');  // Changed from 'send.message' to 'chatify.send' to match the view
+    
+    Route::post('/chat/setActiveStatus', [MessagesController::class, 'setActiveStatus'])
+        ->name('chat.active.status');
+    
+    Route::post('/chat/idInfo', [MessagesController::class, 'idInfo'])
+        ->name('chat.idInfo');
+});
