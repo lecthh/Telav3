@@ -22,6 +22,20 @@
                 <p class="font-inter text-base">Now it's time to get creative! Add your unique design, choose your colors, and make any other custom adjustments to create something truly one-of-a-kind.</p>
             </div>
         </div>
+        <!-- fabric -->
+        <div class="flex flex-col gap-y-4">
+            <h3 class="text-lg font-bold">Canvas</h3>
+            <div class="flex gap-x-6 items-start">
+                <div>
+                    <canvas id="fabricCanvas" width="800" height="600" style="border:1px solid #ccc;"></canvas>
+                </div>
+                <div>
+                    <button id="canva-uploadButton" class="bg-blue-500 text-white px-4 py-2 rounded-md">Upload Image</button>
+                    <input type="file" id="canva-media" accept="image/*" style="display: none;">
+                </div>
+            </div>
+        </div>
+        
         <div class="flex flex-col gap-y-10 font-inter animate-fade-in">
             <div class="flex flex-col gap-y-4">
                 <h3 class="text-lg font-bold">Description</h3>
@@ -82,6 +96,31 @@
     </form>
     @include('layout.footer')
 </body>
+<script src="https://cdn.jsdelivr.net/npm/fabric@latest/dist/index.min.js"></script>
+
+<script>
+
+    const canvas = new fabric.Canvas('fabricCanvas');
+    const rect = new fabric.Rect({
+    left: 100,
+    top: 100,
+    fill: 'red',
+    width: 50,
+    height: 50
+});
+canvas.add(rect);
+
+// Add an image to the canvas
+fabric.Image.fromURL('path/to/your/image.jpg', function(img) {
+    img.set({
+        left: 200,
+        top: 200,
+        angle: 30
+    });
+    canvas.add(img);
+});
+</script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const mediaInput = document.getElementById('media');
