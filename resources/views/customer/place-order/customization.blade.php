@@ -34,7 +34,7 @@
                         <div id="deleteObject" class="w-10 h-10 border border-black rounded-md cursor-pointer justify-center items-center text-center">del</div>
                     </div>
                     <input type="file" id="canvasImgUpload" class="hidden" accept="image/*"/>
-                    <canvas id="fabricCanvas" width="800" height="500" class="border border-black rounded-md"></canvas>
+                    <canvas id="fabricCanvas" width="985" height="500" class="border border-black rounded-md"></canvas>
                 </div>
             </div>
         </div>

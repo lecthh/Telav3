@@ -93,29 +93,34 @@ canvas.on('text:editing:exited', function (e) {
 
 // DELETE FUNCTION
 document.addEventListener('DOMContentLoaded', function () {
-    function deleteSelectedObject() {
-        const activeObject = canvas.getActiveObject();
-        if (activeObject) {
-            canvas.remove(activeObject);
-            console.log('Object deleted');
+    function deleteSelectedObjects() {
+        const activeObjects = canvas.getActiveObjects();
+        if (activeObjects.length) {
+            activeObjects.forEach((object) => {
+                canvas.remove(object);
+            });
+            canvas.discardActiveObject();
+            canvas.renderAll();
+            console.log('Objects deleted:', activeObjects.length);
         } else {
-            console.log('No object selected to delete');
+            console.log('No objects selected to delete');
         }
     }
 
     const deleteButton = document.getElementById('deleteObject');
     if (deleteButton) {
-        deleteButton.addEventListener('click', deleteSelectedObject);
+        deleteButton.addEventListener('click', deleteSelectedObjects);
     } else {
         console.error("Element with ID 'deleteObject' not found in the DOM.");
     }
 
     document.addEventListener('keydown', function (event) {
         if (event.key === 'Delete') {
-            deleteSelectedObject();
+            deleteSelectedObjects();
         }
     });
 });
+
 
 // IMAGE FUNCTIONS
 document.getElementById('canvasImg').addEventListener('click', function () {
