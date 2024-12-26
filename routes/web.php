@@ -24,6 +24,7 @@ use App\Http\Controllers\FinalizeOrderController;
 use App\Http\Controllers\PendingRequestController;
 use App\Http\Controllers\PrintingInProgressController;
 use App\Http\Controllers\EditProducerAccountController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ReadyController;
 use App\Http\Middleware\PreventBackHistory;
 use Illuminate\Http\Request;
@@ -99,13 +100,24 @@ Route::prefix('partner')->name('partner.')->middleware('DesignerOnly')->group(fu
     });
 });
 
-Route::get('/select-apparel', [SelectAparrelController::class, 'selectApparel'])->name('customer.place-order.select-apparel');
-Route::get('/select-production-type/{apparel}', [SelectProductionTypeController::class, 'selectProductionType'])->name('customer.place-order.select-production-type');
-Route::get('/select-production-company/{apparel}/{productionType}', [SelectProductionCompanyController::class, 'selectProductionCompany'])->name('customer.place-order.select-production-company');
-Route::get('/customization/{apparel}/{productionType}/{company}', [Customization::class, 'customization'])->name('customer.place-order.customization');
-Route::post('/customization/{apparel}/{productionType}/{company}', [Customization::class, 'storeCustomization'])->name('customer.place-order.customization-post');
-Route::get('/review/{apparel}/{productionType}/{company}', [Review::class, 'review'])->name('customer.place-order.review');
-Route::post('/review/{apparel}/{productionType}/{company}', [Review::class, 'storeReview'])->name('customer.place-order.review-post');
+Route::prefix('customer/place-order')->name('customer.place-order.')->group(function () {
+    // Apparel Selection
+    Route::get('/select-apparel', [OrderController::class, 'selectApparel'])->name('select-apparel');
+
+    // Production Type Selection
+    Route::get('/select-production-type/{apparel}', [OrderController::class, 'selectProductionType'])->name('select-production-type');
+
+    // Production Company Selection
+    Route::get('/select-production-company/{apparel}/{productionType}', [OrderController::class, 'selectProductionCompany'])->name('select-production-company');
+
+    // Customization
+    Route::get('/customization/{apparel}/{productionType}/{company}', [OrderController::class, 'customization'])->name('customization');
+    Route::post('/customization/{apparel}/{productionType}/{company}', [OrderController::class, 'storeCustomization'])->name('customization-post');
+
+    // Review
+    Route::get('/review/{apparel}/{productionType}/{company}', [OrderController::class, 'review'])->name('review');
+    Route::post('/review/{apparel}/{productionType}/{company}', [OrderController::class, 'storeReview'])->name('review-post');
+});
 
 Route::middleware(['CustomerOnly'])->group(function () {
     Route::get('/cart', [CartController::class, 'showCart'])->name('customer.cart');
