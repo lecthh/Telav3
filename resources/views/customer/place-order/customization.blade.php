@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/pagedone@1.2.2/src/css/pagedone.css " rel="stylesheet" />
     @vite('resources/css/app.css')
+    @vite('resources/js/customize.js')
 </head>
 @include('layout.nav')
 
@@ -26,12 +27,14 @@
         <div class="flex flex-col gap-y-4">
             <h3 class="text-lg font-bold">Canvas</h3>
             <div class="flex gap-x-6 items-start">
-                <div>
-                    <canvas id="fabricCanvas" width="800" height="600" style="border:1px solid #ccc;"></canvas>
-                </div>
-                <div>
-                    <button id="canva-uploadButton" class="bg-blue-500 text-white px-4 py-2 rounded-md">Upload Image</button>
-                    <input type="file" id="canva-media" accept="image/*" style="display: none;">
+                <div class="w-full flex gap-x-4">
+                    <div class="flex flex-col gap-y-2">
+                        <div id="canvasText" class="w-10 h-10 border border-black rounded-md cursor-pointer justify-center items-center text-center">h1</div>
+                        <div id="canvasImg" class="w-10 h-10 border border-black rounded-md cursor-pointer justify-center items-center text-center">img</div>
+                        <div id="deleteObject" class="w-10 h-10 border border-black rounded-md cursor-pointer justify-center items-center text-center">del</div>
+                    </div>
+                    <input type="file" id="canvasImgUpload" class="hidden" accept="image/*"/>
+                    <canvas id="fabricCanvas" width="800" height="500" class="border border-black rounded-md"></canvas>
                 </div>
             </div>
         </div>
@@ -97,58 +100,4 @@
     @include('layout.footer')
 </body>
 <script src="https://cdn.jsdelivr.net/npm/fabric@latest/dist/index.min.js"></script>
-
-<script>
-
-    const canvas = new fabric.Canvas('fabricCanvas');
-    const rect = new fabric.Rect({
-    left: 100,
-    top: 100,
-    fill: 'red',
-    width: 50,
-    height: 50
-});
-canvas.add(rect);
-
-// Add an image to the canvas
-fabric.Image.fromURL('path/to/your/image.jpg', function(img) {
-    img.set({
-        left: 200,
-        top: 200,
-        angle: 30
-    });
-    canvas.add(img);
-});
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const mediaInput = document.getElementById('media');
-        const uploadButton = document.getElementById('uploadButton');
-        const previewContainer = document.getElementById('previewContainer');
-
-        uploadButton.addEventListener('click', function() {
-            mediaInput.click();
-        });
-
-        mediaInput.addEventListener('change', function(event) {
-            const files = event.target.files;
-            previewContainer.innerHTML = '';
-
-            Array.from(files).forEach(file => {
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.classList.add('w-16', 'h-16', 'object-cover', 'rounded-md');
-                        previewContainer.appendChild(img);
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        });
-    });
-</script>
-
 </html>
