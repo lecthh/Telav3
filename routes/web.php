@@ -25,6 +25,7 @@ use App\Http\Controllers\PendingRequestController;
 use App\Http\Controllers\PrintingInProgressController;
 use App\Http\Controllers\EditProducerAccountController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderProduceController;
 use App\Http\Controllers\ReadyController;
 use App\Http\Middleware\PreventBackHistory;
 use Illuminate\Http\Request;
@@ -47,43 +48,51 @@ Route::get('/printer-dashboard', function () {
 
 // Printer Partner Routes
 Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->group(function () {
+    // Printer Routes
     Route::prefix('printer')->name('printer.')->group(function () {
+        
+        // Profile Management
         Route::get('/profile/basics', function () {
             return view('partner.printer.profile.basics');
         })->name('profile.basics');
 
         Route::get('/profile/pricing', [EditProducerAccountController::class, 'index'])->name('profile.pricing');
-
         Route::post('/profile/update', [EditProducerAccountController::class, 'update'])->name('profile.update');
         Route::post('/profile/pricing/update', [EditProducerAccountController::class, 'updatePricing'])->name('profile.pricing.update');
 
-        Route::get('/orders', [PendingRequestController::class, 'index'])->name('orders');
-        Route::get('/pending-x/{order_id}', [PendingRequestController::class, 'pendingOrder'])->name('pending-order-x');
-        Route::post('/assign-designer/{order_id}', [PendingRequestController::class, 'assignDesigner'])->name('assign-designer');
+        // Order Management
+        Route::get('/orders', [OrderProduceController::class, 'pending'])->name('orders');
+        Route::get('/pending-x/{order_id}', [OrderProduceController::class, 'pendingOrder'])->name('pending-order-x');
+        Route::post('/assign-designer/{order_id}', [OrderProduceController::class, 'assignDesigner'])->name('assign-designer');
 
-        Route::get('/design-in-progress', [DesignInProgressController::class, 'designInProgress'])->name('design-in-progress');
-        Route::get('/design-x/{order_id}', [DesignInProgressController::class, 'designOrder'])->name('design-x');
+        // Design Management
+        Route::get('/design-in-progress', [OrderProduceController::class, 'designInProgress'])->name('design-in-progress');
+        Route::get('/design-x/{order_id}', [OrderProduceController::class, 'designOrder'])->name('design-x');
 
-        Route::get('/finalize-order', [FinalizeOrderController::class, 'finalize'])->name('finalize-order');
-        Route::get('/finalize-x/{order_id}', [FinalizeOrderController::class, 'finalizeOrder'])->name('finalize-x');
-        Route::post('/finalize-x/{order_id}/post', [FinalizeOrderController::class, 'finalizeOrderPost'])->name('finalize-x-post');
+        // Finalization
+        Route::get('/finalize-order', [OrderProduceController::class, 'finalize'])->name('finalize-order');
+        Route::get('/finalize-x/{order_id}', [OrderProduceController::class, 'finalizeOrder'])->name('finalize-x');
+        Route::post('/finalize-x/{order_id}/post', [OrderProduceController::class, 'finalizeOrderPost'])->name('finalize-x-post');
 
-        Route::get('/awaiting-printing', [AwaitingOrderController::class, 'awaitingPrinting'])->name('awaiting-printing');
-        Route::get('/awaiting-x/{order_id}', [AwaitingOrderController::class, 'awaitingOrder'])->name('awaiting-x');
-        Route::post('/awaiting-x/{order_id}/post', [AwaitingOrderController::class, 'awaitingOrderPost'])->name('awaiting-x-post');
+        // Printing Management
+        Route::get('/awaiting-printing', [OrderProduceController::class, 'awaitingPrinting'])->name('awaiting-printing');
+        Route::get('/awaiting-x/{order_id}', [OrderProduceController::class, 'awaitingOrder'])->name('awaiting-x');
+        Route::post('/awaiting-x/{order_id}/post', [OrderProduceController::class, 'awaitingOrderPost'])->name('awaiting-x-post');
 
-        Route::get('/printing-in-progress', [PrintingInProgressController::class, 'printingInProgress'])->name('printing-in-progress');
-        Route::get('/printing-x/{order_id}', [PrintingInProgressController::class, 'printingOrder'])->name('printing-x');
-        Route::post('/printing-x/{order_id}/post', [PrintingInProgressController::class, 'printingOrderPost'])->name('printing-x-post');
+        Route::get('/printing-in-progress', [OrderProduceController::class, 'printingInProgress'])->name('printing-in-progress');
+        Route::get('/printing-x/{order_id}', [OrderProduceController::class, 'printingOrder'])->name('printing-x');
+        Route::post('/printing-x/{order_id}/post', [OrderProduceController::class, 'printingOrderPost'])->name('printing-x-post');
 
-        Route::get('/ready', [ReadyController::class, 'ready'])->name('ready');
-        Route::get('/ready-x/{order_id}', [ReadyController::class, 'readyOrder'])->name('ready-x');
-        Route::post('/ready-x/{order_id}/post', [ReadyController::class, 'readyOrderPost'])->name('ready-x-post');
+        // Order Status Management
+        Route::get('/ready', [OrderProduceController::class, 'ready'])->name('ready');
+        Route::get('/ready-x/{order_id}', [OrderProduceController::class, 'readyOrder'])->name('ready-x');
+        Route::post('/ready-x/{order_id}/post', [OrderProduceController::class, 'readyOrderPost'])->name('ready-x-post');
 
-        Route::get('/completed', [PrinterOrderController::class, 'completed'])->name('completed');
-        Route::get('/completed-x/{order_id}', [PrinterOrderController::class, 'completedOrder'])->name('completed-x');
+        Route::get('/completed', [OrderProduceController::class, 'completed'])->name('completed');
+        Route::get('/completed-x/{order_id}', [OrderProduceController::class, 'completedOrder'])->name('completed-x');
 
-        Route::post('/cancel-order/{order_id}', [PrinterOrderController::class, 'cancelOrder'])->name('cancel-order');
+        // Order Cancellation
+        Route::post('/cancel-order/{order_id}', [OrderProduceController::class, 'cancelOrder'])->name('cancel-order');
     });
 });
 
