@@ -67,12 +67,24 @@
 
                 <hr class="border-cPrimary">
                 <div class="flex gap-x-10">
+                    <div class="flex border w-[400px] h-[200px] rounded-md border-cPrimary bg-white">
+                        @if($canvasImage)
+                            <img src="{{ $canvasImage }}" alt="canvasDesign" class="object-cover w-full h-full rounded-md">
+                        @else
+                            <p>No design available.</p>
+                        @endif
+                    </div>
+                </div>
+
+                <hr class="border-cPrimary">
+                <div class="flex gap-x-10">
                     @foreach ($customization['media'] as $media)
                     <div class="flex border w-[168px] h-[132px] rounded-md border-cPrimary bg-white">
                         <img src="{{ asset('storage/' . $media) }}" alt="Design" class="object-cover w-full h-full rounded-md">
                     </div>
                     @endforeach
                 </div>
+
                 <div class="flex flex-col gap-y-3">
                     <h3 class="text-lg font-bold">Description</h3>
                     <h5 class="text-base">{{ $customization['description'] }}</h5>

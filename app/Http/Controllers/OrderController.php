@@ -29,7 +29,7 @@ class OrderController extends Controller
         $currentStep = 1;
         return view('customer.place-order.select-apparel', compact('currentStep'));
     }
-    
+
     //STEP 2
 
     public function selectProductionType($apparel)
@@ -39,7 +39,7 @@ class OrderController extends Controller
     }
 
     //STEP 3
-    
+
     public function selectProductionCompany($apparel, $productionType)
     {
         $currentStep = 3;
@@ -52,7 +52,14 @@ class OrderController extends Controller
         $apparel = $request->input('apparel');
         $productionType = $request->input('productionType');
 
-        return redirect()->route('customization', ['apparel' => $apparel, 'productionType' => $productionType, 'productionCompany' => $productionCompany]);
+        $apparelImgGuideURL = $this->getApparelGuideURL($apparel);
+
+        return redirect()->route('customization', [
+            'apparel' => $apparel, 
+            'productionType' => $productionType, 
+            'productionCompany' => $productionCompany,
+            'apparelImgGuideURL' => $apparelImgGuideURL,
+        ]);
     }
 
     //STEP 4
@@ -60,7 +67,8 @@ class OrderController extends Controller
     public function customization($apparel, $productionType, $company)
     {
         $currentStep = 4;
-        return view('customer.place-order.customization', compact('apparel', 'productionType', 'company', 'currentStep'));
+        $apparelImgGuideURL = $this->getApparelGuideURL($apparel);
+        return view('customer.place-order.customization', compact('apparel', 'productionType', 'company', 'currentStep', 'apparelImgGuideURL'));
     }
 
     public function storeCustomization(Request $request, $apparel, $productionType, $company)
@@ -72,12 +80,25 @@ class OrderController extends Controller
             'custom_type' => 'required|in:standard,personalized',
         ]);
 
+        //handle canvas
+        if ($request->has('canvas_image')) {
+            $canvasImage = $request->input('canvas_image');
+            $canvasImage = str_replace('data:image/png;base64,', '', $canvasImage);
+            $canvasImage = str_replace(' ', '+', $canvasImage);
+            $imageName = 'canvas_' . time() . '.png';
+            \Illuminate\Support\Facades\Storage::disk('public')->put('uploads/designs/' . $imageName, base64_decode($canvasImage));
+        }
+
         if ($request->hasFile('media')) {
             $mediaPaths = [];
             foreach ($request->file('media') as $file) {
                 $path = $file->store('uploads/designs', 'public');
                 $mediaPaths[] = $path;
             }
+        }
+
+        if ($request->has('canvas_image')) {
+            session()->put('canvas_image', $request->input('canvas_image'));
         }
 
         $customizationData = [
@@ -93,16 +114,17 @@ class OrderController extends Controller
     }
 
     //STEP 5
-    
+
     public function review($apparel, $productionType, $company)
     {
         $customization = session()->get('customization');
+        $canvasImage = session()->get('canvas_image');
         $productionCompany = ProductionCompany::find($company);
         $apparelName = ApparelType::find($apparel)->name;
         $productionTypeName = ModelsProductionType::find($productionType)->name;
 
         $currentStep = 5;
-        return view('customer.place-order.review', compact('apparel', 'productionType', 'company', 'currentStep', 'customization', 'productionCompany', 'apparelName', 'productionTypeName'));
+        return view('customer.place-order.review', compact('apparel', 'productionType', 'company', 'currentStep', 'customization', 'productionCompany', 'apparelName', 'productionTypeName', 'canvasImage'));
     }
 
     public function storeReview($apparel, $productionType, $company)
@@ -133,5 +155,12 @@ class OrderController extends Controller
         }
 
         return redirect()->route('customer.cart');
+    }
+
+    private function getApparelGuideURL($apparel) {
+        $apparelGuides = [
+            'jersey' => '/img/apparelGuides/jerseyGuide.avif'
+        ];
+        return $apparelGuides[$apparel] ?? null;
     }
 }

@@ -36,8 +36,6 @@ canvasElement.height = 500;
 
 const canvas = new fabric.Canvas('fabricCanvas');
 
-
-
 // TEXT FUNCTIONS
 function addTextToCanvas() {
     const text = new fabric.IText('Your Text Here', {
@@ -186,7 +184,7 @@ function exportCanvasToPNG() {
 
     const hiddenInput = document.createElement('input');
     hiddenInput.type = 'hidden';
-    hiddenInput.name = 'canvasExportedImg'
+    hiddenInput.name = 'canvas_image'
     hiddenInput.value = dataURL;
 
     const form = document.querySelector('form');
