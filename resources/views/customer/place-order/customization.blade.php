@@ -28,13 +28,19 @@
             <h3 class="text-lg font-bold">Canvas</h3>
             <div class="flex gap-x-6 items-start">
                 <div class="w-full flex gap-x-4">
-                    <div class="flex flex-col gap-y-2">
-                        <div id="canvasText" class="w-10 h-10 border border-black rounded-md cursor-pointer justify-center items-center text-center">h1</div>
-                        <div id="canvasImg" class="w-10 h-10 border border-black rounded-md cursor-pointer justify-center items-center text-center">img</div>
-                        <div id="deleteObject" class="w-10 h-10 border border-black rounded-md cursor-pointer justify-center items-center text-center">del</div>
+                    <div class="flex flex-col justify-between">
+                        <div class="flex flex-col gap-y-2">
+                            <div id="canvasText" class="flex w-10 h-10 border border-black rounded-md cursor-pointer justify-center items-center text-center">@include('svgs.text')</div>
+                            <div id="canvasImg" class="flex w-10 h-10 border border-black rounded-md cursor-pointer justify-center items-center text-center">@include('svgs.img')</div>
+                            <div id="deleteObject" class="flex w-10 h-10 border border-black rounded-md cursor-pointer justify-center items-center text-center">@include('svgs.delete-custom')</div>
+                        </div>
+                    
+                        <div>
+                            <div id="shirtToggle" class="flex w-10 h-10 border border-black rounded-md cursor-pointer justify-center items-center text-center">@include('svgs.shirt-2')</div>
+                        </div>
                     </div>
                     <input type="file" id="canvasImgUpload" class="hidden" accept="image/*"/>
-                    <canvas id="fabricCanvas" width="985" height="500" class="border border-black rounded-md"></canvas>
+                    <canvas id="fabricCanvas" width="1000" height="500" class="border border-black rounded-md"></canvas>
                 </div>
             </div>
         </div>

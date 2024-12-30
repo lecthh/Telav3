@@ -36,6 +36,8 @@ canvasElement.height = 500;
 
 const canvas = new fabric.Canvas('fabricCanvas');
 
+
+
 // TEXT FUNCTIONS
 function addTextToCanvas() {
     const text = new fabric.IText('Your Text Here', {
@@ -161,3 +163,41 @@ document.getElementById('canvasImgUpload').addEventListener('change', function (
 });
 
 document.getElementById('canvasImgUpload').value = '';
+
+//TOGGLE SHIRT GUIDE
+fabric.Image.fromURL('/imgs/istockphoto-1304992360-612x612.jpg', function (imgGuide) {
+    imgGuide.set({
+        left: 0,
+        top: 0,
+        scaleX: 1,
+        scaleY: 1
+    });
+
+    canvas.add(imgGuide);
+    canvas.renderAll();
+});
+
+//EXPORT TO PNG
+function exportCanvasToPNG() {
+    const dataURL = canvas.toDataURL({
+        format: 'png',
+        quality: 1
+    });
+
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = 'canvasExportedImg'
+    hiddenInput.value = dataURL;
+
+    const form = document.querySelector('form');
+    form.appendChild(hiddenInput);
+}
+
+const continueButton = document.querySelector('button[type="submit"]');
+if (continueButton) {
+    continueButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        exportCanvasToPNG();
+        continueButton.form.submit();
+    })
+}

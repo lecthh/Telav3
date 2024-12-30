@@ -25,38 +25,38 @@ class CartController extends Controller
         }
         return view('cart.cart', compact('cartItems'));
     }
-    
+
     public function removeCartItem($cartItemId)
     {
         if (Auth::check()) {
             $cart = Cart::where('user_id', Auth::id())->first();
-    
+
 
             $cartItem = CartItem::where('cart_id', $cart->cart_id)
-                ->where('cart_item_id', $cartItemId) 
+                ->where('cart_item_id', $cartItemId)
                 ->first();
             if ($cartItem) {
                 DB::table('cart_items')->where('cart_item_id', $cartItemId)->delete();
             }
-        } 
+        }
         return redirect()->route('customer.cart');
     }
-    
+
 
     public function checkout(Request $request)
-{
-    $selectedItemIds = $request->input('cart_items', []);
+    {
+        $selectedItemIds = $request->input('cart_items', []);
 
-    if (empty($selectedItemIds)) {
-        return redirect()->back()->with('error', 'No items selected for checkout.');
+        if (empty($selectedItemIds)) {
+            return redirect()->back()->with('error', 'No items selected for checkout.');
+        }
+
+        $cartItems = CartItem::whereIn('cart_item_id', $selectedItemIds)
+            ->with(['cartItemImages', 'apparelType', 'productionCompany', 'productionType'])
+            ->get();
+
+        session()->put('selected_cart_items', $cartItems);
+
+        return redirect()->route('customer.checkout');
     }
-
-    $cartItems = CartItem::whereIn('cart_item_id', $selectedItemIds)
-        ->with(['cartItemImages', 'apparelType', 'productionCompany', 'productionType'])
-        ->get();
-
-    session()->put('selected_cart_items', $cartItems);
-
-    return redirect()->route('customer.checkout');
-}
 }

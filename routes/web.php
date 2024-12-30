@@ -1,37 +1,21 @@
 <?php
 
-use App\Exports\CustomizationDetailsExport;
-use App\Http\Controllers\AwaitingOrderController;
 use App\Http\Controllers\BusinessAuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ConfirmationLinkController;
 use App\Http\Controllers\ConfirmationMessageController;
 use App\Http\Controllers\ConfirmBulkController;
-use App\Http\Controllers\Review;
-use App\Http\Controllers\Customization;
 use App\Http\Controllers\CustomizationExportController;
 use App\Http\Controllers\GoogleAuth;
 use App\Http\Controllers\PartnerRegistration;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\SelectAparrelController;
-use App\Http\Controllers\SelectProductionCompanyController;
-use App\Http\Controllers\SelectProductionTypeController;
-use App\Http\Controllers\PrinterOrderController;
 use App\Http\Controllers\DesignerOrderController;
-use App\Http\Controllers\DesignInProgressController;
-use App\Http\Controllers\FinalizeOrderController;
-use App\Http\Controllers\PendingRequestController;
-use App\Http\Controllers\PrintingInProgressController;
 use App\Http\Controllers\EditProducerAccountController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderProduceController;
-use App\Http\Controllers\ReadyController;
 use App\Http\Middleware\PreventBackHistory;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
-use Laravel\Socialite\Facades\Socialite;
 
 Route::get('/', function () {
     return view('welcome');
