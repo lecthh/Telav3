@@ -25,6 +25,7 @@ use App\Http\Controllers\PendingRequestController;
 use App\Http\Controllers\PrintingInProgressController;
 use App\Http\Controllers\EditProducerAccountController;
 use App\Http\Controllers\ReadyController;
+use App\Http\Controllers\ChatController;
 use App\Http\Middleware\PreventBackHistory;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
@@ -151,3 +152,9 @@ Route::get('/auth/google/callback', [GoogleAuth::class, 'handleGoogleCallback'])
 
 Route::get('export-customization/{order_id}', [CustomizationExportController::class, 'exportExcel'])->name('export.customization')->withoutMiddleware(PreventBackHistory::class);
 Route::get('/export/customization/{order_id}', [CustomizationExportController::class, 'export'])->name('export.customization');
+
+// chat Routes
+
+Route::get('/messages/{userId}', [ChatController::class, 'fetchMessages']);
+Route::post('/messages', [ChatController::class, 'sendMessage']);
+Route::patch('/messages/{id}/seen', [ChatController::class, 'markAsSeen']);
