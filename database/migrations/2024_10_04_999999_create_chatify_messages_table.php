@@ -13,14 +13,17 @@ class CreateChatifyMessagesTable extends Migration
      */
     public function up()
     {
-        Schema::create('ch_messages', function (Blueprint $table) {
+        Schema::create('messages', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('from_id');  // Change to string to match your `user_id`
-            $table->string('to_id');    // Change to string to match your `user_id`
+            $table->string('from_id');
+            $table->string('to_id');
             $table->string('body', 5000)->nullable();
             $table->string('attachment')->nullable();
             $table->boolean('seen')->default(false);
             $table->timestamps();
+
+            $table->foreign('from_id')->references('user_id')->on('users')->onDelete('cascade');
+            $table->foreign('to_id')->references('user_id')->on('users')->onDelete('cascade');
         });
     }
 

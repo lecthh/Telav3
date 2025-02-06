@@ -11,11 +11,16 @@ class Message extends Model
     use HasFactory;
 
     public $table = 'messages';
-    protected $fillable = ['id', 'user_id', 'text'];
+    protected $fillable = ['id', 'from_id', 'to_id', 'body', 'attachment', 'seen'];
 
-    public function user(): BelongsTo
+    public function fromUser(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'from_id');
+    }
+
+    public function toUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'to_id');
     }
 
     public function getTimeAttribute(): string
