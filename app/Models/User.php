@@ -21,7 +21,10 @@ class User extends Authenticatable
         'email',
         'password',
         'role_type_id',
-        'passwordToken'
+        'passwordToken',
+        'avatar',
+        'active_status',
+
     ];
 
     public function roleType()
@@ -32,7 +35,8 @@ class User extends Authenticatable
     {
         return $this->hasOne(AddressInformation::class, 'user_id', 'user_id');
     }
-    public function orders(){
+    public function orders()
+    {
         return $this->hasMany(Order::class, 'user_id', 'user_id');
     }
     public function notifications()
