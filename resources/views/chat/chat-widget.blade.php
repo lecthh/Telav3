@@ -1,26 +1,81 @@
 <div x-data="{ open: false }" class="fixed bottom-4 right-4 z-50">
     <button
-        @click="open = !open"
-        class="bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 transition">
+        @click="open = true"
+        x-show="!open"
+        x-transition
+        class="bg-blue-500 text-white p-5 text-2xl rounded-full shadow-lg hover:bg-blue-600 transition">
         💬
     </button>
 
     <div x-show="open" x-transition
-        class="absolute bottom-16 right-0 w-80 bg-white rounded-lg shadow-lg p-4 border border-gray-300">
-        <div class="flex justify-between items-center border-b pb-2">
+        class="absolute bottom-0 right-0 w-[40vw] h-[60vh]  bg-white rounded-md shadow-lg border border-gray-300 flex flex-col">
+        <div class="flex justify-between rounded-tl-md rounded-tr-md items-center border-b p-3 bg-gray-100">
             <h2 class="text-lg font-semibold">Chat</h2>
-            <button @click="open = false" class="text-gray-500 hover:text-gray-700">✖</button>
+            <button @click="open = false" class="text-gray-500 hover:text-gray-700 text-lg">✖</button>
         </div>
-        <div class="h-60 overflow-y-auto p-2 space-y-2">
-            <div class="bg-gray-100 p-2 rounded-md text-sm">Hello! How can I help?</div>
-            <div class="bg-blue-500 text-white p-2 rounded-md text-sm self-end">Hi! I need assistance.</div>
-        </div>
-        <div class="mt-2 flex">
-            <input type="text" placeholder="Type a message..."
-                class="w-full border rounded-l-md px-2 py-1 focus:outline-none">
-            <button class="bg-blue-500 text-white px-3 py-1 rounded-r-md hover:bg-blue-600">
-                ➤
-            </button>
+
+        <div class="flex flex-1">
+            <div x-data="{
+        searchQuery: '',
+        users: [
+            { id: 1, name: 'User 1', avatar: 'https://i.pravatar.cc/40?u=user1', lastMessage: 'Hey, how are you?', lastMessageDate: '2h ago' },
+            { id: 2, name: 'User 2', avatar: 'https://i.pravatar.cc/40?u=user2', lastMessage: 'Let’s catch up later!', lastMessageDate: 'Yesterday' },
+            { id: 3, name: 'User 3', avatar: 'https://i.pravatar.cc/40?u=user3', lastMessage: 'See you soon.', lastMessageDate: 'Jan 15' }
+        ],
+        get filteredUsers() {
+            return this.searchQuery 
+                ? this.users.filter(user => user.name.toLowerCase().includes(this.searchQuery.toLowerCase()))
+                : this.users;
+        },
+        startChat(user) {
+            alert(`Starting chat with ${user.name}`);
+        }
+    }" class="w-1/3 bg-gray-100 p-3 rounded-md border-r">
+
+                <div class="relative mb-2">
+                    <input type="text"
+                        x-model="searchQuery"
+                        placeholder="Search for users..."
+                        class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+                </div>
+                <ul class="space-y-2 text-sm  overflow-y-auto">
+                    <template x-for="user in filteredUsers" :key="user.id">
+                        <li @click="startChat(user)"
+                            class="p-2 bg-white rounded-md hover:bg-gray-200 cursor-pointer flex items-center space-x-2">
+                            <img :src="user.avatar" class="w-8 h-8 rounded-full" alt="User Avatar">
+                            <div class="flex-1">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-semibold" x-text="user.name"></span>
+                                    <span class="text-xs text-gray-500" x-text="user.lastMessageDate"></span>
+                                </div>
+                                <p class="text-gray-500 text-xs truncate w-full" x-text="user.lastMessage"></p>
+                            </div>
+                        </li>
+                    </template>
+                </ul>
+            </div>
+
+
+            <div class="w-2/3 flex flex-col">
+                <div class="flex-1 overflow-y-auto p-2 space-y-2 w-full">
+                    <div class="bg-gray-100 p-2 rounded-md text-sm max-w-[60%] w-fit">
+                        Hello! How can I help?asdfas dfgasdfasdfasdfasdfas dfasfsdasdfasdfaasdfasdf
+                    </div>
+                    <div class="bg-blue-500 text-white p-2 rounded-md text-sm max-w-[60%] w-fit ml-auto">
+                        Hi! I need assistance.
+                    </div>
+                </div>
+
+
+                <div class="p-2 border-t flex">
+                    <input type="text" placeholder="Type a message..."
+                        class="w-full border rounded-l-md px-3 py-1 focus:outline-none">
+                    <button class="bg-blue-500 text-white px-4 py-1 rounded-r-md hover:bg-blue-600 text-lg">
+                        ➤
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
+
 </div>
