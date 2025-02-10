@@ -6,6 +6,7 @@ use App\Events\MessageSent;
 use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class ChatController extends Controller
 {
@@ -18,6 +19,46 @@ class ChatController extends Controller
         })->orderBy('created_at', 'asc')->get();
 
         return response()->json($messages);
+    }
+
+    public function fetchChatUsers()
+    {
+        try {
+            $userId = Auth::id(); // Ensure user is authenticated
+
+            // Fetch users that have sent/received messages with the current user
+            $users = User::whereHas('messagesReceived', function ($query) use ($userId) {
+                $query->where('from_id', $userId);
+            })
+                ->orWhereHas('messagesSent', function ($query) use ($userId) {
+                    $query->where('to_id', $userId);
+                })
+                ->with([
+                    'messagesReceived' => function ($query) use ($userId) {
+                        $query->where('from_id', $userId)->latest();
+                    },
+                    'messagesSent' => function ($query) use ($userId) {
+                        $query->where('to_id', $userId)->latest();
+                    }
+                ])
+                ->get();
+
+            // Format response
+            $formattedUsers = $users->map(function ($user) use ($userId) {
+                $lastMessage = $user->messagesReceived->first() ?? $user->messagesSent->first();
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'avatar' => $user->avatar ?? 'https://i.pravatar.cc/40?u=' . $user->id,
+                    'lastMessage' => $lastMessage ? $lastMessage->body : 'No messages yet',
+                    'lastMessageDate' => $lastMessage ? $lastMessage->created_at->diffForHumans() : '',
+                ];
+            });
+
+            return response()->json($formattedUsers, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     public function sendMessage(Request $request)

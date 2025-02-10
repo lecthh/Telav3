@@ -17,11 +17,17 @@
         <div class="flex flex-1">
             <div x-data="{
         searchQuery: '',
-        users: [
-            { id: 1, name: 'User 1', avatar: 'https://i.pravatar.cc/40?u=user1', lastMessage: 'Hey, how are you?', lastMessageDate: '2h ago' },
-            { id: 2, name: 'User 2', avatar: 'https://i.pravatar.cc/40?u=user2', lastMessage: 'Let’s catch up later!', lastMessageDate: 'Yesterday' },
-            { id: 3, name: 'User 3', avatar: 'https://i.pravatar.cc/40?u=user3', lastMessage: 'See you soon.', lastMessageDate: 'Jan 15' }
-        ],
+        users: [],
+        async fetchUsers() {
+            try {
+                const response = await fetch('/chat/users', {
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('auth_token') }
+                });
+                this.users = await response.json();
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        },
         get filteredUsers() {
             return this.searchQuery 
                 ? this.users.filter(user => user.name.toLowerCase().includes(this.searchQuery.toLowerCase()))
@@ -30,7 +36,9 @@
         startChat(user) {
             alert(`Starting chat with ${user.name}`);
         }
-    }" class="w-1/3 bg-gray-100 p-3 rounded-md border-r">
+    }"
+                x-init="fetchUsers()"
+                class="w-1/3 bg-gray-100 p-3 rounded-md border-r">
 
                 <div class="relative mb-2">
                     <input type="text"

@@ -158,3 +158,4 @@ Route::get('/export/customization/{order_id}', [CustomizationExportController::c
 Route::get('/messages/{userId}', [ChatController::class, 'fetchMessages']);
 Route::post('/messages', [ChatController::class, 'sendMessage']);
 Route::patch('/messages/{id}/seen', [ChatController::class, 'markAsSeen']);
+Route::get('/chat/users', [ChatController::class, 'fetchChatUsers']);
