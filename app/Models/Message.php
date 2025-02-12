@@ -11,7 +11,7 @@ class Message extends Model
     use HasFactory;
 
     public $table = 'messages';
-    protected $fillable = ['id', 'from_id', 'to_id', 'body', 'attachment', 'seen'];
+    protected $fillable = ['from_id', 'to_id', 'body', 'attachment', 'seen'];
 
     public function fromUser(): BelongsTo
     {

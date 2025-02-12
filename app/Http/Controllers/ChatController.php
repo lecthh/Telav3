@@ -7,18 +7,49 @@ use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 class ChatController extends Controller
 {
-    public function fetchMessages($userId)
+    public function fetchMessages($user_id)
     {
-        $messages = Message::where(function ($query) use ($userId) {
-            $query->where('from_id', Auth::id())->where('to_id', $userId);
-        })->orWhere(function ($query) use ($userId) {
-            $query->where('from_id', $userId)->where('to_id', Auth::id());
-        })->orderBy('created_at', 'asc')->get();
+        $userId = Auth::id();
+
+        $messages = Message::where(function ($query) use ($userId, $user_id) {
+            $query->where('from_id', $userId)->where('to_id', $user_id);
+        })
+            ->orWhere(function ($query) use ($userId, $user_id) {
+                $query->where('from_id', $user_id)->where('to_id', $userId);
+            })
+            ->orderBy('created_at', 'asc')
+            ->get();
 
         return response()->json($messages);
+    }
+
+    public function sendMessage(Request $request)
+    {
+        $request->validate([
+            'to_id' => 'required|exists:users,user_id',
+            'body' => 'required|string',
+        ]);
+
+        $message = Message::create([
+            'from_id' => Auth::id(),
+            'to_id' => $request->to_id,
+            'body' => $request->body,
+            'seen' => false
+        ]);
+
+        // Log after message creation.
+        Log::info('sendMessage: Message created', ['message' => $message]);
+
+        broadcast(new MessageSent($message))->toOthers();
+
+        // Log that the event was broadcasted.
+        Log::info('sendMessage: MessageSent event broadcasted', ['message' => $message]);
+
+        return response()->json($message);
     }
 
     public function fetchChatUsers()
@@ -47,7 +78,7 @@ class ChatController extends Controller
             $formattedUsers = $users->map(function ($user) use ($userId) {
                 $lastMessage = $user->messagesReceived->first() ?? $user->messagesSent->first();
                 return [
-                    'id' => $user->id,
+                    'id' => $user->user_id,
                     'name' => $user->name,
                     'avatar' => $user->avatar ?? 'https://i.pravatar.cc/40?u=' . $user->id,
                     'lastMessage' => $lastMessage ? $lastMessage->body : 'No messages yet',
@@ -59,32 +90,6 @@ class ChatController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
-    }
-
-    public function sendMessage(Request $request)
-    {
-        $request->validate([
-            'to_id' => 'required|exists:users,user_id',
-            'body' => 'required|string',
-            'attachment' => 'nullable|file|max:2048'
-        ]);
-
-        $attachmentPath = null;
-        if ($request->hasFile('attachment')) {
-            $attachmentPath = $request->file('attachment')->store('attachments', 'public');
-        }
-
-        $message = Message::create([
-            'from_id' => Auth::id(),
-            'to_id' => $request->to_id,
-            'body' => $request->body,
-            'attachment' => $attachmentPath,
-            'seen' => false
-        ]);
-
-        broadcast(new MessageSent($message->load('fromUser', 'toUser')))->toOthers();
-
-        return response()->json(['message' => $message], 201);
     }
 
     public function markAsSeen($id)

@@ -2,30 +2,34 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
-
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Queue\SerializesModels;
 use App\Models\Message;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Support\Facades\Log;
 
 class MessageSent implements ShouldBroadcast
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use InteractsWithSockets, SerializesModels;
 
     public $message;
 
     public function __construct(Message $message)
     {
-        $this->message = $message;
+        // Optionally load relationships, e.g., fromUser
+        $this->message = $message->load('fromUser');
+        Log::info('MessageSent: Event constructed', ['message' => $this->message]);
     }
 
     public function broadcastOn()
     {
-        return new Channel('chat.' . $this->message->to_id);
+        // Create an array of the two user IDs and sort them for a consistent channel name.
+        $ids = [$this->message->from_id, $this->message->to_id];
+        sort($ids);
+        $channelName = 'chat.' . $ids[0] . '.' . $ids[1];
+        Log::info('MessageSent: Broadcasting on channel', ['channel' => $channelName]);
+        return new PrivateChannel($channelName);
     }
 
     public function broadcastAs()

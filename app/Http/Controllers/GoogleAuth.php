@@ -37,6 +37,7 @@ class GoogleAuth extends Controller
                 'email' => $googleUser->email,
                 'password' => bcrypt('random_password'),
                 'email_verified_at' => now(),
+                'avatar' => $googleUser->avatar ?? null,
             ]);
         }
         Auth::login($user);

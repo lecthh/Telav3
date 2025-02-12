@@ -31,6 +31,11 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+
+require base_path('routes/channels.php');
 
 Route::get('/', function () {
     return view('welcome');
@@ -155,7 +160,23 @@ Route::get('/export/customization/{order_id}', [CustomizationExportController::c
 
 // chat Routes
 
-Route::get('/messages/{userId}', [ChatController::class, 'fetchMessages']);
-Route::post('/messages', [ChatController::class, 'sendMessage']);
 Route::patch('/messages/{id}/seen', [ChatController::class, 'markAsSeen']);
 Route::get('/chat/users', [ChatController::class, 'fetchChatUsers']);
+Route::get('/chat/messages/{user_id}', [ChatController::class, 'fetchMessages']);
+Route::post('/chat/send/message', [ChatController::class, 'sendMessage']);
+
+
+
+Route::middleware(['auth'])->post('/broadcasting/auth', function (Request $request) {
+    Log::info('Broadcasting auth request', [
+        'user' => Auth::user(),
+        'request_payload' => $request->all(),
+        'headers' => $request->headers->all(),
+    ]);
+    return Broadcast::auth($request);
+});
+
+
+Route::get('/user', function () {
+    return response()->json(Auth::user());
+});
