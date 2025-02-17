@@ -47,7 +47,7 @@
                     </div>
 
                     <!-- Right Side: Chat Area -->
-                    <div class="w-2/3 flex flex-col h-full">
+                    <div class="w-2/3 flex flex-col">
                         <!-- Messages Container -->
                         <div class="flex-1 max-h-[50vh] overflow-y-auto p-2 space-y-2 w-full"
                             x-ref="chatContainer"
@@ -66,7 +66,7 @@
                         <!-- Chat Input -->
                         <form @submit.prevent="sendMessage()">
                             @csrf
-                            <div class="p-2 border-t flex">
+                            <div class="p-2 absolute border-t w-2/3 flex">
                                 <input type="text" x-model="newMessage" placeholder="Type a message..."
                                     class="w-full border rounded-l-md px-3 py-1 focus:outline-none">
                                 <button type="submit"
@@ -87,137 +87,141 @@
             </template>
         </div>
     </div>
+</div>
 
-    <script>
-        document.addEventListener("alpine:init", () => {
-            Alpine.data("chatSystem", () => ({
-                open: false,
-                searchQuery: "",
-                users: [],
-                messages: [],
-                currentChatUser: null,
-                newMessage: "",
-                // Set currentUserId from Laravel; if not authenticated, this will be falsy.
-                currentUserId: "{{ auth()->id() }}",
-                channelSubscription: null,
 
-                // Initialize the component.
-                init() {
-                    if (this.currentUserId) {
-                        this.fetchUsers();
-                    }
-                },
 
-                async fetchUsers() {
-                    try {
-                        const response = await fetch("/chat/users");
-                        this.users = await response.json();
-                    } catch (error) {
-                        console.error("Error fetching users:", error);
-                    }
-                },
 
-                async startChat(user) {
-                    this.currentChatUser = user;
-                    console.log("Current Chat User:", this.currentChatUser);
-                    try {
-                        const response = await fetch(`/chat/messages/${user.id}`);
-                        this.messages = await response.json();
-                        this.markMessagesAsSeen();
-                    } catch (error) {
-                        console.error("Error fetching messages:", error);
-                    }
-                    this.$nextTick(() => {
-                        let chatContainer = this.$refs.chatContainer;
-                        if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
-                    });
+<script>
+    document.addEventListener("alpine:init", () => {
+        Alpine.data("chatSystem", () => ({
+            open: false,
+            searchQuery: "",
+            users: [],
+            messages: [],
+            currentChatUser: null,
+            newMessage: "",
+            // Set currentUserId from Laravel; if not authenticated, this will be falsy.
+            currentUserId: "{{ auth()->id() }}",
+            channelSubscription: null,
 
-                    const sortedIds = [String(this.currentUserId), String(this.currentChatUser.id)].sort();
-                    const channelName = `chat.${sortedIds[0]}.${sortedIds[1]}`;
-                    console.log("Subscribing to channel:", channelName);
+            // Initialize the component.
+            init() {
+                if (this.currentUserId) {
+                    this.fetchUsers();
+                }
+            },
 
-                    // Unsubscribe any existing subscription before subscribing again.
-                    if (this.channelSubscription) {
-                        this.channelSubscription.stopListening('.message.sent');
-                    }
+            async fetchUsers() {
+                try {
+                    const response = await fetch("/chat/users");
+                    this.users = await response.json();
+                } catch (error) {
+                    console.error("Error fetching users:", error);
+                }
+            },
 
-                    this.channelSubscription = window.Echo.private(channelName)
-                        .listen(".message.sent", (event) => {
-                            console.log("New message received:", event.message);
-                            if (!this.messages.some(m => m.id === event.message.id)) {
-                                this.messages.push(event.message);
-                                if (event.message.to_id == this.currentUserId && !event.message.seen) {
-                                    this.markMessageAsSeen(event.message);
-                                }
+            async startChat(user) {
+                this.currentChatUser = user;
+                console.log("Current Chat User:", this.currentChatUser);
+                try {
+                    const response = await fetch(`/chat/messages/${user.id}`);
+                    this.messages = await response.json();
+                    this.markMessagesAsSeen();
+                } catch (error) {
+                    console.error("Error fetching messages:", error);
+                }
+                this.$nextTick(() => {
+                    let chatContainer = this.$refs.chatContainer;
+                    if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
+                });
+
+                const sortedIds = [String(this.currentUserId), String(this.currentChatUser.id)].sort();
+                const channelName = `chat.${sortedIds[0]}.${sortedIds[1]}`;
+                console.log("Subscribing to channel:", channelName);
+
+                // Unsubscribe any existing subscription before subscribing again.
+                if (this.channelSubscription) {
+                    this.channelSubscription.stopListening('.message.sent');
+                }
+
+                this.channelSubscription = window.Echo.private(channelName)
+                    .listen(".message.sent", (event) => {
+                        console.log("New message received:", event.message);
+                        if (!this.messages.some(m => m.id === event.message.id)) {
+                            this.messages.push(event.message);
+                            if (event.message.to_id == this.currentUserId && !event.message.seen) {
+                                this.markMessageAsSeen(event.message);
                             }
-                            this.$nextTick(() => {
-                                let chatContainer = this.$refs.chatContainer;
-                                if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
-                            });
-                        });
-                },
-                markMessagesAsSeen() {
-                    this.messages.forEach(message => {
-                        if (message.to_id == this.currentUserId && !message.seen) {
-                            this.markMessageAsSeen(message);
                         }
-                    });
-                },
-                markMessageAsSeen(message) {
-                    fetch(`/chat/mark-as-seen/${message.id}`, {
-                            method: 'PATCH',
-                            headers: {
-                                "Content-Type": "application/json",
-                                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log("Message marked as seen:", message.id);
-                            message.seen = true;
-                        })
-                        .catch(error => console.error("Error marking message as seen", error));
-                },
-
-                async sendMessage() {
-                    if (this.newMessage.trim() === "") return;
-                    try {
-                        const response = await fetch("/chat/send/message", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
-                            },
-                            body: JSON.stringify({
-                                to_id: this.currentChatUser.id,
-                                body: this.newMessage
-                            }),
-                        });
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! Status: ${response.status}`);
-                        }
-                        const message = await response.json();
-                        this.messages.push(message);
-                        this.newMessage = "";
                         this.$nextTick(() => {
                             let chatContainer = this.$refs.chatContainer;
-                            if (chatContainer) {
-                                chatContainer.scrollTop = chatContainer.scrollHeight;
-                            } else {
-                                console.error("Chat container not found.");
-                            }
+                            if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
                         });
-                    } catch (error) {
-                        console.error("Error sending message:", error);
+                    });
+            },
+            markMessagesAsSeen() {
+                this.messages.forEach(message => {
+                    if (message.to_id == this.currentUserId && !message.seen) {
+                        this.markMessageAsSeen(message);
                     }
-                },
+                });
+            },
+            markMessageAsSeen(message) {
+                fetch(`/chat/mark-as-seen/${message.id}`, {
+                        method: 'PATCH',
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("Message marked as seen:", message.id);
+                        message.seen = true;
+                    })
+                    .catch(error => console.error("Error marking message as seen", error));
+            },
 
-                get filteredUsers() {
-                    return this.searchQuery ?
-                        this.users.filter(user =>
-                            user.name.toLowerCase().includes(this.searchQuery.toLowerCase())) :
-                        this.users;
+            async sendMessage() {
+                if (this.newMessage.trim() === "") return;
+                try {
+                    const response = await fetch("/chat/send/message", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+                        },
+                        body: JSON.stringify({
+                            to_id: this.currentChatUser.id,
+                            body: this.newMessage
+                        }),
+                    });
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    const message = await response.json();
+                    this.messages.push(message);
+                    this.newMessage = "";
+                    this.$nextTick(() => {
+                        let chatContainer = this.$refs.chatContainer;
+                        if (chatContainer) {
+                            chatContainer.scrollTop = chatContainer.scrollHeight;
+                        } else {
+                            console.error("Chat container not found.");
+                        }
+                    });
+                } catch (error) {
+                    console.error("Error sending message:", error);
                 }
-            }));
-        });
-    </script>
+            },
+
+            get filteredUsers() {
+                return this.searchQuery ?
+                    this.users.filter(user =>
+                        user.name.toLowerCase().includes(this.searchQuery.toLowerCase())) :
+                    this.users;
+            }
+        }));
+    });
+</script>
