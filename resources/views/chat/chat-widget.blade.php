@@ -1,4 +1,4 @@
-<div x-data="chatSystem()" x-init="init()" wire:ignore class="fixed bottom-4 right-4 z-50">
+<div x-data="chatSystem()" x-init="init()" x-cloak wire:ignore class="fixed bottom-4 right-4 z-50">
     <!-- Floating Chat Button -->
     <button
         @click="open = true"
