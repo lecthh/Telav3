@@ -1,7 +1,6 @@
 <!doctype html>
 <html>
 @include('layout.nav')
-@include('head')
 
 <body>
     <div class="relative flex gap-x-20 p-[200px] bg-white/10 items-center justify-between animate-fade-in">
@@ -29,9 +28,8 @@
             </div>
         </div>
     </div>
-    @vite(['resources/js/app.js'])
+
 </body>
 @include('layout.footer')
-@include('chat.chat-widget')
 
 </html>

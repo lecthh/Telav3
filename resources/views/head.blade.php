@@ -15,4 +15,5 @@
             PUSHER_APP_CLUSTER: "{{ env('VITE_PUSHER_APP_CLUSTER') }}"
         };
     </script>
+    @livewireStyles
 </head>
