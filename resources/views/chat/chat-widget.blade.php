@@ -1,37 +1,37 @@
-<div x-data="chatSystem()" x-init="init()" x-cloak wire:ignore class="fixed bottom-4 right-4 z-50">
+<div x-data x-init="$store.chatSystem.init()" x-cloak wire:ignore class="fixed bottom-4 right-4 z-50">
     <!-- Floating Chat Button -->
     <button
-        @click="open = true"
-        x-show="!open"
+        @click="$store.chatSystem.open = true"
+        x-show="!$store.chatSystem.open"
         x-transition
         class="bg-blue-500 text-white p-5 text-2xl rounded-full shadow-lg hover:bg-blue-600 transition">
         💬
     </button>
 
     <!-- Chat Box -->
-    <div x-show="open" x-transition
+    <div x-show="$store.chatSystem.open" x-transition
         class="absolute bottom-0 right-0 w-[40vw] h-[60vh] bg-white rounded-md shadow-lg border border-gray-300 flex flex-col">
         <div class="flex justify-between rounded-tl-md rounded-tr-md items-center border-b p-3 bg-gray-100">
             <h2 class="text-lg font-semibold">Chat</h2>
-            <button @click="open = false" class="text-gray-500 hover:text-gray-700 text-lg">✖</button>
+            <button @click="$store.chatSystem.open = false" class="text-gray-500 hover:text-gray-700 text-lg">✖</button>
         </div>
 
         <!-- Chat Content -->
         <div class="flex flex-1">
             <!-- If authenticated, show full chat UI -->
-            <template x-if="currentUserId">
+            <template x-if="$store.chatSystem.currentUserId">
                 <div class="flex w-full">
                     <!-- Left Sidebar: Users -->
                     <div class="w-1/3 bg-gray-100 p-3 rounded-md border-r">
                         <div class="relative mb-2">
                             <input type="text"
-                                x-model="searchQuery"
+                                x-model="$store.chatSystem.searchQuery"
                                 placeholder="Search for users..."
                                 class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
                         </div>
                         <ul class="space-y-2 text-sm overflow-y-auto">
-                            <template x-for="(user, index) in filteredUsers" :key="user.id || index">
-                                <li @click="startChat(user)"
+                            <template x-for="(user, index) in $store.chatSystem.filteredUsers" :key="user.id || index">
+                                <li @click="$store.chatSystem.startChat(user)"
                                     class="p-2 bg-white rounded-md hover:bg-gray-200 cursor-pointer flex items-center space-x-2">
                                     <img :src="user.avatar" class="w-8 h-8 rounded-full" alt="User Avatar">
                                     <div class="flex-1">
@@ -55,8 +55,8 @@
                                 let chatContainer = $refs.chatContainer; 
                                 if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight; 
                             })">
-                            <template x-for="(message, index) in messages" :key="message.id + '-' + index">
-                                <div :class="message.from_id == currentUserId ? 'bg-blue-500 text-white ml-auto' : 'bg-gray-100'"
+                            <template x-for="(message, index) in $store.chatSystem.messages" :key="message.id + '-' + index">
+                                <div :class="message.from_id == $store.chatSystem.currentUserId ? 'bg-blue-500 text-white ml-auto' : 'bg-gray-100'"
                                     class="p-2 rounded-md text-sm max-w-[60%] w-fit">
                                     <span x-text="message.body"></span>
                                 </div>
@@ -64,10 +64,10 @@
                         </div>
 
                         <!-- Chat Input -->
-                        <form @submit.prevent="sendMessage()">
+                        <form @submit.prevent="$store.chatSystem.sendMessage()">
                             @csrf
                             <div class="p-2 absolute border-t w-2/3 flex">
-                                <input type="text" x-model="newMessage" placeholder="Type a message..."
+                                <input type="text" x-model="$store.chatSystem.newMessage" placeholder="Type a message..."
                                     class="w-full border rounded-l-md px-3 py-1 focus:outline-none">
                                 <button type="submit"
                                     class="bg-blue-500 text-white px-4 py-1 rounded-r-md hover:bg-blue-600 text-lg">
@@ -80,7 +80,7 @@
             </template>
 
             <!-- If not authenticated, show a sign-in prompt inside the chat box -->
-            <template x-if="!currentUserId">
+            <template x-if="!$store.chatSystem.currentUserId">
                 <div class="flex items-center justify-center flex-1">
                     <p class="text-center">Sign in / Sign up to start chatting</p>
                 </div>
@@ -92,20 +92,19 @@
 
 
 
+
 <script>
     document.addEventListener("alpine:init", () => {
-        Alpine.data("chatSystem", () => ({
+        Alpine.store("chatSystem", {
             open: false,
             searchQuery: "",
             users: [],
             messages: [],
             currentChatUser: null,
             newMessage: "",
-            // Set currentUserId from Laravel; if not authenticated, this will be falsy.
             currentUserId: "{{ auth()->id() }}",
             channelSubscription: null,
 
-            // Initialize the component.
             init() {
                 if (this.currentUserId) {
                     this.fetchUsers();
@@ -131,16 +130,19 @@
                 } catch (error) {
                     console.error("Error fetching messages:", error);
                 }
-                this.$nextTick(() => {
-                    let chatContainer = this.$refs.chatContainer;
-                    if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
-                });
+
+                // Scroll to bottom after messages load
+                setTimeout(() => {
+                    let chatContainer = document.querySelector('[x-ref="chatContainer"]');
+                    if (chatContainer) {
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                    }
+                }, 0);
 
                 const sortedIds = [String(this.currentUserId), String(this.currentChatUser.id)].sort();
                 const channelName = `chat.${sortedIds[0]}.${sortedIds[1]}`;
                 console.log("Subscribing to channel:", channelName);
 
-                // Unsubscribe any existing subscription before subscribing again.
                 if (this.channelSubscription) {
                     this.channelSubscription.stopListening('.message.sent');
                 }
@@ -154,12 +156,17 @@
                                 this.markMessageAsSeen(event.message);
                             }
                         }
-                        this.$nextTick(() => {
-                            let chatContainer = this.$refs.chatContainer;
-                            if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
-                        });
+
+                        // Scroll to bottom after a new message is received
+                        setTimeout(() => {
+                            let chatContainer = document.querySelector('[x-ref="chatContainer"]');
+                            if (chatContainer) {
+                                chatContainer.scrollTop = chatContainer.scrollHeight;
+                            }
+                        }, 0);
                     });
             },
+
             markMessagesAsSeen() {
                 this.messages.forEach(message => {
                     if (message.to_id == this.currentUserId && !message.seen) {
@@ -167,6 +174,7 @@
                     }
                 });
             },
+
             markMessageAsSeen(message) {
                 fetch(`/chat/mark-as-seen/${message.id}`, {
                         method: 'PATCH',
@@ -203,14 +211,16 @@
                     const message = await response.json();
                     this.messages.push(message);
                     this.newMessage = "";
-                    this.$nextTick(() => {
-                        let chatContainer = this.$refs.chatContainer;
+
+                    // Scroll to bottom after sending a message
+                    setTimeout(() => {
+                        let chatContainer = document.querySelector('[x-ref="chatContainer"]');
                         if (chatContainer) {
                             chatContainer.scrollTop = chatContainer.scrollHeight;
                         } else {
                             console.error("Chat container not found.");
                         }
-                    });
+                    }, 0);
                 } catch (error) {
                     console.error("Error sending message:", error);
                 }
@@ -222,6 +232,6 @@
                         user.name.toLowerCase().includes(this.searchQuery.toLowerCase())) :
                     this.users;
             }
-        }));
+        });
     });
 </script>

@@ -44,7 +44,14 @@
                                             <div class="flex gap-x-2 px-3 py-3 rounded-lg bg-cPrimary bg-opacity-20 items-center justify-center w-[45px] h-[50px]">@include('svgs.user-single')</div>
                                             <div class="flex flex-col gap-y-2">
                                                 <h4 class="font-inter font-bold text-base">Customer Name</h4>
-                                                <h4 class="font-inter text-base">{{$order->user->name}}</h4>
+                                                <h4 class="font-inter text-base justify-between">{{$order->user->name}}
+                                                    <x-popover>
+                                                        <x-slot name="trigger">
+                                                            <x-start-chat :user="$order->user" />
+                                                        </x-slot>
+                                                        Start chatting with {{$order->user->name}}
+                                                    </x-popover>
+                                                </h4>
                                             </div>
                                         </div>
                                     </div>
