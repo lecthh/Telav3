@@ -17,7 +17,7 @@
             <!-- Header -->
             <div class="flex justify-between items-center p-3 bg-gray-100 border-b">
                 <h2 class="text-lg font-semibold">Chat</h2>
-                <button @click="$store.chatSystem.open = false" class="text-gray-500 hover:text-gray-700 text-lg">
+                <button @click="$store.chatSystem.closeChat()" class="text-gray-500 hover:text-gray-700 text-lg">
                     ✖
                 </button>
             </div>
@@ -311,6 +311,16 @@
             },
             get totalUnreadCount() {
                 return this.users.reduce((acc, user) => acc + (user.unreadCount || 0), 0);
+            },
+
+            closeChat() {
+                this.open = false;
+                if (this.channelSubscription) {
+                    this.channelSubscription.stopListening('.message.sent');
+                    this.channelSubscription = null;
+                }
+                this.currentChatUser = null;
+                this.messages = [];
             }
         });
     });
