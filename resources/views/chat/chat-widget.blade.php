@@ -33,10 +33,14 @@
                     <ul class="space-y-2 text-sm overflow-y-auto h-full">
                         <template x-for="(user, index) in $store.chatSystem.filteredUsers" :key="user.id || index">
                             <li @click="$store.chatSystem.startChat(user)"
-                                class="p-2 bg-white rounded-md hover:bg-gray-200 cursor-pointer flex items-center space-x-2">
+                                :class="{
+                'bg-blue-200': user.id == $store.chatSystem.currentChatUser?.id,
+                'bg-white': user.id != $store.chatSystem.currentChatUser?.id
+            }"
+                                class="p-2 rounded-md hover:bg-gray-200 cursor-pointer flex items-center space-x-2">
                                 <img :src="user.avatar" class="w-8 h-8 rounded-full" alt="User Avatar">
                                 <div class="flex-1">
-                                    <div class="flex justify-between items-center">
+                                    <div class="flex justify-between">
                                         <span class="font-semibold" x-text="user.name"></span>
                                         <span class="text-xs text-gray-500" x-text="user.lastMessageDate"></span>
                                     </div>
@@ -50,34 +54,41 @@
                             </li>
                         </template>
                     </ul>
+
                 </div>
 
                 <div class="flex flex-col w-full md:w-2/3">
-                    <div class="flex-1 overflow-y-auto p-2 space-y-2" x-ref="chatContainer"
+                    <div class="flex-1 overflow-y-auto p-2 space-y-2 w-full"
+                        x-ref="chatContainer"
                         x-init="$nextTick(() => { if ($refs.chatContainer) $refs.chatContainer.scrollTop = $refs.chatContainer.scrollHeight; })">
-                        <template x-for="(message, index) in $store.chatSystem.messages" :key="message.id + '-' + index">
-                            <div :class="message.from_id == $store.chatSystem.currentUserId ? 'flex justify-end' : 'flex justify-start'">
-                                <div :class="message.from_id == $store.chatSystem.currentUserId ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-800'"
-                                    class="p-2 rounded-md text-sm max-w-[70%] break-words">
-                                    <span x-text="message.body"></span>
-                                    <template x-if="message.attachment">
-                                        <div class="mt-2">
-                                            <template x-if="/\.(jpe?g|png|gif)$/i.test(message.attachment)">
-                                                <img :src="`/storage/${message.attachment}`"
-                                                    class="max-w-full h-auto rounded border"
-                                                    alt="Attachment" />
-                                            </template>
-                                            <template x-if="!/\.(jpe?g|png|gif)$/i.test(message.attachment)">
-                                                <a :href="`/storage/${message.attachment}`"
-                                                    target="_blank"
-                                                    class="text-blue-600 underline">View Attachment</a>
-                                            </template>
-                                        </div>
-                                    </template>
-                                </div>
+                        <template x-if="$store.chatSystem.loadingMessages">
+                            <div class="flex items-center justify-center h-full">
+                                <x-spinner class="h-8 w-8 text-blue-500 mx-auto my-4" />
                             </div>
                         </template>
+                        <template x-if="!$store.chatSystem.loadingMessages">
+                            <template x-for="(message, index) in $store.chatSystem.messages" :key="message.id + '-' + index">
+                                <div :class="message.from_id == $store.chatSystem.currentUserId ? 'flex justify-end' : 'flex justify-start'">
+                                    <div :class="message.from_id == $store.chatSystem.currentUserId ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-800'"
+                                        class="p-2 rounded-md text-sm max-w-[70%] break-words">
+                                        <span x-text="message.body"></span>
+                                        <!-- Attachment handling -->
+                                        <template x-if="message.attachment">
+                                            <div class="mt-2">
+                                                <template x-if="/\.(jpe?g|png|gif)$/i.test(message.attachment)">
+                                                    <img :src="`/storage/${message.attachment}`" class="max-w-full h-auto rounded border" alt="Attachment" />
+                                                </template>
+                                                <template x-if="!/\.(jpe?g|png|gif)$/i.test(message.attachment)">
+                                                    <a :href="`/storage/${message.attachment}`" target="_blank" class="text-blue-600 underline">View Attachment</a>
+                                                </template>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+                        </template>
                     </div>
+
 
                     <div class="p-2 border-t">
                         <form @submit.prevent="$store.chatSystem.sendMessage()" class="flex items-center space-x-2">
@@ -104,7 +115,7 @@
                         </form>
 
                         <template x-if="$store.chatSystem.selectedFile">
-                            <div class="mt-2 flex items-center bg-white border rounded-md p-2 shadow-sm">
+                            <div class="mt-1 flex items-center bg-white border rounded-md p-2 shadow-sm">
                                 <template x-if="$store.chatSystem.filePreviewUrl">
                                     <img :src="$store.chatSystem.filePreviewUrl"
                                         class="w-16 h-16 object-cover rounded"
@@ -142,6 +153,7 @@
             currentUserId: "{{ auth()->id() }}",
             channelSubscription: null,
             selectedFile: null,
+            loadingMessages: false,
 
             init() {
                 if (this.currentUserId) {
@@ -164,6 +176,7 @@
             async startChat(user) {
                 this.currentChatUser = user;
                 console.log("Current Chat User:", this.currentChatUser);
+                this.loadingMessages = true; // Start loading indicator
                 try {
                     const response = await fetch(`/chat/messages/${user.id}`);
                     this.messages = await response.json();
@@ -171,6 +184,8 @@
                     this.fetchUsers();
                 } catch (error) {
                     console.error("Error fetching messages:", error);
+                } finally {
+                    this.loadingMessages = false; // Stop loading indicator
                 }
 
                 setTimeout(() => {
@@ -192,7 +207,6 @@
                     .listen(".message.sent", (event) => {
                         console.log("New message received:", event.message);
                         if (!this.messages.some(m => m.id === event.message.id)) {
-
                             this.messages.push(event.message);
                             if (event.message.to_id == this.currentUserId && !event.message.seen) {
                                 this.markMessageAsSeen(event.message);
