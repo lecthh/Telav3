@@ -5,6 +5,9 @@
         x-show="!$store.chatSystem.open"
         x-transition
         class="fixed bottom-4 right-4 z-50 bg-blue-500 text-white p-5 text-2xl rounded-full shadow-lg hover:bg-blue-600 transition">
+        <template x-if="$store.chatSystem.totalUnreadCount > 0">
+            <span class="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full" x-text="$store.chatSystem.totalUnreadCount"></span>
+        </template>
         💬
     </button>
 
@@ -145,16 +148,14 @@
                     this.fetchUsers();
                     setInterval(() => {
                         this.fetchUsers();
-                    }, 30000);
+                    }, 5000);
                 }
             },
-
 
             async fetchUsers() {
                 try {
                     const response = await fetch("/chat/users");
                     this.users = await response.json();
-                    console.log(this.users);
                 } catch (error) {
                     console.error("Error fetching users:", error);
                 }
@@ -167,6 +168,7 @@
                     const response = await fetch(`/chat/messages/${user.id}`);
                     this.messages = await response.json();
                     this.markMessagesAsSeen();
+                    this.fetchUsers();
                 } catch (error) {
                     console.error("Error fetching messages:", error);
                 }
@@ -292,6 +294,9 @@
                     this.users.filter(user =>
                         user.name.toLowerCase().includes(this.searchQuery.toLowerCase())) :
                     this.users;
+            },
+            get totalUnreadCount() {
+                return this.users.reduce((acc, user) => acc + (user.unreadCount || 0), 0);
             }
         });
     });
