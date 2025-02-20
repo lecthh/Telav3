@@ -32,12 +32,20 @@ class ChatController extends Controller
         $request->validate([
             'to_id' => 'required|exists:users,user_id',
             'body' => 'nullable|string',
-            'attachment' => 'nullable|file|max:5120|mimes:jpg,jpeg,png,gif,pdf,doc,docx',
+            'attachment' => 'nullable|array',
+            'attachment.*' => 'file|max:5120|mimes:jpg,jpeg,png,gif,pdf,doc,docx',
         ]);
 
-        $attachmentPath = null;
+        $attachmentPaths = [];
         if ($request->hasFile('attachment')) {
-            $attachmentPath = $request->file('attachment')->store('attachments', 'public');
+            foreach ($request->file('attachment') as $file) {
+                // Preserve the original file name.
+                $originalName = $file->getClientOriginalName();
+                // Optionally, prepend a unique prefix to avoid name collisions:
+                // $originalName = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('attachments', $originalName, 'public');
+                $attachmentPaths[] = $path;
+            }
         }
 
         $message = Message::create([
@@ -45,19 +53,15 @@ class ChatController extends Controller
             'to_id' => $request->to_id,
             'body' => $request->body,
             'seen' => false,
-            'attachment' => $attachmentPath,
+            'attachments' => $attachmentPaths,
         ]);
-
-        // Log after message creation.
-        Log::info('sendMessage: Message created', ['message' => $message]);
 
         broadcast(new MessageSent($message))->toOthers();
 
-        // Log that the event was broadcasted.
-        Log::info('sendMessage: MessageSent event broadcasted', ['message' => $message]);
-
         return response()->json($message);
     }
+
+
 
     public function fetchChatUsers()
     {
