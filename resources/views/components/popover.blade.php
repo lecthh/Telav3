@@ -1,4 +1,4 @@
-<div x-data="{ show: false }" class="relative inline-block" @mouseenter="show = true" @mouseleave="show = false">
+<div x-data="{ show: false }" class="relative inline-block" @mouseenter="show = true" @mouseleave="show = false" x-cloak wire:ignore>
     <!-- Trigger Slot -->
     <div>
         {{ $trigger }}

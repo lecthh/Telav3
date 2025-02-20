@@ -22,7 +22,18 @@
                     <div class="flex flex-col gap-y-10">
                         <h1 class="font-gilroy font-bold text-2xl">Orders</h1>
                         @include('partner.printer.order-nav')
-                        <h1 class="font-gilroy font-bold text-xl text-black">Pending Request - Order No.{{$order->order_id}}</h1>
+                        <div class="flex items-center space-x-2">
+                            <h1 class="font-gilroy font-bold text-xl text-black">
+                                Pending Request - Order No. {{$order->order_id}}
+                            </h1>
+                            <x-popover>
+                                <x-slot name="trigger">
+                                    <x-start-chat :user="$order->user" />
+                                </x-slot>
+                                Start chatting with {{$order->user->name}}
+                            </x-popover>
+                        </div>
+
                         <div class="flex gap-x-10">
                             <div class="flex flex-col">
                                 <div class="flex">
@@ -45,12 +56,6 @@
                                             <div class="flex flex-col gap-y-2">
                                                 <h4 class="font-inter font-bold text-base">Customer Name</h4>
                                                 <h4 class="font-inter text-base justify-between">{{$order->user->name}}
-                                                    <x-popover>
-                                                        <x-slot name="trigger">
-                                                            <x-start-chat :user="$order->user" />
-                                                        </x-slot>
-                                                        Start chatting with {{$order->user->name}}
-                                                    </x-popover>
                                                 </h4>
                                             </div>
                                         </div>
