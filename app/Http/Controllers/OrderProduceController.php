@@ -12,7 +12,7 @@ class OrderProduceController extends Controller {
     //PENDING
     public function pending()
     {
-        $pendingOrders = Order::where('status_id', '1')->get();
+        $pendingOrders = Order::where('status_id', '1')->orderBy('created_at', 'desc')->get();
         return view('partner.printer.orders', compact('pendingOrders'));
     }
 

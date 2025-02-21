@@ -52,13 +52,11 @@ class OrderController extends Controller
         $apparel = $request->input('apparel');
         $productionType = $request->input('productionType');
 
-        $apparelImgGuideURL = $this->getApparelGuideURL($apparel);
 
         return redirect()->route('customization', [
             'apparel' => $apparel, 
             'productionType' => $productionType, 
             'productionCompany' => $productionCompany,
-            'apparelImgGuideURL' => $apparelImgGuideURL,
         ]);
     }
 
@@ -67,8 +65,7 @@ class OrderController extends Controller
     public function customization($apparel, $productionType, $company)
     {
         $currentStep = 4;
-        $apparelImgGuideURL = $this->getApparelGuideURL($apparel);
-        return view('customer.place-order.customization', compact('apparel', 'productionType', 'company', 'currentStep', 'apparelImgGuideURL'));
+        return view('customer.place-order.customization', compact('apparel', 'productionType', 'company', 'currentStep'));
     }
 
     public function storeCustomization(Request $request, $apparel, $productionType, $company)
@@ -155,12 +152,5 @@ class OrderController extends Controller
         }
 
         return redirect()->route('customer.cart');
-    }
-
-    private function getApparelGuideURL($apparel) {
-        $apparelGuides = [
-            'jersey' => '/img/apparelGuides/jerseyGuide.avif'
-        ];
-        return $apparelGuides[$apparel] ?? null;
     }
 }

@@ -106,4 +106,11 @@
     @include('layout.footer')
 </body>
 <script src="https://cdn.jsdelivr.net/npm/fabric@latest/dist/index.min.js"></script>
+<script>
+    window.apparelType = '{{ $apparel }}';
+    window.guideImageURL = '';
+    if (parseInt(window.apparelType) === 1) {
+        window.guideImageURL = '{{ asset("imgs/apparelGuides/jersey.jpg") }}';
+    }
+</script>
 </html>

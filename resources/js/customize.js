@@ -36,6 +36,27 @@ canvasElement.height = 500;
 
 const canvas = new fabric.Canvas('fabricCanvas');
 
+console.log(apparelType)
+console.log("guideImageURL before if check:", guideImageURL);
+console.log(fabric.Image.fromURL('/imgs/apparelGuides/jersey.jpg'))
+fabric.Image.fromURL('/imgs/apparelGuides/jersey.jpg', 
+    function(imgGuide) {
+        console.log("Local image loaded successfully:", imgGuide);
+        imgGuide.set({
+            left: 0,
+            top: 0,
+            scaleX: 1,
+            scaleY: 1
+        });
+        canvas.add(imgGuide);
+        canvas.centerObject(imgGuide);
+        canvas.renderAll();
+    }, 
+    function(error) {
+        console.error("Error loading local image:", error);
+    }
+);
+
 // TEXT FUNCTIONS
 function addTextToCanvas() {
     const text = new fabric.IText('Your Text Here', {
