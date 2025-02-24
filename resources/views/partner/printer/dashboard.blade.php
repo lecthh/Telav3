@@ -49,6 +49,7 @@
     </div>
 
     @include('layout.footer')
+    @include('chat.chat-widget')
 </body>
 
 </html>

@@ -1,3 +1,5 @@
+@include('head')
+
 <footer class="flex gap-x-[10px] px-[100px] py-6 bg-cNot-black text-white justify-start">
     <div class="flex flex-col gap-y-[10px] text-sm">
         <h1 class="font-inter font-bold">Site Links</h1>
@@ -12,3 +14,7 @@
         </ul>
     </div>
 </footer>
+
+@livewireScripts
+@vite(['resources/js/app.js'])
+@include('chat.chat-widget')
