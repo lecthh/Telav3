@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Order;
 use Illuminate\Support\Facades\View;
+use App\Models\ProductionCompany;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -22,18 +23,18 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         View::composer('partner.printer.*', function ($view) {
-            $productionCompany = session('admin');
+            $productionCompany = ProductionCompany::where('user_id', auth()->id())->firstOrFail();
             $view->with('productionCompany', $productionCompany);
         });
 
         View::composer('partner.designer.*', function ($view) {
-            $productionCompany = session('admin');
+            $productionCompany = ProductionCompany::where('user_id', auth()->id())->firstOrFail();
             $view->with('productionCompany', $productionCompany);
         });
 
         View::composer('partner.printer.dashboard', function ($view) {
-            $productionCompany = session('admin');
 
+            $productionCompany = ProductionCompany::where('user_id', auth()->id())->firstOrFail();
             $pendingCount = Order::where('status_id', 1)->count();
             $designInProgressCount = Order::where('status_id', 2)->count();
             $finalizeOrderCount = Order::where('status_id', 3)->count();
