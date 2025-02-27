@@ -45,14 +45,13 @@ class EditProducerAccountController extends Controller
     public function edit()
     {
         $productionCompany = ProductionCompany::where('user_id', auth()->id())->firstOrFail();
-        dd($productionCompany);
         return view('partner.printer.profile.basics', compact('productionCompany'));
     }
 
     public function update(Request $request)
     {
         try {
-            $request->validate([
+            $validatedData = $request->validate([
                 'company_name' => 'required|string|max:255',
                 'email'        => 'required|email|max:255',
                 'phone'        => 'required|numeric',
@@ -61,20 +60,16 @@ class EditProducerAccountController extends Controller
 
             $productionCompany = ProductionCompany::where('user_id', auth()->id())->firstOrFail();
 
-            $productionCompany->update([
-                'company_name' => $request->input('company_name'),
-                'email'        => $request->input('email'),
-                'phone'        => $request->input('phone'),
-                'address'      => $request->input('address'),
-            ]);
+            $productionCompany->update($validatedData);
 
-            $this->toast('Profile Updated Successfully!', 'success');
             session()->forget('_old_input');
+            $this->toast('Profile updated successfully!', 'success');
+
             return redirect()->route('partner.printer.profile.basics');
         } catch (\Exception $e) {
             Log::error('Profile update error: ' . $e->getMessage());
 
-            $this->toast('Error updating profile: ' . $e->getMessage(), 'error');
+            $this->toast('An error occurred while updating the profile.', 'error');
 
             return redirect()->back()->withInput();
         }
@@ -83,7 +78,7 @@ class EditProducerAccountController extends Controller
     public function updatePricing(Request $request)
     {
         try {
-            $request->validate([
+            $validatedData = $request->validate([
                 'base_price.*' => 'required|numeric',
                 'bulk_price.*' => 'required|numeric',
             ]);
@@ -91,8 +86,8 @@ class EditProducerAccountController extends Controller
             foreach ($request->input('selected_records', []) as $recordId) {
                 $pricingRecord = ProductionCompanyPricing::findOrFail($recordId);
                 $pricingRecord->update([
-                    'base_price' => $request->input("base_price.$recordId"),
-                    'bulk_price' => $request->input("bulk_price.$recordId"),
+                    'base_price' => $validatedData["base_price"][$recordId],
+                    'bulk_price' => $validatedData["bulk_price"][$recordId],
                 ]);
             }
 
@@ -101,7 +96,8 @@ class EditProducerAccountController extends Controller
             return redirect()->route('partner.printer.profile.pricing');
         } catch (\Exception $e) {
             Log::error('Pricing update error: ' . $e->getMessage());
-            $this->toast('Error updating pricing: ' . $e->getMessage(), 'error');
+
+            $this->toast('An error occurred while updating pricing.', 'error');
 
             return redirect()->back()->withInput();
         }
