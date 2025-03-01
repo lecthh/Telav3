@@ -32,12 +32,21 @@
                         <div class="flex flex-col gap-y-2">
                             <div id="canvasText" class="flex w-10 h-10 border border-black rounded-md cursor-pointer justify-center items-center text-center">@include('svgs.text')</div>
                             <div id="canvasImg" class="flex w-10 h-10 border border-black rounded-md cursor-pointer justify-center items-center text-center">@include('svgs.img')</div>
-                            <div id="deleteObject" class="flex w-10 h-10 border border-black rounded-md cursor-pointer justify-center items-center text-center">@include('svgs.delete-custom')</div>
+                            <div id="canvasDraw" class="flex w-10 h-10 border border-black rounded-md cursor-pointer justify-center items-center text-center">
+                                <!-- You'll need to create an SVG for drawing or use an existing one -->
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+                                    <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                                    <path d="M2 2l7.586 7.586"></path>
+                                    <circle cx="11" cy="11" r="2"></circle>
+                                </svg>
+                            </div>
                         </div>
-                    
-                        <div>
+
+                        <div id="deleteObject" class="flex w-10 h-10 border border-black rounded-md cursor-pointer justify-center items-center text-center">@include('svgs.delete-custom')</div>
+                        <!-- <div>
                             <div id="shirtToggle" class="flex w-10 h-10 border border-black rounded-md cursor-pointer justify-center items-center text-center">@include('svgs.shirt-2')</div>
-                        </div>
+                        </div> -->
                     </div>
                     <input type="file" id="canvasImgUpload" class="hidden" accept="image/*"/>
                     <canvas id="fabricCanvas" width="1000" height="500" class="border border-black rounded-md"></canvas>

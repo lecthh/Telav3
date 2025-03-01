@@ -1,21 +1,21 @@
 //image upload
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const mediaInput = document.getElementById('media');
     const uploadButton = document.getElementById('uploadButton');
     const previewContainer = document.getElementById('previewContainer');
 
-    uploadButton.addEventListener('click', function() {
+    uploadButton.addEventListener('click', function () {
         mediaInput.click();
     });
 
-    mediaInput.addEventListener('change', function(event) {
+    mediaInput.addEventListener('change', function (event) {
         const files = event.target.files;
         previewContainer.innerHTML = '';
 
         Array.from(files).forEach(file => {
             if (file.type.startsWith('image/')) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     const img = document.createElement('img');
                     img.src = e.target.result;
                     img.classList.add('w-16', 'h-16', 'object-cover', 'rounded-md');
@@ -35,27 +35,6 @@ canvasElement.width = canvasElement.clientWidth;
 canvasElement.height = 500;
 
 const canvas = new fabric.Canvas('fabricCanvas');
-
-console.log(apparelType)
-console.log("guideImageURL before if check:", guideImageURL);
-console.log(fabric.Image.fromURL('/imgs/apparelGuides/jersey.jpg'))
-fabric.Image.fromURL('/imgs/apparelGuides/jersey.jpg', 
-    function(imgGuide) {
-        console.log("Local image loaded successfully:", imgGuide);
-        imgGuide.set({
-            left: 0,
-            top: 0,
-            scaleX: 1,
-            scaleY: 1
-        });
-        canvas.add(imgGuide);
-        canvas.centerObject(imgGuide);
-        canvas.renderAll();
-    }, 
-    function(error) {
-        console.error("Error loading local image:", error);
-    }
-);
 
 // TEXT FUNCTIONS
 function addTextToCanvas() {
@@ -142,7 +121,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-
 // IMAGE FUNCTIONS
 document.getElementById('canvasImg').addEventListener('click', function () {
     document.getElementById('canvasImgUpload').click();
@@ -152,11 +130,11 @@ document.getElementById('canvasImgUpload').addEventListener('change', function (
     const input = e.target;
     const reader = new FileReader();
 
-    reader.onload = function() {
+    reader.onload = function () {
         const imgElement = document.createElement('img');
         imgElement.src = reader.result;
 
-        imgElement.onload = function() {
+        imgElement.onload = function () {
             const imgInstance = new fabric.Image(imgElement, {
                 angle: 0,
                 opacity: 1,
@@ -183,20 +161,33 @@ document.getElementById('canvasImgUpload').addEventListener('change', function (
 
 document.getElementById('canvasImgUpload').value = '';
 
-//TOGGLE SHIRT GUIDE
-fabric.Image.fromURL('/imgs/istockphoto-1304992360-612x612.jpg', function (imgGuide) {
-    imgGuide.set({
-        left: 0,
-        top: 0,
-        scaleX: 1,
-        scaleY: 1
-    });
+// DRAWING FUNCTIONALITY
+let isDrawingMode = false;
 
-    canvas.add(imgGuide);
+document.getElementById('canvasDraw').addEventListener('click', function() {
+    // Toggle drawing mode
+    isDrawingMode = !isDrawingMode;
+    canvas.isDrawingMode = isDrawingMode;
+    
+    // Visual feedback for active state
+    if (isDrawingMode) {
+        document.getElementById('canvasDraw').classList.add('border-cPrimary', 'bg-gray-100');
+        // Set brush options
+        canvas.freeDrawingBrush.width = 3;
+        canvas.freeDrawingBrush.color = '#000000';
+    } else {
+        document.getElementById('canvasDraw').classList.remove('border-cPrimary', 'bg-gray-100');
+    }
+    
     canvas.renderAll();
 });
 
-//EXPORT TO PNG
+// Initialize drawing brush
+canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
+canvas.freeDrawingBrush.width = 3;
+canvas.freeDrawingBrush.color = '#000000';
+
+// EXPORT TO PNG
 function exportCanvasToPNG() {
     const dataURL = canvas.toDataURL({
         format: 'png',
@@ -205,7 +196,7 @@ function exportCanvasToPNG() {
 
     const hiddenInput = document.createElement('input');
     hiddenInput.type = 'hidden';
-    hiddenInput.name = 'canvas_image'
+    hiddenInput.name = 'canvas_image';
     hiddenInput.value = dataURL;
 
     const form = document.querySelector('form');
@@ -214,9 +205,9 @@ function exportCanvasToPNG() {
 
 const continueButton = document.querySelector('button[type="submit"]');
 if (continueButton) {
-    continueButton.addEventListener('click', function(event) {
+    continueButton.addEventListener('click', function (event) {
         event.preventDefault();
         exportCanvasToPNG();
         continueButton.form.submit();
-    })
+    });
 }

@@ -4,7 +4,7 @@
         <ul class="flex gap-x-6">
             <li class=""><a wire:navigate href="{{ route('home') }}">Home</a></li>
             <li class=""><a wire:navigate href="{{ route('customer.place-order.select-apparel') }}">Start Your Custom Order</a></li>
-            <li class=""><a href="">Browse Production Services</a></li>
+            <li class=""><a href="{{ route('production-services') }}">Browse Production Services</a></li>
             <li class=""><a wire:navigate href="{{ route('partner-registration') }}">Become a Partner</a></li>
             @guest
             <li class=""><a href="{{ route('login') }}">Business Hub</a></li>
