@@ -1,17 +1,5 @@
 <html>
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
-        rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/pagedone@1.2.2/src/css/pagedone.css " rel="stylesheet" />
-    @vite('resources/css/app.css')
-</head>
-
 <body class="flex flex-col h-full justify-between">
     <div class="flex flex-col h-full">
         <div class="flex p-1 bg-cPrimary font-gilroy font-bold text-white text-sm justify-center">Production Hub</div>
@@ -21,25 +9,22 @@
                 <div class="flex flex-col gap-y-1">
                     <h2 class="font-gilroy font-bold text-3xl text-black">Account</h2>
                 </div>
-                
-                <!-- Success Message -->
-                @if(session('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
-                    </div>
-                @endif
 
                 <div class="flex flex-col gap-y-6 p-5 bg-white drop-shadow-md rounded-md border">
                     <form action="{{ route('partner.printer.profile.update') }}" method="POST">
                         @csrf
                         <div class="flex flex-col gap-y-10">
                             <ul class="flex gap-x-5">
-                                <a href="{{ route('partner.printer.profile.basics') }}"><li class="font-inter font-bold text-xl py-3 border-b text-cPrimary border-cPrimary hover:text-cPrimary hover:border-cPrimary cursor-pointer">
-                                    Basics
-                                </li></a>
-                                <a href="{{ route('partner.printer.profile.pricing') }}"><li class="font-inter font-bold text-xl py-3 text-black hover:text-cPrimary hover:border-b hover:border-cPrimary cursor-pointer transition ease-in-out">
-                                    Pricing
-                                </li></a>
+                                <a href="{{ route('partner.printer.profile.basics') }}">
+                                    <li class="font-inter font-bold text-xl py-3 border-b text-cPrimary border-cPrimary hover:text-cPrimary hover:border-cPrimary cursor-pointer">
+                                        Basics
+                                    </li>
+                                </a>
+                                <a href="{{ route('partner.printer.profile.pricing') }}">
+                                    <li class="font-inter font-bold text-xl py-3 text-black hover:text-cPrimary hover:border-b hover:border-cPrimary cursor-pointer transition ease-in-out">
+                                        Pricing
+                                    </li>
+                                </a>
                             </ul>
                             <div class="flex flex-col gap-y-6">
                                 <div class="flex flex-col gap-y-4 w-[600px]">
@@ -72,7 +57,5 @@
 
     @include('layout.footer')
 </body>
-
-</html>
 
 </html>

@@ -12,9 +12,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use App\Traits\Toastable;
 
 class CartController extends Controller
 {
+    use Toastable;
+
     public function showCart()
     {
         if (Auth::check()) {
@@ -25,38 +28,64 @@ class CartController extends Controller
         }
         return view('cart.cart', compact('cartItems'));
     }
-    
+
     public function removeCartItem($cartItemId)
     {
-        if (Auth::check()) {
-            $cart = Cart::where('user_id', Auth::id())->first();
-    
+        try {
+            if (Auth::check()) {
+                $cart = Cart::where('user_id', Auth::id())->first();
 
-            $cartItem = CartItem::where('cart_id', $cart->cart_id)
-                ->where('cart_item_id', $cartItemId) 
-                ->first();
-            if ($cartItem) {
-                DB::table('cart_items')->where('cart_item_id', $cartItemId)->delete();
+                if (!$cart) {
+                    $this->toast('Cart not found.', 'error');
+                    return redirect()->route('customer.cart');
+                }
+
+                $cartItem = CartItem::where('cart_id', $cart->cart_id)
+                    ->where('cart_item_id', $cartItemId)
+                    ->first();
+
+                if ($cartItem) {
+                    DB::table('cart_items')->where('cart_item_id', $cartItemId)->delete();
+                    $this->toast('Item removed from cart.', 'success');
+                } else {
+                    $this->toast('Cart item not found.', 'error');
+                }
+            } else {
+                $this->toast('You need to log in to manage your cart.', 'error');
             }
-        } 
+        } catch (\Exception $e) {
+            $this->toast('An error occurred while removing the item.', 'error');
+        }
+
         return redirect()->route('customer.cart');
     }
-    
 
     public function checkout(Request $request)
-{
-    $selectedItemIds = $request->input('cart_items', []);
+    {
+        try {
+            $selectedItemIds = $request->input('cart_items', []);
 
-    if (empty($selectedItemIds)) {
-        return redirect()->back()->with('error', 'No items selected for checkout.');
+            if (empty($selectedItemIds)) {
+                $this->toast('No items selected for checkout.', 'error');
+                return redirect()->back();
+            }
+
+            $cartItems = CartItem::whereIn('cart_item_id', $selectedItemIds)
+                ->with(['cartItemImages', 'apparelType', 'productionCompany', 'productionType'])
+                ->get();
+
+            if ($cartItems->isEmpty()) {
+                $this->toast('Selected items not found in cart.', 'error');
+                return redirect()->back();
+            }
+
+            session()->put('selected_cart_items', $cartItems);
+
+            $this->toast('Proceeding to checkout.', 'success');
+            return redirect()->route('customer.checkout');
+        } catch (\Exception $e) {
+            $this->toast('An error occurred during checkout.', 'error');
+            return redirect()->back();
+        }
     }
-
-    $cartItems = CartItem::whereIn('cart_item_id', $selectedItemIds)
-        ->with(['cartItemImages', 'apparelType', 'productionCompany', 'productionType'])
-        ->get();
-
-    session()->put('selected_cart_items', $cartItems);
-
-    return redirect()->route('customer.checkout');
-}
 }
