@@ -21,9 +21,8 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::get('production-services', function() {
-    return view('prod-services');
-})->name('production-services');
+Route::get('/production-services', [App\Http\Controllers\ProductionCompanyController::class, 'index'])->name('production.services');
+Route::get('/order/details/{productionCompany}', [App\Http\Controllers\OrderController::class, 'details'])->name('order.details');
 
 // FRONTEND BECOME A PARTNER ROUTES
 Route::get('/partner-registration', [PartnerRegistration::class, 'partnerRegistration'])->name('partner-registration');

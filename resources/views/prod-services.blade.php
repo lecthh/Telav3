@@ -11,11 +11,28 @@
         rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/pagedone@1.2.2/src/css/pagedone.css " rel="stylesheet" />
     @vite('resources/css/app.css')
+    @vite('resources/css/select.css')
 </head>
 @include('layout.nav')
 
-<body>
-    <h1>PROD SERVICES</h1>
+<body class="flex flex-col h-screen justify-between">
+    <div class="font-inter bg-white flex flex-col px-[200px] py-[100px] gap-y-[60px]">
+        <div class="flex flex-col gap-y-10">
+            <div class="flex flex-col gap-y-3">
+                <h1 class="font-gilroy font-bold text-5xl">Partnered Production Companies</h1>
+            </div>
+        </div>
+        <div class="flex flex-col gap-y-6 animate-fade-in">
+            <div class="flex justify-start">
+                @livewire('include.base-price-filter')
+            </div>
+            <div class="flex gap-y-6">
+                @livewire('production-companies-component')
+            </div>
+        </div>
+    </div>
+    @livewireScripts
 </body>
+
 @include('layout.footer')
 </html>
