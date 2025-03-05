@@ -1,8 +1,9 @@
 <?php
 
 use App\Exports\CustomizationDetailsExport;
+use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\AwaitingOrderController;
-use App\Http\Controllers\BusinessAuthController;
+use App\Http\Controllers\Auth\BusinessAuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ConfirmationLinkController;
@@ -11,8 +12,6 @@ use App\Http\Controllers\ConfirmBulkController;
 use App\Http\Controllers\Review;
 use App\Http\Controllers\Customization;
 use App\Http\Controllers\CustomizationExportController;
-use App\Http\Controllers\GoogleAuth;
-use App\Http\Controllers\PartnerRegistration;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SelectAparrelController;
 use App\Http\Controllers\SelectProductionCompanyController;
@@ -26,6 +25,8 @@ use App\Http\Controllers\PrintingInProgressController;
 use App\Http\Controllers\EditProducerAccountController;
 use App\Http\Controllers\ReadyController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\Auth\PartnerRegistration;
+use App\Http\Controllers\Auth\GoogleAuth;
 use App\Http\Middleware\PreventBackHistory;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
@@ -42,7 +43,7 @@ Route::get('/', function () {
 })->name('home');
 
 // FRONTEND BECOME A PARTNER ROUTES
-Route::get('/partner-registration', [PartnerRegistration::class, 'partnerRegistration'])->name('partner-registration');
+Route::get('/partner-registration', [PartnerRegistration::class, 'partnerRegistrationForm'])->name('partner-registration');
 Route::get('/partner-confirmation', [PartnerRegistration::class, 'partnerConfirmation'])->name('partner-confirmation');
 
 // Printer Partner Routes
@@ -136,8 +137,13 @@ Route::middleware(['CustomerOnly'])->group(function () {
     })->name('customer.chat');
 });
 
+//Password Routes
 Route::get('/set-password/{token}', [BusinessAuthController::class, 'showSetPasswordForm'])->name('set-password');
 Route::post('/set-password/store', [BusinessAuthController::class, 'storePassword'])->name('password.store');
+Route::get('/forgot-password', [PasswordResetController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetPasswordForm'])->name('password.reset');
+Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.update');
 
 Route::get('/login', [BusinessAuthController::class, 'login'])->name('login');
 Route::post('/login/user', [BusinessAuthController::class, 'loginPost'])->name('login.post');
