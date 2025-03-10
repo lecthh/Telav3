@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Traits\Toastable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
@@ -10,10 +11,7 @@ use Illuminate\Support\Facades\Validator;
 
 class PasswordResetController extends Controller
 {
-    public function showForgotPasswordForm()
-    {
-        return view('auth.forgot-password');
-    }
+    use Toastable;
 
     public function sendResetLinkEmail(Request $request)
     {
@@ -61,8 +59,11 @@ class PasswordResetController extends Controller
             }
         );
 
-        return $status === Password::PASSWORD_RESET
-            ? redirect()->route('home')->with('status', __($status))
-            : back()->withErrors(['email' => [__($status)]]);
+        if ($status === Password::PASSWORD_RESET) {
+            $this->toast('Your password has been reset! You may log in now using your new password.', 'success');
+            return redirect()->route('home');
+        } else {
+            return back()->withErrors(['email' => [__($status)]]);
+        }
     }
 }

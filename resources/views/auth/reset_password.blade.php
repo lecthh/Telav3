@@ -25,6 +25,17 @@
                 <p class="font-inter font-medium text-lg">Please set your password to continue</p>
             </div>
 
+            <!-- Generic Error Block -->
+            @if ($errors->any())
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
+
             <form method="POST" action="{{ route('password.update') }}" class="space-y-6">
                 @csrf
                 <input type="hidden" name="token" value="{{ $token }}">
@@ -35,17 +46,24 @@
                         <label for="password" class="block mb-3 text-lg font-bold font-inter">Create Password</label>
                         <input type="password" id="password" name="password" autocomplete="new-password"
                             class="w-full h-14 px-4 py-2 border border-black rounded-lg focus:outline-none focus:border-purple-500" required>
+                        @error('password')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div>
                         <label for="password_confirmation" class="block mb-3 text-lg font-bold font-inter">Confirm Password</label>
                         <input type="password" id="password_confirmation" name="password_confirmation" autocomplete="new-password"
                             class="w-full h-14 px-4 py-2 border border-black rounded-lg focus:outline-none focus:border-purple-500" required>
+                        @error('password_confirmation')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
 
                 <div>
-                    <button type="submit" class="w-full bg-cPrimary rounded-xl text-white text-lg px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]">
+                    <button type="submit"
+                        class="w-full bg-cPrimary rounded-xl text-white text-lg px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]">
                         Set Password
                     </button>
                 </div>
