@@ -53,17 +53,19 @@
 
             <div class="flex flex-col gap-y-3">
                 <h4 class="font-medium text-sm text-Colors/Text/text-secondary(700)">Email</h4>
-                <input type="email" class="border border-Colors/Border/border-primary rounded-lg px-5 py-4"
+                <input type="email"
+                    class="border rounded-lg px-5 py-4 {{ $errors->has('login_error') ? 'border-red-500' : 'border-Colors/Border/border-primary' }}"
                     placeholder="Enter your email" wire:model="email" required>
                 @error('email')
-                <span class="text-red-500 text-sm" wire:key="email-error">{{ $message }}</span>
+                <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
+
             </div>
 
             @if(!$isForgotPassword)
             <div class="flex flex-col gap-y-2">
                 <h4 class="font-medium text-sm text-Colors/Text/text-secondary(700)">Password</h4>
-                <input type="password" class="border border-Colors/Border/border-primary rounded-lg px-5 py-4"
+                <input type="password" class="border {{ $errors->has('login_error') ? 'border-red-500' : 'border-Colors/Border/border-primary' }} rounded-lg px-5 py-4"
                     placeholder="Create a password" wire:model="password">
                 @if($isSignup)
                 <span class=" text-Colors/Text/text-tertiary(600) text-sm">Must be at least 8 characters</span>
@@ -79,7 +81,7 @@
             @endif
 
             @if(!$isSignup)
-            <div class="flex justify-between items-center">
+            <div class=" flex justify-between items-center">
                 <div class="flex items-center gap-x-2">
                     <input type="checkbox" id="remember-me" wire:model="rememberMe"
                         class="rounded border-gray-300 text-cPrimary focus:ring-cPrimary focus:border-cPrimary checked:border-cPrimary">

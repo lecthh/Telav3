@@ -20,11 +20,6 @@ class ModalLogin extends ModalComponent
     public $rememberMe = false;
     public $passwordResetStatus = null;
 
-
-    protected $rules = [
-        'email' => 'required|email',
-    ];
-
     public static function modalMaxWidth(): string
     {
         return 'lg';
@@ -39,6 +34,7 @@ class ModalLogin extends ModalComponent
     {
         $this->isSignup = false;
         $this->isForgotPassword = false;
+        $this->resetFields();
     }
 
 
@@ -52,13 +48,11 @@ class ModalLogin extends ModalComponent
             ]);
 
             $validatedData = $this->validate([
-                'password' => 'required|min:8',
+                'email' => 'required|email',
+                'password' => 'required',
             ]);
 
-            Log::info('Login validation successful', $validatedData);
-
-
-            if (Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->rememberMe)) {
+            if (Auth::attempt(['email' => $validatedData['email'], 'password' => $validatedData['password']], $this->rememberMe)) {
                 Log::info('User logged in successfully', ['email' => $this->email]);
 
                 return redirect()->to(Session::get('url.intended', '/'));
@@ -75,7 +69,7 @@ class ModalLogin extends ModalComponent
     {
         $this->isSignup = !$this->isSignup;
         $this->isForgotPassword = false;
-        $this->resetValidation();
+        $this->resetFields();
     }
 
     public function toggleModal()
@@ -87,6 +81,17 @@ class ModalLogin extends ModalComponent
     {
         $this->isForgotPassword = true;
         $this->isSignup = false;
+        $this->resetFields();
+    }
+
+    private function resetFields()
+    {
+        $this->name = '';
+        $this->email = '';
+        $this->password = '';
+        $this->rememberMe = false;
+        $this->passwordResetStatus = null;
+
         $this->resetValidation();
     }
 
