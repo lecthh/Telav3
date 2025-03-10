@@ -20,6 +20,8 @@ export default {
         'Colors/Text/text-primary(900)': '#181D27',
         'Colors/Text/text-secondary(700)': '#414651',
         'Colors/Border/border-primary': '#D5D7DA',
+        'Colors/Background/bg-primary_hover': '#FAFAFA',
+        'Primary/button-primary-bg_hover': '#9700fd',
       },
       fontFamily: {
         'inter': ['Inter', 'sans-serif'],

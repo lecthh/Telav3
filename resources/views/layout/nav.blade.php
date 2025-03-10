@@ -17,7 +17,8 @@
         @if(Auth::check())
         <a wire:navigate href="{{ route('customer.profile.basics') }}">{{ Auth::user()->name }}</a>
         @else
-        <button onclick="Livewire.dispatch('openModal', { component: 'modal-login' })" href="">Login/Sign Up</button>
+        <!-- Idkk About the design, please improve -->
+        <button onclick="Livewire.dispatch('openModal', { component: 'modal-login' })" href="" class="rounded-xl px-6 py-3 gap-x-3 bg-white border border-Colors/Border/border-primary text-black text-base items-center justify-center hover:bg-Colors/Background/bg-primary_hover">Login/Sign Up</button>
         @endif
         <a wire:navigate href="{{ route('customer.place-order.select-apparel') }}" class="flex bg-cPrimary rounded-xl text-white text-[18px] gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]">Order Now</a>
     </div>
