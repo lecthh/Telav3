@@ -20,6 +20,11 @@ class ModalLogin extends ModalComponent
     public $rememberMe = false;
     public $passwordResetStatus = null;
 
+
+    protected $rules = [
+        'email' => 'required|email',
+    ];
+
     public static function modalMaxWidth(): string
     {
         return 'lg';
@@ -47,7 +52,6 @@ class ModalLogin extends ModalComponent
             ]);
 
             $validatedData = $this->validate([
-                'email' => 'required|email',
                 'password' => 'required|min:8',
             ]);
 
@@ -56,11 +60,11 @@ class ModalLogin extends ModalComponent
 
             if (Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->rememberMe)) {
                 Log::info('User logged in successfully', ['email' => $this->email]);
-                session()->regenerate();
 
                 return redirect()->to(Session::get('url.intended', '/'));
             }
             Log::warning('Login failed for email', ['email' => $this->email]);
+            $this->addError('login_error', 'Invalid email or password.');
         } catch (\Exception $e) {
             Log::error('Error in login function', ['message' => $e->getMessage()]);
         }
