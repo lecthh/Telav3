@@ -140,8 +140,6 @@ Route::middleware(['CustomerOnly'])->group(function () {
 //Password Routes
 Route::get('/set-password/{token}', [BusinessAuthController::class, 'showSetPasswordForm'])->name('set-password');
 Route::post('/set-password/store', [BusinessAuthController::class, 'storePassword'])->name('password.store');
-Route::get('/forgot-password', [PasswordResetController::class, 'showForgotPasswordForm'])->name('password.request');
-Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetPasswordForm'])->name('password.reset');
 Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.update');
 
@@ -158,14 +156,14 @@ Route::post('/confirm-bulk-custom/post', [ConfirmationLinkController::class, 'co
 Route::get('/confirm-jerseybulk-custom/{token}', [ConfirmationLinkController::class, 'confirmJerseyBulkCustom'])->name('confirm-jerseybulk-custom');
 Route::post('/confirm-jerseybulk-custom/post', [ConfirmationLinkController::class, 'confirmJerseyBulkCustomPost'])->name('confirm-jerseybulk-custom-post');
 
-Route::get('/auth/google/redirect', [GoogleAuth::class, 'redirectToGoogle'])->name('google.redirect');
-Route::get('/auth/google/callback', [GoogleAuth::class, 'handleGoogleCallback'])->name('google.callback');
-
 Route::get('export-customization/{order_id}', [CustomizationExportController::class, 'exportExcel'])->name('export.customization')->withoutMiddleware(PreventBackHistory::class);
 Route::get('/export/customization/{order_id}', [CustomizationExportController::class, 'export'])->name('export.customization');
 
-// chat Routes
+// Google Auth Routes
+Route::get('/auth/google/redirect', [GoogleAuth::class, 'redirectToGoogle'])->name('google.redirect');
+Route::get('/auth/google/callback', [GoogleAuth::class, 'handleGoogleCallback'])->name('google.callback');
 
+// chat Routes
 Route::patch('/chat/mark-as-seen/{id}', [ChatController::class, 'markAsSeen']);
 Route::get('/chat/users', [ChatController::class, 'fetchChatUsers']);
 Route::get('/chat/messages/{user_id}', [ChatController::class, 'fetchMessages']);

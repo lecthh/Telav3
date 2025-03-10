@@ -1,6 +1,6 @@
 <div class="flex flex-col gap-y-[40px] w-full px-[24px] pt-[40px] pb-[40px] rounded-xl bg-white drop-shadow-md justify-center">
     <div class="flex flex-col gap-y-8">
-        <div class="flex justify-end cursor-pointer" wire:click="$emit('closeModal')">
+        <div class="flex justify-end cursor-pointer" wire:click="toggleModal">
             @include('svgs.delete')
         </div>
         <div class="flex flex-col gap-y-1 justify-center items-center">
@@ -18,7 +18,7 @@
                 @if($isForgotPassword)
                 Enter your email to reset your password
                 @elseif($isSignup)
-                Create an account
+                Take your first steps by creating an account
                 @else
                 Welcome back! Please enter your details
                 @endif
@@ -37,24 +37,27 @@
             <div class="flex flex-col gap-y-3">
                 <h4 class="font-medium text-sm text-Colors/Text/text-secondary(700)">Name</h4>
                 <input type="text" class="border border-Colors/Border/border-primary rounded-lg px-5 py-4"
-                    placeholder="Enter your first name" wire:model="first_name">
+                    placeholder="Enter your name" wire:model="first_name">
             </div>
             @endif
 
             <div class="flex flex-col gap-y-3">
                 <h4 class="font-medium text-sm text-Colors/Text/text-secondary(700)">Email</h4>
                 <input type="text" class="border border-Colors/Border/border-primary rounded-lg px-5 py-4"
-                    placeholder="email@gmail.com" wire:model="email">
+                    placeholder="Enter your email" wire:model="email">
                 @error('email')
                 <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
             </div>
 
             @if(!$isForgotPassword)
-            <div class="flex flex-col gap-y-3">
+            <div class="flex flex-col gap-y-2">
                 <h4 class="font-medium text-sm text-Colors/Text/text-secondary(700)">Password</h4>
                 <input type="password" class="border border-Colors/Border/border-primary rounded-lg px-5 py-4"
-                    placeholder="Enter password" wire:model="password">
+                    placeholder="Create a password" wire:model="password">
+                @if($isSignup)
+                <span class=" text-Colors/Text/text-tertiary(600) text-sm">Must be at least 8 characters</span>
+                @endif
             </div>
 
             @if(!$isSignup)
@@ -96,7 +99,7 @@
 
         @if(!$isForgotPassword)
         <div class="text-center">
-            <span class="text-sm cursor-pointer text-cPrimary" wire:click="toggleSignup">
+            <span class="text-sm cursor-pointer text-cPrimary hover:underline" wire:click="toggleSignup">
                 {{ $isSignup ? 'Already have an account? Log in' : 'No account? Click here to sign up' }}
             </span>
         </div>

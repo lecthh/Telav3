@@ -12,7 +12,7 @@ class ModalLogin extends ModalComponent
 {
     public $isSignup = false;
     public $isForgotPassword = false;
-    public $first_name, $last_name, $email, $password, $password_confirmation;
+    public $name, $email, $password, $password_confirmation;
     public $rememberMe = false;
     public $passwordResetStatus = null;
 
@@ -31,6 +31,11 @@ class ModalLogin extends ModalComponent
         $this->isSignup = !$this->isSignup;
         $this->isForgotPassword = false;
         $this->resetValidation();
+    }
+
+    public function toggleModal()
+    {
+        $this->closeModal();
     }
 
     public function showForgotPassword()
