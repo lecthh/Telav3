@@ -15,7 +15,13 @@ export default {
         'cAccent': '#FE94D3',
         'cGreen': '#30EAA1',
         'cGrey': '#F0F0F0',
-        'cDarkGrey': '#787878'
+        'cDarkGrey': '#787878',
+        'Colors/Text/text-tertiary(600)': '#535862',
+        'Colors/Text/text-primary(900)': '#181D27',
+        'Colors/Text/text-secondary(700)': '#414651',
+        'Colors/Border/border-primary': '#D5D7DA',
+        'Colors/Background/bg-primary_hover': '#FAFAFA',
+        'Primary/button-primary-bg_hover': '#9700fd',
       },
       fontFamily: {
         'inter': ['Inter', 'sans-serif'],

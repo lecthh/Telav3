@@ -48,5 +48,9 @@ return [
         'dispatch_close_event' => false,
 
         'destroy_on_close' => false,
+
+        'modalMaxHeight' => 'max-h-[90vh]',
+
+        'modalClasses' => 'absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2',
     ],
 ];
