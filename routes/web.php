@@ -16,6 +16,12 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderProduceController;
 use App\Http\Middleware\PreventBackHistory;
 use Illuminate\Support\Facades\Route;
+use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+
+require base_path('routes/channels.php');
 
 Route::get('/', function () {
     return view('welcome');
@@ -159,3 +165,26 @@ Route::get('/auth/google/callback', [GoogleAuth::class, 'handleGoogleCallback'])
 
 Route::get('export-customization/{order_id}', [CustomizationExportController::class, 'exportExcel'])->name('export.customization')->withoutMiddleware(PreventBackHistory::class);
 Route::get('/export/customization/{order_id}', [CustomizationExportController::class, 'export'])->name('export.customization');
+
+// chat Routes
+
+Route::patch('/chat/mark-as-seen/{id}', [ChatController::class, 'markAsSeen']);
+Route::get('/chat/users', [ChatController::class, 'fetchChatUsers']);
+Route::get('/chat/messages/{user_id}', [ChatController::class, 'fetchMessages']);
+Route::post('/chat/send/message', [ChatController::class, 'sendMessage']);
+
+
+
+Route::middleware(['auth'])->post('/broadcasting/auth', function (Request $request) {
+    Log::info('Broadcasting auth request', [
+        'user' => Auth::user(),
+        'request_payload' => $request->all(),
+        'headers' => $request->headers->all(),
+    ]);
+    return Broadcast::auth($request);
+});
+
+
+Route::get('/user', function () {
+    return response()->json(Auth::user());
+});
