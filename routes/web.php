@@ -11,6 +11,8 @@ use App\Http\Controllers\ConfirmationMessageController;
 use App\Http\Controllers\ConfirmBulkController;
 use App\Http\Controllers\CustomizationExportController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\OrderProduceController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\DesignerOrderController;
 use App\Http\Controllers\EditProducerAccountController;
 use App\Http\Controllers\ChatController;
@@ -22,6 +24,7 @@ use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 
 require base_path('routes/channels.php');
 
