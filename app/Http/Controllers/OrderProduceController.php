@@ -6,13 +6,16 @@ use App\Models\Designer;
 use App\Models\Notification;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use App\Traits\Toastable;
+use Illuminate\Support\Facades\Log;
 
 class OrderProduceController extends Controller {
+    use Toastable;
 
     //PENDING
     public function pending()
     {
-        $pendingOrders = Order::where('status_id', '1')->orderBy('created_at', 'desc')->get();
+        $pendingOrders = Order::where('status_id', '1')->get();
         return view('partner.printer.orders', compact('pendingOrders'));
     }
 
@@ -58,23 +61,29 @@ class OrderProduceController extends Controller {
 
     public function finalizeOrderPost($order_id)
     {
-        $order = Order::find($order_id);
-        foreach ($order->imagesWithStatusTwo as $image) {
-            $image->status_id = 4;
-            $image->save();
+        try {
+            $order = Order::findOrFail($order_id);
+
+            foreach ($order->imagesWithStatusTwo as $image) {
+                $image->update(['status_id' => 4]);
+            }
+
+            Notification::create([
+                'user_id' => $order->user->user_id,
+                'message' => 'Your Order Is Waiting To Be Printed',
+                'is_read' => false,
+                'order_id' => $order->order_id,
+            ]);
+
+            $order->update(['status_id' => 4]);
+
+            $this->toast('Order finalized and waiting for printing!', 'success');
+            return redirect()->route('partner.printer.awaiting-printing');
+        } catch (\Exception $e) {
+            Log::error('Finalize Order Error: ' . $e->getMessage());
+            $this->toast('An error occurred while finalizing the order.', 'error');
+            return redirect()->back();
         }
-
-        Notification::create([
-            'user_id' => $order->user->user_id,
-            'message' => 'Your Order Is Waiting To Be Printed',
-            'is_read' => false,
-            'order_id' => $order->order_id,
-        ]);
-
-        $order->status_id = 4;
-        $order->save();
-
-        return redirect()->route('partner.printer.awaiting-printing');
     }
 
     //AWAITING ORDER
@@ -92,17 +101,28 @@ class OrderProduceController extends Controller {
 
     public function awaitingOrderPost($order_id)
     {
-        $order = Order::find($order_id);
-        $order->status_id = 5;
-        $order->save();
+        try {
+            $order = Order::findOrFail($order_id);
+            $order->status_id = 5;
+            $order->save();
 
-        Notification::create([
-            'user_id' => $order->user->user_id,
-            'message' => 'Your Order Is Being Printed',
-            'is_read' => false,
-            'order_id' => $order->order_id,
-        ]);
-        return redirect()->route('partner.printer.printing-in-progress');
+            Notification::create([
+                'user_id'  => $order->user->user_id,
+                'message'  => 'Your Order Is Being Printed',
+                'is_read'  => false,
+                'order_id' => $order->order_id,
+            ]);
+
+
+            $this->toast('Order status updated successfully!', 'success');
+
+            return redirect()->route('partner.printer.printing-in-progress');
+        } catch (\Exception $e) {
+
+            $this->toast('Error updating order status: ' . $e->getMessage(), 'error');
+
+            return redirect()->back();
+        }
     }
 
     //PRINTING IN PROGRESS
@@ -120,16 +140,24 @@ class OrderProduceController extends Controller {
 
     public function printingOrderPost($order_id)
     {
-        $order = Order::find($order_id);
-        $order->status_id = 6;
-        $order->save();
-        Notification::create([
-            'user_id' => $order->user->user_id,
-            'message' => 'Your Order Is Ready to be Collected/Delivered',
-            'is_read' => false,
-            'order_id' => $order->order_id,
-        ]);
-        return redirect()->route('partner.printer.ready');
+        try {
+            $order = Order::findOrFail($order_id);
+            $order->update(['status_id' => 6]);
+
+            Notification::create([
+                'user_id' => $order->user->user_id,
+                'message' => 'Your Order Is Ready to be Collected/Delivered',
+                'is_read' => false,
+                'order_id' => $order->order_id,
+            ]);
+
+            $this->toast('Order marked as ready for collection/delivery!', 'success');
+            return redirect()->route('partner.printer.ready');
+        } catch (\Exception $e) {
+            Log::error('Printing Order Update Error: ' . $e->getMessage());
+            $this->toast('An error occurred while updating the order status.', 'error');
+            return redirect()->back();
+        }
     }
 
     //READY
@@ -146,31 +174,47 @@ class OrderProduceController extends Controller {
 
     public function readyOrderPost($order_id)
     {
-        $order = Order::find($order_id);
-        $order->status_id = 7;
-        $order->save();
-        Notification::create([
-            'user_id' => $order->user->user_id,
-            'message' => 'Your Order is Completed',
-            'is_read' => false,
-            'order_id' => $order->order_id,
-        ]);
-        return redirect()->route('partner.printer.completed');
+        try {
+            $order = Order::findOrFail($order_id);
+            $order->update(['status_id' => 7]);
+
+            Notification::create([
+                'user_id' => $order->user->user_id,
+                'message' => 'Your Order is Completed',
+                'is_read' => false,
+                'order_id' => $order->order_id,
+            ]);
+
+            $this->toast('Order marked as completed!', 'success');
+            return redirect()->route('partner.printer.completed');
+        } catch (\Exception $e) {
+            Log::error('Ready Order Update Error: ' . $e->getMessage());
+            $this->toast('An error occurred while completing the order.', 'error');
+            return redirect()->back();
+        }
     }
 
     //COMPLETE OR CANCEL
     public function cancelOrder($order_id)
     {
-        $order = Order::find($order_id);
-        $order->status_id = 8;
-        $order->save();
-        Notification::create([
-            'user_id' => $order->user->user_id,
-            'message' => 'Your Order Has Been Cancelled',
-            'is_read' => false,
-            'order_id' => $order->order_id,
-        ]);
-        return redirect()->route('printer-dashboard');
+        try {
+            $order = Order::findOrFail($order_id);
+            $order->update(['status_id' => 8]);
+
+            Notification::create([
+                'user_id' => $order->user->user_id,
+                'message' => 'Your Order Has Been Cancelled',
+                'is_read' => false,
+                'order_id' => $order->order_id,
+            ]);
+
+            $this->toast('Order cancelled successfully!', 'success');
+            return redirect()->route('printer-dashboard');
+        } catch (\Exception $e) {
+            Log::error('Cancel Order Error: ' . $e->getMessage());
+            $this->toast('An error occurred while canceling the order.', 'error');
+            return redirect()->back();
+        }
     }
 
     public function completed()
@@ -181,29 +225,36 @@ class OrderProduceController extends Controller {
     public function completedOrder($order_id)
     {
         $order = Order::find($order_id);
-        return view('partner.printer.complete.order');
+        return view('partner.printer.complete.order', compact('order'));
     }
 
     //ASSIGN DESIGNER
     public function assignDesigner(Request $request, $order_id)
     {
-        $request->validate([
-            'selected_designer_id' => 'required',
-        ]);
-        $order = Order::find($order_id);
-        $order->assigned_designer_id = intval($request->selected_designer_id);
-        $order->status_id = 2;
-        $order->save();
+        try {
+            $validatedData = $request->validate([
+                'selected_designer_id' => 'required|integer|exists:users,user_id',
+            ]);
 
-        $user_id = $order->user->user_id;
+            $order = Order::findOrFail($order_id);
+            $order->update([
+                'assigned_designer_id' => intval($validatedData['selected_designer_id']),
+                'status_id' => 2,
+            ]);
 
-        Notification::create([
-            'user_id' => $user_id,
-            'message' => 'Design in Progress',
-            'is_read' => false,
-            'order_id' => $order->order_id,
-        ]);
+            Notification::create([
+                'user_id' => $order->user->user_id,
+                'message' => 'Design in Progress',
+                'is_read' => false,
+                'order_id' => $order->order_id,
+            ]);
 
-        return redirect()->route('partner.printer.orders');
+            $this->toast('Designer assigned successfully!', 'success');
+            return redirect()->route('partner.printer.orders');
+        } catch (\Exception $e) {
+            Log::error('Assign Designer Error: ' . $e->getMessage());
+            $this->toast('An error occurred while assigning the designer.', 'error');
+            return redirect()->back();
+        }
     }
 }
