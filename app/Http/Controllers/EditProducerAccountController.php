@@ -134,4 +134,3 @@ class EditProducerAccountController extends Controller
         }
     }
 }
-}
