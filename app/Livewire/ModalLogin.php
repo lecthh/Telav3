@@ -9,16 +9,26 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 use LivewireUI\Modal\ModalComponent;
+use App\Mail\VerificationCodeMail;
 
 class ModalLogin extends ModalComponent
 {
     public $isSignup = false;
     public $isForgotPassword = false;
+
+    public $signupStep = 1;
+
     public $name, $email, $password, $password_confirmation;
     public $rememberMe = false;
     public $passwordResetStatus = null;
+
+    public $userEnteredVerificationCode;
+    public $generatedVerificationCode;
+
+    public $code1, $code2, $code3, $code4, $code5, $code6;
 
     public static function modalMaxWidth(): string
     {
@@ -34,9 +44,9 @@ class ModalLogin extends ModalComponent
     {
         $this->isSignup = false;
         $this->isForgotPassword = false;
+        $this->signupStep = 1;
         $this->resetFields();
     }
-
 
     public function login()
     {
@@ -64,11 +74,11 @@ class ModalLogin extends ModalComponent
         }
     }
 
-
     public function toggleSignup()
     {
         $this->isSignup = !$this->isSignup;
         $this->isForgotPassword = false;
+        $this->signupStep = 1;
         $this->resetFields();
     }
 
@@ -89,14 +99,78 @@ class ModalLogin extends ModalComponent
         $this->name = '';
         $this->email = '';
         $this->password = '';
+        $this->password_confirmation = '';
         $this->rememberMe = false;
         $this->passwordResetStatus = null;
+        $this->userEnteredVerificationCode = '';
+        $this->generatedVerificationCode = '';
 
         $this->resetValidation();
     }
 
+    public function sendEmailVerificationCode()
+    {
+        $this->validate([
+            'email' => 'required|email'
+        ]);
+
+        $this->generatedVerificationCode = mt_rand(100000, 999999);
+        session(['email_verification_code' => $this->generatedVerificationCode]);
+        session(['email_for_verification' => $this->email]);
+
+        try {
+            Mail::to($this->email)->send(new VerificationCodeMail($this->generatedVerificationCode));
+            Log::info('Verification code sent to email', ['email' => $this->email, 'code' => $this->generatedVerificationCode]);
+            $this->signupStep = 2;
+        } catch (\Exception $e) {
+            Log::error('Error sending verification code', ['message' => $e->getMessage()]);
+            $this->addError('email', 'Unable to send verification code. Please try again later.');
+        }
+    }
+
+    public function verifyEmailCode()
+    {
+        // Validate that each box has one digit (you can adjust rules as needed)
+        $this->validate([
+            'code1' => 'required|numeric',
+            'code2' => 'required|numeric',
+            'code3' => 'required|numeric',
+            'code4' => 'required|numeric',
+            'code5' => 'required|numeric',
+            'code6' => 'required|numeric',
+        ]);
+
+        $userEnteredVerificationCode = $this->code1 . $this->code2 . $this->code3 . $this->code4 . $this->code5 . $this->code6;
+        $storedCode = session('email_verification_code');
+
+        if ($userEnteredVerificationCode == $storedCode) {
+            // Verification successful; proceed to the next signup step.
+            $this->signupStep = 3;
+            session()->forget('email_verification_code');
+            Log::info('Email verification successful', ['email' => $this->email]);
+        } else {
+            $this->addError('verification_code', 'The verification code is invalid.');
+            Log::warning('Invalid verification code attempt', [
+                'entered' => $userEnteredVerificationCode,
+                'expected' => $storedCode,
+            ]);
+        }
+    }
+
+
+    public function resendEmailVerificationCode()
+    {
+        $this->sendEmailVerificationCode();
+        session()->flash('message', 'A new verification code has been sent to your email.');
+    }
+
     public function register()
     {
+        if ($this->signupStep !== 3) {
+            $this->addError('registration', 'Please complete email verification first.');
+            return;
+        }
+
         try {
             Log::info('Register function called', [
                 'name' => $this->name,
@@ -108,7 +182,7 @@ class ModalLogin extends ModalComponent
             $validatedData = $this->validate([
                 'name' => 'required|string|min:2|max:255',
                 'email' => 'required|email|unique:users,email',
-                'password' => 'required|min:8',
+                'password' => 'required|min:8|confirmed',
             ]);
             Log::info('Validation successful', $validatedData);
 
@@ -118,6 +192,7 @@ class ModalLogin extends ModalComponent
                 'email' => $this->email,
                 'password' => Hash::make($this->password),
                 'role_type_id' => 1,
+                'email_verified_at' => now(),
             ]);
 
             Log::info('User created successfully', ['user_id' => $user->id]);
