@@ -30,13 +30,13 @@
                         <h3 class="font-bold">Production Company</h3>
                         <div class="flex gap-x-4 p-4 bg-cGrey rounded-md">
                             <div class="w-[168px] h-[100px] rounded-md bg-cPrimary">
-                                <img src="{{ asset($productionCompany->company_logo) }}" alt="{{ $productionCompany->company_name }}">
+                                <img src="{{ asset($productionCompany->company_logo) }}" alt="{{ $productionCompany->company_name }}" class="object-contain w-full h-full">
                             </div>
                             <div class="flex flex-col gap-y-2">
                                 <div class="flex flex-col gap-y-1">
                                     <h4 class="font-gilroy font-bold text-base">{{ $productionCompany->company_name }}</h4>
-                                    <h3 class="font-gilroy font-bold text-2xl">{{ $productionCompany->price }} PHP</h3>
-                                    <!-- PRICE TO BE IMPLEMENTED -->
+                                    <h3 class="font-gilroy font-bold text-2xl">{{ number_format($orderPrice, 2) }} PHP</h3>
+                                    <p class="text-sm text-gray-600">{{ $customization['order_type'] === 'bulk' ? 'Bulk' : 'Base' }} price per item</p>
                                 </div>
                                 <a href="#" class="font-inter text-base text-cPrimary hover:underline">View Sample</a>
                             </div>
@@ -69,9 +69,9 @@
                 <div class="flex gap-x-10">
                     <div class="flex border w-[400px] h-[200px] rounded-md border-cPrimary bg-white">
                         @if($canvasImage)
-                            <img src="{{ $canvasImage }}" alt="canvasDesign" class="object-cover w-full h-full rounded-md">
+                        <img src="{{ $canvasImage }}" alt="canvasDesign" class="object-cover w-full h-full rounded-md">
                         @else
-                            <p>No design available.</p>
+                        <p>No design available.</p>
                         @endif
                     </div>
                 </div>
@@ -89,6 +89,48 @@
                     <h3 class="text-lg font-bold">Description</h3>
                     <h5 class="text-base">{{ $customization['description'] }}</h5>
                 </div>
+
+                <div class="flex flex-col gap-y-6 p-6 border border-gray-200 rounded-lg bg-gray-50">
+                    <h3 class="text-lg font-bold">Order Summary</h3>
+
+                    <div class="flex flex-col gap-y-3 text-base">
+                        <div class="flex justify-between">
+                            <span>Unit Price:</span>
+                            <span class="font-semibold">{{ number_format($orderPrice, 2) }} PHP</span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Quantity:</span>
+                            <span class="font-semibold">{{ $quantity }} {{ $quantity > 1 ? 'items' : 'item' }}</span>
+                        </div>
+
+                        @if($customization['order_type'] === 'bulk' && $basePrice > $bulkPrice)
+                        <div class="flex justify-between text-cPrimary text-sm">
+                            <span>Bulk discount applied</span>
+                            <span>-{{ number_format(($basePrice - $bulkPrice) * $quantity, 2) }} PHP</span>
+                        </div>
+                        @endif
+
+                        <hr class="border-gray-300 my-2">
+
+                        <div class="flex justify-between text-lg">
+                            <span class="font-bold">Estimated Total:</span>
+                            <span class="font-bold">{{ number_format($totalPrice, 2) }} PHP</span>
+                        </div>
+
+                        <div class="flex justify-between text-base mt-1">
+                            <span>Required Downpayment (50%):</span>
+                            <span class="font-semibold">{{ number_format($totalPrice / 2, 2) }} PHP</span>
+                        </div>
+
+                        @if($customization['order_type'] === 'bulk')
+                        <p class="text-sm text-gray-600 mt-2">*Minimum bulk order quantity is 10 items</p>
+                        @endif
+
+                        <p class="text-sm text-gray-600">*Final price may be adjusted based on design customization details</p>
+                    </div>
+                </div>
+
                 <div class=" flex justify-start gap-x-3">
                     <a href="{{ route('customer.place-order.customization', ['apparel' => $apparel, 'productionType' => $productionType, 'company' => $company]) }}"
                         class="flex bg-[#9CA3AF] bg-opacity-20 text-opacity-50 rounded-xl text-black gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-gray-600">

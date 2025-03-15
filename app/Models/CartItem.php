@@ -19,6 +19,8 @@ class CartItem extends Model
         'quantity',
         'production_company_id',
         'price',
+        'total_price',
+        'downpayment', 
         'customization',
         'orderType',
         'description',

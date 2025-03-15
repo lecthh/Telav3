@@ -78,6 +78,10 @@ class OrderController extends Controller
             'custom_type' => 'required|in:standard,personalized',
         ]);
 
+        if ($request->input('order_type') === 'bulk' && $request->input('quantity') < 10) {
+            return redirect()->back()->withErrors(['quantity' => 'Bulk orders require a minimum of 10 items.'])->withInput();
+        }
+
         //handle canvas
         if ($request->has('canvas_image')) {
             $canvasImage = $request->input('canvas_image');
@@ -104,6 +108,7 @@ class OrderController extends Controller
             'media' => $mediaPaths ?? [],
             'order_type' => $request->input('order_type'),
             'custom_type' => $request->input('custom_type'),
+            'quantity' => $request->input('quantity'),
         ];
 
         session()->put('customization', $customizationData);
@@ -121,17 +126,28 @@ class OrderController extends Controller
         $apparelName = ApparelType::find($apparel)->name;
         $productionTypeName = ModelsProductionType::find($productionType)->name;
 
-        $pricing = ProductionCompanyPricing::where('production_company_id', $company)
+        $pricing = \App\Models\ProductionCompanyPricing::where('production_company_id', $company)
         ->where('apparel_type', $apparel)
         ->where('production_type', $productionType)
         ->first();
 
-        $basePrice = $pricing ? $pricing->base_price : 0;
-        $bulkPrice = $pricing ? $pricing->bulk_price : 0;
+        $basePrice = 0;
+        $bulkPrice = 0;
+        
+        if ($pricing) {
+            $basePrice = $pricing->base_price;
+            $bulkPrice = $pricing->bulk_price;
+        }
 
         $orderPrice = isset($customization['order_type']) && $customization['order_type'] === 'bulk' 
         ? $bulkPrice 
         : $basePrice;
+
+        $quantity = isset($customization['quantity']) ? $customization['quantity'] : 
+        (isset($customization['order_type']) && $customization['order_type'] === 'bulk' ? 10 : 1);
+
+        $totalPrice = $orderPrice * $quantity;
+        $downpayment = $totalPrice / 2;
 
         $currentStep = 5;
         return view('customer.place-order.review', compact(
@@ -146,7 +162,10 @@ class OrderController extends Controller
             'canvasImage',
             'basePrice',
             'bulkPrice',
-            'orderPrice'
+            'orderPrice',
+            'quantity',
+            'totalPrice',
+            'downpayment'
         ));
     }
 
@@ -155,26 +174,35 @@ class OrderController extends Controller
         $company = ProductionCompany::find($company);
         $customization = session()->get('customization');
 
-        $pricing = ProductionCompanyPricing::where('production_company_id', $company)
+        $pricing = \App\Models\ProductionCompanyPricing::where('production_company_id', $company)
         ->where('apparel_type', $apparel)
         ->where('production_type', $productionType)
         ->first();
 
-        $price = 0;
+        $unitPrice = 0;
         if ($pricing) {
-            $price = ($customization['order_type'] === 'bulk') 
+            $unitPrice = ($customization['order_type'] === 'bulk') 
                 ? $pricing->bulk_price 
                 : $pricing->base_price;
         }
+
+        $quantity = isset($customization['quantity']) ? $customization['quantity'] : 
+        ($customization['order_type'] === 'bulk' ? 10 : 1);
+
+        $totalPrice = $unitPrice * $quantity;
+        $downpayment = $totalPrice / 2;
         
         $cartItemData = [
             'apparel_type_id' => $apparel,
             'production_type' => $productionType,
-            'price' => $price,
+            'price' => $unitPrice,
+            'quantity' => $quantity, 
             'production_company_id' => $company->id,
             'orderType' => $customization['order_type'],
             'customization' => $customization['custom_type'],
             'description' => $customization['description'],
+            'total_price' => $totalPrice,
+            'downpayment' => $downpayment,
         ];
 
         $cart = Cart::firstOrCreate([

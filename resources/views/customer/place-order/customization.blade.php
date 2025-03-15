@@ -48,12 +48,12 @@
                             <div id="shirtToggle" class="flex w-10 h-10 border border-black rounded-md cursor-pointer justify-center items-center text-center">@include('svgs.shirt-2')</div>
                         </div> -->
                     </div>
-                    <input type="file" id="canvasImgUpload" class="hidden" accept="image/*"/>
+                    <input type="file" id="canvasImgUpload" class="hidden" accept="image/*" />
                     <canvas id="fabricCanvas" width="1000" height="500" class="border border-black rounded-md"></canvas>
                 </div>
             </div>
         </div>
-        
+
         <div class="flex flex-col gap-y-10 font-inter animate-fade-in">
             <div class="flex flex-col gap-y-4">
                 <h3 class="text-lg font-bold">Description</h3>
@@ -88,6 +88,31 @@
                 </fieldset>
             </div>
             <div class="flex flex-col gap-y-4">
+                <h3 class="text-lg font-bold">Quantity</h3>
+                <div class="flex items-center gap-x-4">
+                    <div class="w-32">
+                        <div class="relative flex items-center">
+                            <button type="button" id="decrease-quantity" class="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-l-md border border-gray-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                            </button>
+                            <input type="number" name="quantity" id="quantity" min="1" value="1" class="w-full h-8 border-y border-gray-300 text-center" placeholder="Qty">
+                            <button type="button" id="increase-quantity" class="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-r-md border border-gray-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <p id="bulk-quantity-message" class="text-sm text-cPrimary hidden">Minimum bulk order quantity is 10 items</p>
+                </div>
+                @error('quantity')
+                <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror
+            </div>
+            <div class="flex flex-col gap-y-4">
                 <h3 class="text-lg font-bold">Customization</h3>
                 <fieldset class="flex flex-col gap-y-2">
                     <label class="flex items-center gap-x-2">
@@ -116,10 +141,63 @@
 </body>
 <script src="https://cdn.jsdelivr.net/npm/fabric@latest/dist/index.min.js"></script>
 <script>
-    window.apparelType = '{{ $apparel }}';
-    window.guideImageURL = '';
-    if (parseInt(window.apparelType) === 1) {
-        window.guideImageURL = '{{ asset("imgs/apparelGuides/jersey.jpg") }}';
-    }
+    // window.apparelType = '{{ $apparel }}';
+    // window.guideImageURL = '';
+    // if (parseInt(window.apparelType) === 1) {
+    //     window.guideImageURL = '{{ asset("imgs/apparelGuides/jersey.jpg") }}';
+    // }
+    document.addEventListener('DOMContentLoaded', function() {
+        const decreaseBtn = document.getElementById('decrease-quantity');
+        const increaseBtn = document.getElementById('increase-quantity');
+        const quantityInput = document.getElementById('quantity');
+        const bulkRadio = document.getElementById('bulk');
+        const singleRadio = document.getElementById('single');
+        const bulkMessage = document.getElementById('bulk-quantity-message');
+        
+        // Set minimum quantity based on order type
+        function updateQuantityConstraints() {
+            if (bulkRadio.checked) {
+                quantityInput.min = 10;
+                if (parseInt(quantityInput.value) < 10) {
+                    quantityInput.value = 10;
+                }
+                bulkMessage.classList.remove('hidden');
+            } else {
+                quantityInput.min = 1;
+                bulkMessage.classList.add('hidden');
+            }
+        }
+        
+        // Initial setup
+        updateQuantityConstraints();
+        
+        // Decrease quantity
+        decreaseBtn.addEventListener('click', function() {
+            let value = parseInt(quantityInput.value);
+            let min = parseInt(quantityInput.min);
+            if (value > min) {
+                quantityInput.value = value - 1;
+            }
+        });
+        
+        // Increase quantity
+        increaseBtn.addEventListener('click', function() {
+            let value = parseInt(quantityInput.value);
+            quantityInput.value = value + 1;
+        });
+        
+        // Update constraints when order type changes
+        bulkRadio.addEventListener('change', updateQuantityConstraints);
+        singleRadio.addEventListener('change', updateQuantityConstraints);
+        
+        // Validate on input
+        quantityInput.addEventListener('input', function() {
+            let value = parseInt(this.value);
+            let min = parseInt(this.min);
+            if (value < min) {
+                this.value = min;
+            }
+        });
+    });
 </script>
 </html>
