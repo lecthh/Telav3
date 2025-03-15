@@ -13,9 +13,12 @@ use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 use LivewireUI\Modal\ModalComponent;
 use App\Mail\VerificationCodeMail;
+use App\Traits\Toastable;
 
 class ModalLogin extends ModalComponent
 {
+    use Toastable;
+
     public $isSignup = false;
     public $isForgotPassword = false;
 
@@ -161,7 +164,7 @@ class ModalLogin extends ModalComponent
     public function resendEmailVerificationCode()
     {
         $this->sendEmailVerificationCode();
-        session()->flash('message', 'A new verification code has been sent to your email.');
+        $this->toast('A new verification code has been sent to your email.', 'success');
     }
 
     public function register()
@@ -199,7 +202,7 @@ class ModalLogin extends ModalComponent
 
             Auth::login($user);
             Log::info('User logged in successfully');
-
+            $this->toast('Registration Succesful! Welcome to Tel-A!', 'success');
             return redirect()->to('/');
         } catch (\Exception $e) {
             Log::error('Error in register function', ['message' => $e->getMessage()]);

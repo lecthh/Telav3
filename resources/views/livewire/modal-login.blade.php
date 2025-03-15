@@ -135,7 +135,7 @@
                     <button wire:click="resendEmailVerificationCode"
                         wire:loading.attr="disabled"
                         wire:target="verifyEmailCode,resendEmailVerificationCode"
-                        class="mt-2 text-cPrimary hover:underline hover:bg-Primary/button-primary-bg_hover px-4 py-2">
+                        class="mt-2 text-cPrimary hover:underline ">
                         Resend Code
                     </button>
                 </div>
