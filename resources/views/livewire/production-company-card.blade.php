@@ -12,7 +12,19 @@
                 <div class="flex flex-col gap-y-2 w-[168px]">
                     <div class="flex flex-col gap-y-1 font-gilroy">
                         <h5 class="text-cDarkGrey text-base font-bold">{{ $productionCompany->company_name }}</h5>
-                        <h3 class="text-black text-2xl font-bold">4996 PHP</h3>
+                        <div>
+                            <h3 class="text-black text-2xl font-bold">
+                                @if(isset($pricingData[$productionCompany->id]['base_price']))
+                                    {{ number_format($pricingData[$productionCompany->id]['base_price'], 2) }} PHP
+                                @else
+                                    Price unavailable
+                                @endif
+                            </h3>
+                            <p class="text-sm text-gray-500">starting price</p>
+                        </div>
+                        @if(isset($pricingData[$productionCompany->id]['bulk_price']) && $pricingData[$productionCompany->id]['bulk_price'] > 0)
+                            <p class="text-sm text-cPrimary">Bulk orders from {{ number_format($pricingData[$productionCompany->id]['bulk_price'], 2) }} PHP</p>
+                        @endif
                     </div>
                     <a class="font-inter text-cPrimary text-base hover:underline cursor-pointer">Visit Page</a>
                 </div>
@@ -26,7 +38,7 @@
         <button wire:click="back" class="flex bg-[#9CA3AF] bg-opacity-20 text-opacity-50 rounded-xl text-black gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-gray-600">
             Back
         </button>
-        <button wire:click="submit" class="flex bg-cPrimary rounded-xl text-white text-[18px] gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]">
+        <button wire:click="submit" class="flex bg-cPrimary rounded-xl text-white text-[18px] gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]" {{ $selectedProductionCompany ? '' : 'disabled' }}>
             Continue
         </button>
     </div>

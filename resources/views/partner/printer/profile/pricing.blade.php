@@ -54,8 +54,8 @@
                                             </th>
                                             <th class="px-5 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-700">Apparel Type</th>
                                             <th class="px-5 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-700">Production Type</th>
-                                            <th class="px-5 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-700">Base Price ($)</th>
-                                            <th class="px-5 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-700">Bulk Price ($)</th>
+                                            <th class="px-5 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-700">Base Price (PHP)</th>
+                                            <th class="px-5 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-700">Bulk Price (PHP)</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -87,12 +87,13 @@
                                 </button>
                             </div>
                         </form>
+
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    @include('layout.footer')
+
+        @include('layout.footer')
 </body>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -129,4 +130,38 @@
     });
 </script>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectAllCheckbox = document.getElementById('select-all');
+        const recordCheckboxes = document.querySelectorAll('.record-checkbox');
+        const saveButton = document.getElementById('save-button');
+        
+        // Function to update save button state
+        function updateSaveButtonState() {
+            const anySelected = Array.from(recordCheckboxes).some(checkbox => checkbox.checked);
+            saveButton.disabled = !anySelected;
+            saveButton.innerText = anySelected ? 'Save Selected Prices' : 'Select Items to Save';
+        }
+        
+        // Select all functionality
+        selectAllCheckbox.addEventListener('change', function() {
+            recordCheckboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+            updateSaveButtonState();
+        });
+        
+        // Individual checkbox change
+        recordCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                // Update "select all" checkbox
+                selectAllCheckbox.checked = Array.from(recordCheckboxes).every(cb => cb.checked);
+                updateSaveButtonState();
+            });
+        });
+        
+        // Initial button state
+        updateSaveButtonState();
+    });
+</script>
 </html>
