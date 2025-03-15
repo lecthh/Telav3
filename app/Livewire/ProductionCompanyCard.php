@@ -48,7 +48,7 @@ class ProductionCompanyCard extends Component
             $query->where('apparel_type', $this->apparel)
                   ->where('production_type', $this->productionType);
         })->get();
-
+        
         if ($this->productionCompanies->isEmpty()) {
             $this->productionCompanies = ProductionCompany::all();
         }

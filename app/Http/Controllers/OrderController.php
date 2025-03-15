@@ -12,6 +12,7 @@ use App\Models\CartItem;
 use App\Models\CartItemImage;
 use App\Models\CartItemImages;
 use Illuminate\Support\Facades\Auth;
+use App\Models\ProductionCompanyPricing;
 
 class OrderController extends Controller
 {
@@ -120,18 +121,56 @@ class OrderController extends Controller
         $apparelName = ApparelType::find($apparel)->name;
         $productionTypeName = ModelsProductionType::find($productionType)->name;
 
+        $pricing = ProductionCompanyPricing::where('production_company_id', $company)
+        ->where('apparel_type', $apparel)
+        ->where('production_type', $productionType)
+        ->first();
+
+        $basePrice = $pricing ? $pricing->base_price : 0;
+        $bulkPrice = $pricing ? $pricing->bulk_price : 0;
+
+        $orderPrice = isset($customization['order_type']) && $customization['order_type'] === 'bulk' 
+        ? $bulkPrice 
+        : $basePrice;
+
         $currentStep = 5;
-        return view('customer.place-order.review', compact('apparel', 'productionType', 'company', 'currentStep', 'customization', 'productionCompany', 'apparelName', 'productionTypeName', 'canvasImage'));
+        return view('customer.place-order.review', compact(
+            'apparel', 
+            'productionType', 
+            'company', 
+            'currentStep', 
+            'customization', 
+            'productionCompany', 
+            'apparelName', 
+            'productionTypeName', 
+            'canvasImage',
+            'basePrice',
+            'bulkPrice',
+            'orderPrice'
+        ));
     }
 
     public function storeReview($apparel, $productionType, $company)
     {
         $company = ProductionCompany::find($company);
         $customization = session()->get('customization');
+
+        $pricing = ProductionCompanyPricing::where('production_company_id', $company)
+        ->where('apparel_type', $apparel)
+        ->where('production_type', $productionType)
+        ->first();
+
+        $price = 0;
+        if ($pricing) {
+            $price = ($customization['order_type'] === 'bulk') 
+                ? $pricing->bulk_price 
+                : $pricing->base_price;
+        }
+        
         $cartItemData = [
             'apparel_type_id' => $apparel,
             'production_type' => $productionType,
-            'price' => rand(5, 2500), // TO BE IMPLEMENTED
+            'price' => $price,
             'production_company_id' => $company->id,
             'orderType' => $customization['order_type'],
             'customization' => $customization['custom_type'],
@@ -141,6 +180,7 @@ class OrderController extends Controller
         $cart = Cart::firstOrCreate([
             'user_id' => Auth::id()
         ]);
+        
         $cartItem = CartItem::create(array_merge($cartItemData, ['cart_id' => $cart->cart_id]));
         if (isset($customization['media'])) {
             foreach ($customization['media'] as $image) {
