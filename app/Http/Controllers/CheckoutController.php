@@ -22,9 +22,14 @@ class CheckoutController extends Controller
     public function checkout()
     {
         $cartItems = session()->get('selected_cart_items', []);
-        $cartItems = collect($cartItems);
+        if (!is_object($cartItems) || !method_exists($cartItems, 'isEmpty')) {
+            $cartItems = collect($cartItems);
+        }
+
         $user = Auth::user();
         $contactInformation = $user->addressInformation;
+
+        \Log::info('Cart items in checkout:', ['items' => $cartItems->toArray()]);
         return view('cart.checkout', compact('cartItems', 'user'));
     }
 

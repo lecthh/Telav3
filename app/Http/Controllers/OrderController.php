@@ -171,72 +171,100 @@ class OrderController extends Controller
 
     public function storeReview($apparel, $productionType, $company)
     {
-        $company = ProductionCompany::find($company);
-        $customization = session()->get('customization');
-
-        $pricing = \App\Models\ProductionCompanyPricing::where('production_company_id', $company)
-        ->where('apparel_type', $apparel)
-        ->where('production_type', $productionType)
-        ->first();
-
-        $unitPrice = 0;
-        if ($pricing) {
-            $unitPrice = ($customization['order_type'] === 'bulk') 
-                ? $pricing->bulk_price 
-                : $pricing->base_price;
-        }
-
-        $quantity = isset($customization['quantity']) ? $customization['quantity'] : 
-        ($customization['order_type'] === 'bulk' ? 10 : 1);
-
-        $totalPrice = $unitPrice * $quantity;
-        $downpayment = $totalPrice / 2;
-        
-        $cartItemData = [
-            'apparel_type_id' => $apparel,
-            'production_type' => $productionType,
-            'price' => $unitPrice,
-            'quantity' => $quantity, 
-            'production_company_id' => $company->id,
-            'orderType' => $customization['order_type'],
-            'customization' => $customization['custom_type'],
-            'description' => $customization['description'],
-            'total_price' => $totalPrice,
-            'downpayment' => $downpayment,
-        ];
-
-        $cart = Cart::firstOrCreate([
-            'user_id' => Auth::id()
-        ]);
-        
-        $cartItem = CartItem::create(array_merge($cartItemData, ['cart_id' => $cart->cart_id]));
-        
-        if (isset($customization['media']) && is_array($customization['media'])) {
-            foreach ($customization['media'] as $image) {
+        try {
+            $company = ProductionCompany::find($company);
+            $customization = session()->get('customization');
+            $canvasImage = session()->get('canvas_image');
+    
+            $pricing = \App\Models\ProductionCompanyPricing::where('production_company_id', $company->id)
+                ->where('apparel_type', $apparel)
+                ->where('production_type', $productionType)
+                ->first();
+    
+            $unitPrice = 0;
+            if ($pricing) {
+                $unitPrice = ($customization['order_type'] === 'bulk') 
+                    ? $pricing->bulk_price 
+                    : $pricing->base_price;
+            }
+    
+            $quantity = isset($customization['quantity']) ? $customization['quantity'] : 
+                ($customization['order_type'] === 'bulk' ? 10 : 1);
+    
+            $totalPrice = $unitPrice * $quantity;
+            $downpayment = $totalPrice / 2;
+    
+            \Illuminate\Support\Facades\Log::info('Creating cart item with data:', [
+                'unitPrice' => $unitPrice,
+                'quantity' => $quantity,
+                'totalPrice' => $totalPrice,
+                'downpayment' => $downpayment
+            ]);
+            
+            $cartItemData = [
+                'apparel_type_id' => $apparel,
+                'production_type' => $productionType,
+                'price' => $unitPrice,
+                'quantity' => $quantity, 
+                'production_company_id' => $company->id,
+                'orderType' => $customization['order_type'],
+                'customization' => $customization['custom_type'],
+                'description' => $customization['description'],
+                'total_price' => $totalPrice,
+                'downpayment' => $downpayment,
+            ];
+    
+            $cart = Cart::firstOrCreate([
+                'user_id' => Auth::id()
+            ]);
+            
+            $cartItem = CartItem::create(array_merge($cartItemData, ['cart_id' => $cart->cart_id]));
+            
+            // Verify the cart item was created with correct values
+            \Illuminate\Support\Facades\Log::info('Cart item created:', [
+                'cart_item_id' => $cartItem->cart_item_id,
+                'price' => $cartItem->price,
+                'total_price' => $cartItem->total_price,
+                'downpayment' => $cartItem->downpayment
+            ]);
+            
+            // Add media if available
+            if (isset($customization['media']) && is_array($customization['media'])) {
+                foreach ($customization['media'] as $image) {
+                    CartItemImages::create([
+                        'cart_item_id' => $cartItem->cart_item_id,
+                        'image' => $image,
+                    ]);
+                }
+            }
+    
+            // Handle canvas image if available
+            if (!empty($canvasImage)) {
+                $canvasImage = str_replace('data:image/png;base64,', '', $canvasImage);
+                $canvasImage = str_replace(' ', '+', $canvasImage);
+                $imageName = 'canvas_' . time() . '.png';
+                $path = 'uploads/designs/' . $imageName;
+                
+                // Store the image
+                \Illuminate\Support\Facades\Storage::disk('public')->put($path, base64_decode($canvasImage));
+                
+                // Save the path to the database
                 CartItemImages::create([
                     'cart_item_id' => $cartItem->cart_item_id,
-                    'image' => $image,
+                    'image' => $path,
                 ]);
             }
-        }
-
-        if (!empty($canvasImage)) {
-            $canvasImage = str_replace('data:image/png;base64,', '', $canvasImage);
-            $canvasImage = str_replace(' ', '+', $canvasImage);
-            $imageName = 'canvas_' . time() . '.png';
-            $path = 'uploads/designs/' . $imageName;
+    
+            session()->forget(['customization', 'canvas_image']);
             
-            // Store the image
-            \Illuminate\Support\Facades\Storage::disk('public')->put($path, base64_decode($canvasImage));
-            
-            // Save the path to the database
-            CartItemImages::create([
-                'cart_item_id' => $cartItem->cart_item_id,
-                'image' => $path,
+            return redirect()->route('customer.cart');
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error creating cart item: ' . $e->getMessage(), [
+                'exception' => $e,
+                'trace' => $e->getTraceAsString()
             ]);
+            
+            return redirect()->back()->with('error', 'There was an error adding the item to your cart. Please try again.');
         }
-
-        session()->forget(['customization', 'canvas_image']);
-        return redirect()->route('customer.cart');
     }
 }

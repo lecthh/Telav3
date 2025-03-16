@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -11,10 +12,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('messages', function (Blueprint $table) {
-            $table->json('attachments')->nullable()->after('body');
-            $table->dropColumn('attachment');
-        });
+        DB::statement('UPDATE cart_items SET total_price = price * quantity WHERE total_price IS NULL OR total_price = 0');
+        DB::statement('UPDATE cart_items SET downpayment = total_price / 2 WHERE downpayment IS NULL OR downpayment = 0');
     }
 
     /**
