@@ -7,7 +7,11 @@
                 class="flex flex-col gap-y-4 p-4 rounded-md bg-[#F4F4F4] cursor-pointer transition ease-in-out hover:shadow-lg hover:animate-fade-in-up {{ $selectedProductionCompany === $productionCompany->id ? 'border-2 border-purple-500' : 'border-gray-300' }}"
                 wire:click="selectProductionCompany({{ $productionCompany->id }})">
                 <div class="flex flex-col gap-y-3 w-[168px]">
-                    <img class="object-cover" src="{{ asset($productionCompany->company_logo) }}" alt="{{ $productionCompany->company_name }}">
+                    <img class="object-cover" src="{{ 
+                        $productionCompany->company_logo && !Str::startsWith($productionCompany->company_logo, 'imgs/') 
+                            ? Storage::url($productionCompany->company_logo) 
+                            : asset($productionCompany->company_logo) 
+                    }}" alt="{{ $productionCompany->company_name }}">
                 </div>
                 <div class="flex flex-col gap-y-2 w-[168px]">
                     <div class="flex flex-col gap-y-1 font-gilroy">
@@ -15,15 +19,15 @@
                         <div>
                             <h3 class="text-black text-2xl font-bold">
                                 @if(isset($pricingData[$productionCompany->id]['base_price']))
-                                    {{ number_format($pricingData[$productionCompany->id]['base_price'], 2) }} PHP
+                                {{ number_format($pricingData[$productionCompany->id]['base_price'], 2) }} PHP
                                 @else
-                                    Price unavailable
+                                Price unavailable
                                 @endif
                             </h3>
                             <p class="text-sm text-gray-500">starting price</p>
                         </div>
                         @if(isset($pricingData[$productionCompany->id]['bulk_price']) && $pricingData[$productionCompany->id]['bulk_price'] > 0)
-                            <p class="text-sm text-cPrimary">Bulk orders from {{ number_format($pricingData[$productionCompany->id]['bulk_price'], 2) }} PHP</p>
+                        <p class="text-sm text-cPrimary">Bulk orders from {{ number_format($pricingData[$productionCompany->id]['bulk_price'], 2) }} PHP</p>
                         @endif
                     </div>
                     <a class="font-inter text-cPrimary text-base hover:underline cursor-pointer">Visit Page</a>

@@ -121,19 +121,18 @@
                                     <div id="order-notifications" class="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar"></div>
                                 </div>
 
-                                <div class="flex flex-wrap gap-4 border-t border-gray-200 pt-4">
+                                <!-- <div class="flex flex-wrap gap-4 border-t border-gray-200 pt-4">
                                     <button class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
                                         Contact Support
                                     </button>
                                     <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-cPrimary hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
                                         Track Order
                                     </button>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>
 
-                    <!-- Empty State -->
                     <div id="no-order-selected" class="bg-white rounded-lg shadow-sm">
                         <div class="flex flex-col items-center justify-center w-full p-8">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -198,18 +197,14 @@
             const closeDetails = document.getElementById('close-details');
             const orderSearch = document.getElementById('order-search');
 
-            // IMPORTANT FIX: Initialize the view with only the placeholder showing, but never both panels
             orderDetails.classList.add('hidden');
             noOrderSelected.classList.remove('hidden');
 
-            // Handle order selection
             orderButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    // Highlight selected order
                     orderButtons.forEach(btn => btn.classList.remove('border-cPrimary', 'bg-purple-50'));
                     this.classList.add('border-cPrimary', 'bg-purple-50');
 
-                    // Extract order data
                     const orderId = this.getAttribute('data-order-id');
                     const orderStatus = this.getAttribute('data-order-status');
                     const orderCreatedAt = new Date(this.getAttribute('data-order-created-at'));
@@ -223,12 +218,10 @@
                         minute: 'numeric',
                     });
 
-                    // CRITICAL: Show details and ALWAYS hide the placeholder
                     orderIdDisplay.textContent = orderId.substr(-6);
                     orderDetails.classList.remove('hidden');
                     noOrderSelected.classList.add('hidden');
 
-                    // Set up status with appropriate color
                     let statusColorClass = '';
                     if (orderStatus === 'Completed') {
                         statusColorClass = 'bg-green-100 text-green-800';
@@ -238,7 +231,6 @@
                         statusColorClass = 'bg-blue-100 text-blue-800';
                     }
 
-                    // Populate the order status details
                     orderStatusDetails.innerHTML = `
                         <div class="flex flex-col md:flex-row md:justify-between gap-y-4 md:gap-y-0">
                             <div>
@@ -254,7 +246,6 @@
                         </div>
                     `;
 
-                    // Populate the notifications/timeline
                     const notifications = JSON.parse(this.getAttribute('data-order-notifications'));
                     let notificationsHTML = '';
 

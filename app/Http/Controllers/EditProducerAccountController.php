@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\ProductionCompany;
 use App\Models\ProductionCompanyPricing;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use App\Traits\Toastable;
 
 class EditProducerAccountController extends Controller
@@ -54,11 +55,22 @@ class EditProducerAccountController extends Controller
             $validatedData = $request->validate([
                 'company_name' => 'required|string|max:255',
                 'email'        => 'required|email|max:255',
-                'phone'        => 'required|numeric',
+                'phone' => 'required|regex:/^[0-9\+\-\(\)\s]*$/',
                 'address'      => 'required|string|max:255',
+                'company_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
 
             $productionCompany = ProductionCompany::where('user_id', auth()->id())->firstOrFail();
+
+            // Handle logo upload if present
+            if ($request->hasFile('company_logo')) {
+                if ($productionCompany->company_logo && $productionCompany->company_logo != 'imgs/companyLogo/placeholder.jpg') {
+                    Storage::disk('public')->delete($productionCompany->company_logo);
+                }
+                
+                $logoPath = $request->file('company_logo')->store('company_logos', 'public');
+                $validatedData['company_logo'] = $logoPath;
+            }
 
             $productionCompany->update($validatedData);
 
@@ -78,13 +90,11 @@ class EditProducerAccountController extends Controller
     public function updatePricing(Request $request)
     {
         try {
-            // Validate that selected records exist
             if (!$request->has('selected_records') || count($request->input('selected_records')) === 0) {
                 $this->toast('Please select at least one item to update.', 'warning');
                 return redirect()->back();
             }
     
-            // Validate the pricing data
             $validatedData = $request->validate([
                 'base_price.*' => 'required|numeric|min:0',
                 'bulk_price.*' => 'required|numeric|min:0',
@@ -99,9 +109,7 @@ class EditProducerAccountController extends Controller
     
             $updatedCount = 0;
     
-            // Process only the selected records
             foreach ($request->input('selected_records') as $recordId) {
-                // Find the pricing record by primary key (pricing_id)
                 $pricingRecord = ProductionCompanyPricing::find($recordId);
                 
                 if ($pricingRecord) {
