@@ -210,7 +210,8 @@ class OrderController extends Controller
         ]);
         
         $cartItem = CartItem::create(array_merge($cartItemData, ['cart_id' => $cart->cart_id]));
-        if (isset($customization['media'])) {
+        
+        if (isset($customization['media']) && is_array($customization['media'])) {
             foreach ($customization['media'] as $image) {
                 CartItemImages::create([
                     'cart_item_id' => $cartItem->cart_item_id,
@@ -219,6 +220,23 @@ class OrderController extends Controller
             }
         }
 
+        if (!empty($canvasImage)) {
+            $canvasImage = str_replace('data:image/png;base64,', '', $canvasImage);
+            $canvasImage = str_replace(' ', '+', $canvasImage);
+            $imageName = 'canvas_' . time() . '.png';
+            $path = 'uploads/designs/' . $imageName;
+            
+            // Store the image
+            \Illuminate\Support\Facades\Storage::disk('public')->put($path, base64_decode($canvasImage));
+            
+            // Save the path to the database
+            CartItemImages::create([
+                'cart_item_id' => $cartItem->cart_item_id,
+                'image' => $path,
+            ]);
+        }
+
+        session()->forget(['customization', 'canvas_image']);
         return redirect()->route('customer.cart');
     }
 }

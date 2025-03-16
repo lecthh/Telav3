@@ -109,7 +109,13 @@
                 <div class="flex flex-col gap-y-8 py-6">
                     <div class="flex flex-row gap-x-5 items-start justify-start">
                         <div class="flex flex-col gap-y-4 px-6 py-6 border border-black rounded-lg bg-[#F3F3F3] w-[100px] h-[120px] items-center justify-center">
-                            <img src="{{ asset('storage/' . $cartItem->cartItemImages[0]->image) }}" alt="Apparel Image" class="">
+                            @if($cartItem->cartItemImages->isNotEmpty())
+                                <img src="{{ asset('storage/' . $cartItem->cartItemImages[0]->image) }}" alt="Apparel Image" class="">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500 text-xs text-center">
+                                    No image
+                                </div>
+                            @endif
                         </div>
                         <div class="flex flex-col gap-y-2 flex-grow text-base">
                             <div class="flex flex-row justify-between">

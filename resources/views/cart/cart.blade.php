@@ -32,8 +32,13 @@
                         <label for="cart_item_{{ $cartItem->cart_item_id }}" class="flex gap-x-4 justify-between w-full">
                             <div class="flex flex-col gap-y-4 px-5 py-5 border border-black rounded-lg bg-[#F3F3F3] items-center justify-center">
                                 <div class="flex flex-col gap-y-2 p-2 w-[120px] h-[100px] justify-center">
-                                    <img src="{{ asset('storage/' . $cartItem->cartItemImages->first()->image) }}" alt="Apparel Image" class="w-full h-auto">
-
+                                    @if($cartItem->cartItemImages->isNotEmpty())
+                                        <img src="{{ asset('storage/' . $cartItem->cartItemImages->first()->image) }}" alt="Apparel Image" class="w-full h-auto">
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500 text-xs text-center">
+                                            No image available
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                             <div class="flex flex-col gap-y-2 flex-grow">
