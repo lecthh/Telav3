@@ -12,44 +12,91 @@
     @vite('resources/css/app.css')
 </head>
 
-<body class="flex flex-col h-full justify-between">
-    <div class="flex flex-col h-full">
-        <div class="flex p-1 bg-cPrimary font-gilroy font-bold text-white text-sm justify-center">Production Hub</div>
-        <div class="flex h-full">
-            @include('layout.printer')
-            <div class="flex flex-col gap-y-10 p-14 bg-[#F9F9F9] h-full w-full animate-fade-in">
-                <div class="flex flex-col gap-y-1">
-                    <h2 class="font-gilroy font-bold text-3xl text-black">Hello, {{ $productionCompany->company_name }}</h2>
-                    <h4 class="font-inter text-base">Here's what's going on today.</h4>
-                </div>
-                <ul class="flex gap-x-5">
-                    @livewire('dashboard-card', ['svg' => 'svgs.shipping-box', 'heading' => 'Pending Requests', 'value' => $pendingCount])
-                    @livewire('dashboard-card', ['svg' => 'svgs.print-palette', 'heading' => 'Design in Progress', 'value' => $designInProgressCount])
-                    @livewire('dashboard-card', ['svg' => 'svgs.print-palette', 'heading' => 'Finalize Order', 'value' => $finalizeOrderCount])
-                    @livewire('dashboard-card', ['svg' => 'svgs.square-clock', 'heading' => 'Awaiting Printing', 'value' => $awaitingPrintingCount])
-                    @livewire('dashboard-card', ['svg' => 'svgs.shredder-device', 'heading' => 'Printing in Progress', 'value' => $printingInProgressCount])
-                </ul>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <header class="bg-cPrimary text-white py-2 text-center font-gilroy font-bold text-sm">
+        Production Hub
+    </header>
 
-                <ul class="flex gap-x-5 justify-between">
-                    @livewire('dashboard-card', ['svg' => 'svgs.shredder-device', 'heading' => 'Ready for Collection', 'value' => 3])
-                    <li class="flex flex-col p-5 bg-white drop-shadow-sm rounded-lg text-base justify-between w-full h-[113px] border border-cGrey">
-                        <div class="flex gap-x-3 items-center">
-                            <h5>Payouts</h5>
+    <div class="flex flex-grow">
+        @include('layout.printer')
+
+        <main class="flex-grow bg-gray-50 p-8 lg:p-12">
+            <div class="max-w-7xl mx-auto">
+                <section class="mb-8">
+                    <div class="flex flex-col space-y-2 mb-8">
+                        <h1 class="font-gilroy font-bold text-3xl md:text-4xl text-gray-900">
+                            Hello, {{ $productionCompany->company_name }}
+                        </h1>
+                        <p class="text-gray-600 text-base">
+                            Here's an overview of your production activities today.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-3 md:grid-cols-5 gap-4 mb-8">
+                        @livewire('dashboard-card', ['svg' => 'svgs.shipping-box', 'heading' => 'Pending Requests', 'value' => $pendingCount, 'route' => 'partner.printer.orders'])
+                        @livewire('dashboard-card', ['svg' => 'svgs.print-palette', 'heading' => 'Design in Progress', 'value' => $designInProgressCount, 'route' => 'partner.printer.design-in-progress'])
+                        @livewire('dashboard-card', ['svg' => 'svgs.print-palette', 'heading' => 'Finalize Order', 'value' => $finalizeOrderCount, 'route' => 'partner.printer.finalize-order'])
+                        @livewire('dashboard-card', ['svg' => 'svgs.square-clock', 'heading' => 'Awaiting Printing', 'value' => $awaitingPrintingCount, 'route' => 'partner.printer.awaiting-printing'])
+                        @livewire('dashboard-card', ['svg' => 'svgs.shredder-device', 'heading' => 'Printing Progress', 'value' => $printingInProgressCount, 'route' => 'partner.printer.printing-in-progress'])
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200">
+                            <div class="flex justify-between items-center mb-4">
+                                <div class="flex items-center space-x-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-cPrimary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                                    </svg>
+                                    <h2 class="text-lg font-semibold text-gray-800">Ready for Collection</h2>
+                                </div>
+                                <span class="text-2xl font-bold text-cPrimary">3</span>
+                            </div>
+                            <p class="text-gray-500 text-sm">Orders are prepared and waiting for pickup or delivery.</p>
                         </div>
-                        <h3 class="font-gilroy font-bold text-xl text-black">3</h3>
-                    </li>
-                </ul>
-                <div class="flex flex-col gap-y-5">
-                    <h3 class="flex font-gilroy font-bold text-lg text-black">Statistics</h3>
-                    <li class="flex flex-col p-5 bg-white drop-shadow-sm rounded-lg text-base justify-between w-full h-[200px] border border-cGrey">
-                    </li>
-                </div>
+
+                        <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200">
+                            <div class="flex justify-between items-center mb-4">
+                                <div class="flex items-center space-x-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-cPrimary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <h2 class="text-lg font-semibold text-gray-800">Payouts</h2>
+                                </div>
+                                <span class="text-2xl font-bold text-cPrimary">3</span>
+                            </div>
+                            <p class="text-gray-500 text-sm">Payments pending and processed this month.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">Production Statistics</h3>
+                        <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200 min-h-[300px]">
+                            <p class="text-center text-gray-500">Statistics chart coming soon</p>
+                            <!-- Placeholder for future chart integration -->
+                        </div>
+                    </div>
+                </section>
             </div>
-        </div>
+        </main>
     </div>
 
     @include('layout.footer')
     @include('chat.chat-widget')
+
+    <script>
+        // Optional: Add some interactivity
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('[data-dashboard-card]');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.classList.add('transform', 'scale-105', 'transition', 'duration-300');
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.classList.remove('transform', 'scale-105', 'transition', 'duration-300');
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
