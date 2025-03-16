@@ -20,7 +20,18 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
-
+        DB::table('role_types')->insert([
+            [
+                'role_name' => 'Customer',
+            ],
+            [
+                'role_name' => 'Production Company Admin',
+            ],
+            [
+                'role_name' => 'Designer Admin',
+            ],
+        ]);
+        
         DB::table('apparel_types')->insert([
             [
                 'name' => 'Jersey',
@@ -40,17 +51,6 @@ class DatabaseSeeder extends Seeder
             ],
         ]);
 
-        DB::table('role_types')->insert([
-            [
-                'role_name' => 'Customer',
-            ],
-            [
-                'role_name' => 'Production Company Admin',
-            ],
-            [
-                'role_name' => 'Designer Admin',
-            ],
-        ]);
 
         DB::table('production_types')->insert([
             // [
@@ -96,5 +96,12 @@ class DatabaseSeeder extends Seeder
                 'name' => $size
             ]);
         }
+
+        $this->call([
+            CustomerSeeder::class,
+            ProductionCompanySeeder::class,
+            DesignerSeeder::class,
+            ProductionCompanyPricingSeeder::class,
+        ]);
     }
 }
