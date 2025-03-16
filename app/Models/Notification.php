@@ -10,7 +10,7 @@ class Notification extends Model
     use HasFactory;
 
     protected $table = 'notifications';
-    protected $primaryKey = 'notification_id';
+    protected $primaryKey = 'id';
     protected $fillable = [
         'user_id',
         'message',
