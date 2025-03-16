@@ -233,9 +233,9 @@ class OrderProduceController extends Controller {
     {
         try {
             $validatedData = $request->validate([
-                'selected_designer_id' => 'required|integer|exists:users,user_id',
+                'selected_designer_id' => 'required|integer|exists:designers,designer_id',
             ]);
-
+            
             $order = Order::findOrFail($order_id);
             $order->update([
                 'assigned_designer_id' => intval($validatedData['selected_designer_id']),

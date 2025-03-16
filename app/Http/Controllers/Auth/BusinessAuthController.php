@@ -82,7 +82,7 @@ class BusinessAuthController extends Controller
             } else if ($user->role_type_id == 3) {
                 $admin = Designer::where('user_id', $user->user_id)->first();
                 session(['admin' => $admin]);
-                return redirect()->intended('designer-dashboard')->with('success', 'Logged in successfully');
+                return redirect()->intended(route('designer-dashboard'))->with('success', 'Logged in successfully');
             }
         } else {
             return back()->withErrors(['email' => 'Invalid email or password'])->withInput();

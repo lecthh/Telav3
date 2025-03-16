@@ -31,6 +31,15 @@ class DesignerOrderController extends Controller
             ->where('status_id', 7)
             ->count();
 
+            Log::info('Dashboard accessed', [
+                'session_has_admin' => session()->has('admin'),
+                'designer' => $designer ? $designer->toArray() : null
+            ]);
+            
+            if (!$designer) {
+                return redirect()->route('login')->with('error', 'Designer session not found');
+            }
+
         return view('partner.designer.dashboard', compact('assignedOrdersCount', 'completedOrdersCount'));
     }
 

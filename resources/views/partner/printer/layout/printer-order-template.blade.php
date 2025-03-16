@@ -5,20 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
-        rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/pagedone@1.2.2/src/css/pagedone.css " rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     @vite('resources/css/app.css')
 </head>
 
 <body class="flex flex-col h-screen justify-between bg-gray-50">
     <div class="flex flex-col h-full">
+        <!-- Header Banner -->
         <div class="flex p-1.5 bg-cPrimary font-gilroy font-bold text-white text-sm justify-center">
             Production Hub
         </div>
+
         <div class="flex h-full">
+            <!-- Sidebar Navigation -->
             @include('layout.printer')
+
+            <!-- Main Content Area -->
             <div class="flex flex-col gap-y-8 p-8 bg-[#F9F9F9] w-full">
                 <!-- Dashboard Header -->
                 <div class="flex justify-between items-center">
@@ -41,15 +43,15 @@
                     <div class="flex justify-between items-center">
                         <div class="flex items-center gap-x-2">
                             <h1 class="font-gilroy font-bold text-2xl text-gray-900">Orders</h1>
-                            @if($pendingOrders->isNotEmpty())
+                            @if(isset($orders) && $orders->isNotEmpty())
                             <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-cPrimary bg-opacity-10 text-cPrimary">
-                                {{ $pendingOrders->count() }}
+                                {{ $orders->count() }}
                             </span>
                             @endif
                         </div>
-                        
+
                         <div class="flex items-center gap-x-3">
-                            @if($pendingOrders->isNotEmpty())
+                            @if(isset($orders) && $orders->isNotEmpty())
                             <button id="bulkActionBtn" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary disabled:opacity-50" disabled>
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
@@ -57,7 +59,7 @@
                                 Bulk Actions
                             </button>
                             @endif
-                            
+
                             <div class="relative inline-block text-left" x-data="{ open: false }">
                                 <button @click="open = !open" type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -65,7 +67,7 @@
                                     </svg>
                                     Filter
                                 </button>
-                                
+
                                 <!-- Dropdown menu -->
                                 <div x-show="open" @click.away="open = false" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10" x-cloak>
                                     <div class="py-1">
@@ -79,7 +81,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Order Navigation Tabs -->
                     <div class="border-b border-gray-200">
                         @include('partner.printer.order-nav')
@@ -87,13 +89,13 @@
 
                     <!-- Orders Table -->
                     <div class="bg-white rounded-lg shadow animate-fade-in overflow-hidden">
-                        @if($pendingOrders->isEmpty())
+                        @if(!isset($orders) || $orders->isEmpty())
                         <div class="flex flex-col items-center justify-center py-16 px-4 text-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            <h3 class="text-lg font-medium text-gray-900 mb-1">No pending orders</h3>
-                            <p class="text-gray-500">New orders will appear here when customers place them.</p>
+                            <h3 class="text-lg font-medium text-gray-900 mb-1">{{ $emptyMessage ?? 'No orders available' }}</h3>
+                            <p class="text-gray-500">New orders will appear here when they reach this stage.</p>
                         </div>
                         @else
                         <div class="overflow-x-auto">
@@ -106,19 +108,15 @@
                                                 <span class="ml-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Select</span>
                                             </div>
                                         </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Apparel</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Production</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Type</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customization</th>
+                                        @foreach($columnHeaders ?? ['Date', 'Order ID', 'Customer', 'Email', 'Apparel', 'Production', 'Order Type'] as $header)
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $header }}</th>
+                                        @endforeach
                                         <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($pendingOrders as $order)
-                                    <tr class="hover:bg-gray-50 cursor-pointer transition duration-150 ease-in-out" data-url="{{ route('partner.printer.pending-order-x', ['order_id' => $order->order_id]) }}">
+                                    @foreach($orders as $order)
+                                    <tr class="hover:bg-gray-50 cursor-pointer transition duration-150 ease-in-out" data-url="{{ route($routePrefix, ['order_id' => $order->order_id]) }}">
                                         <td class="px-6 py-4 whitespace-nowrap" onclick="event.stopPropagation()">
                                             <input type="checkbox" class="order-checkbox h-4 w-4 text-cPrimary rounded border-gray-300 focus:ring-cPrimary">
                                         </td>
@@ -135,34 +133,70 @@
                                                 </div>
                                                 <div class="ml-3">
                                                     <div class="text-sm font-medium text-gray-900">{{ $order->user->name }}</div>
-                                                    <div class="text-xs text-gray-500 truncate max-w-[150px]">{{ $order->user->email }}</div>
                                                 </div>
                                             </div>
                                         </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 truncate max-w-[150px]">
+                                            {{ $order->user->email }}
+                                        </td>
+
+                                        @if(isset($columnHeaders) && in_array('Apparel', $columnHeaders))
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             {{ $order->apparelType->name ?? 'Unknown' }}
                                         </td>
+                                        @endif
+
+                                        @if(isset($columnHeaders) && in_array('Production', $columnHeaders))
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             {{ $order->productionType->name ?? 'Unknown' }}
                                         </td>
+                                        @endif
+
+                                        @if(isset($columnHeaders) && in_array('Order Type', $columnHeaders))
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $order->is_bulk_order ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800' }}">
                                                 {{ $order->is_bulk_order ? 'Bulk' : 'Single' }}
                                             </span>
                                         </td>
+                                        @endif
+
+                                        @if(isset($columnHeaders) && in_array('Customization', $columnHeaders))
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $order->is_customized ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
                                                 {{ $order->is_customized ? 'Personalized' : 'Standard' }}
                                             </span>
                                         </td>
+                                        @endif
+
+                                        @if(isset($columnHeaders) && in_array('Designer', $columnHeaders))
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {{ $order->designer->user->name ?? 'Unassigned' }}
+                                        </td>
+                                        @endif
+
+                                        @if(isset($columnHeaders) && in_array('Filled', $columnHeaders))
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $order->customizationDetails && !$order->customizationDetails->isEmpty() ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                                {{ $order->customizationDetails && !$order->customizationDetails->isEmpty() ? 'Yes' : 'No' }}
+                                            </span>
+                                        </td>
+                                        @endif
+
+                                        @if(isset($columnHeaders) && in_array('Remaining Payment', $columnHeaders))
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">
+                                            {{ number_format($order->final_price - $order->downpayment_amount, 2) }} PHP
+                                        </td>
+                                        @endif
+
+                                        @if(isset($columnHeaders) && in_array('Total Payment', $columnHeaders))
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">
+                                            {{ number_format($order->final_price, 2) }} PHP
+                                        </td>
+                                        @endif
+
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium" onclick="event.stopPropagation()">
                                             <div class="flex justify-end space-x-2">
-                                                <button class="text-cPrimary hover:text-purple-800" title="Assign Designer">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                    </svg>
-                                                </button>
-                                                <a href="{{ route('partner.printer.pending-order-x', ['order_id' => $order->order_id]) }}" class="text-indigo-600 hover:text-indigo-900" title="View Details">
+                                                <a href="{{ route($routePrefix, ['order_id' => $order->order_id]) }}" class="text-indigo-600 hover:text-indigo-900" title="View Details">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -175,47 +209,10 @@
                                 </tbody>
                             </table>
                         </div>
-                        
-                        <!-- Pagination -->
-                        @if($pendingOrders->count() > 10)
-                        <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-                            <div class="flex-1 flex justify-between sm:hidden">
-                                <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                    Previous
-                                </a>
-                                <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                    Next
-                                </a>
-                            </div>
-                            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                                <div>
-                                    <p class="text-sm text-gray-700">
-                                        Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">{{ $pendingOrders->count() }}</span> results
-                                    </p>
-                                </div>
-                                <div>
-                                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                                        <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                            <span class="sr-only">Previous</span>
-                                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                            </svg>
-                                        </a>
-                                        <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                                            1
-                                        </a>
-                                        <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                                            2
-                                        </a>
-                                        <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                            <span class="sr-only">Next</span>
-                                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                                            </svg>
-                                        </a>
-                                    </nav>
-                                </div>
-                            </div>
+
+                        @if(isset($orders) && $orders->count() > 10 && method_exists($orders, 'links'))
+                        <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+                            {{ $orders->links() }}
                         </div>
                         @endif
                         @endif
@@ -226,22 +223,20 @@
     </div>
 
     @include('layout.footer')
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Row click handler
             const rows = document.querySelectorAll('tr[data-url]');
             rows.forEach(row => {
                 row.addEventListener('click', function() {
                     window.location.href = row.getAttribute('data-url');
                 });
             });
-            
-            // Select all checkbox functionality
+
             const selectAllCheckbox = document.getElementById('select_all');
             const orderCheckboxes = document.querySelectorAll('.order-checkbox');
             const bulkActionBtn = document.getElementById('bulkActionBtn');
-            
+
             if (selectAllCheckbox) {
                 selectAllCheckbox.addEventListener('change', function() {
                     const isChecked = this.checked;
@@ -251,16 +246,16 @@
                     updateBulkActionButton();
                 });
             }
-            
+
             orderCheckboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', updateBulkActionButton);
             });
-            
+
             function updateBulkActionButton() {
                 if (bulkActionBtn) {
                     const checkedCount = document.querySelectorAll('.order-checkbox:checked').length;
                     bulkActionBtn.disabled = checkedCount === 0;
-                    
+
                     if (checkedCount > 0) {
                         bulkActionBtn.textContent = `Actions (${checkedCount})`;
                     } else {
@@ -268,7 +263,7 @@
                     }
                 }
             }
-            
+
             // Search functionality
             const searchInput = document.getElementById('orderSearch');
             if (searchInput) {
