@@ -344,7 +344,11 @@
                         @endif
 
                         <!-- Stage-Specific Content -->
-                        {!! $pageSpecificContent ?? '' !!}
+                        @hasSection('pageSpecificContent')
+                            @yield('pageSpecificContent')
+                        @else
+                            {!! $pageSpecificContent ?? '' !!}
+                        @endif
                     </div>
                 </div>
             </div>

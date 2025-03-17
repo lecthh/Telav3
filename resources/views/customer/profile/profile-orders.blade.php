@@ -71,7 +71,8 @@
                                 data-order-is-customized="{{ $order->is_customized ? 'Yes' : 'No' }}"
                                 data-order-is-bulk="{{ $order->is_bulk_order ? 'Yes' : 'No' }}"
                                 data-order-price="{{ $order->final_price }}"
-                                data-order-downpayment="{{ $order->downpayment_amount }}">
+                                data-order-downpayment="{{ $order->downpayment_amount }}"
+                                data-order-eta="{{ $order->eta }}">
                                 <div class="flex justify-between items-start">
                                     <div>
                                         <h3 class="font-inter font-bold text-gray-900 group-hover:text-cPrimary transition duration-150">
@@ -172,6 +173,22 @@
                                         </div>
                                     </div>
                                 </div>
+                                
+                                <!-- ETA information if available -->
+                                <div id="eta-container" class="border-t border-gray-200 pt-4 hidden">
+                                    <h3 class="font-inter font-bold text-lg mb-4">Estimated Completion Date</h3>
+                                    <div class="p-3 bg-gray-50 rounded-lg flex items-center">
+                                        <div class="flex items-center justify-center w-10 h-10 rounded-full bg-purple-100 mr-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-cPrimary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="text-gray-600 text-sm">Your order is expected to be completed by</p>
+                                            <p id="order-eta" class="font-medium text-lg text-cPrimary"></p>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <div class="border-t border-gray-200 pt-4">
                                     <h3 class="font-inter font-bold text-lg mb-4">Order Status Timeline</h3>
@@ -263,6 +280,8 @@
             const orderIsBulk = document.getElementById('order-is-bulk');
             const orderPrice = document.getElementById('order-price');
             const orderDownpayment = document.getElementById('order-downpayment');
+            const etaContainer = document.getElementById('eta-container');
+            const orderEta = document.getElementById('order-eta');
 
             orderDetails.classList.add('hidden');
             noOrderSelected.classList.remove('hidden');
@@ -285,6 +304,7 @@
                     const isBulk = this.getAttribute('data-order-is-bulk');
                     const price = this.getAttribute('data-order-price');
                     const downpayment = this.getAttribute('data-order-downpayment');
+                    const eta = this.getAttribute('data-order-eta');
                     
                     const formattedDate = orderCreatedAt.toLocaleDateString('en-US', {
                         year: 'numeric',
@@ -309,6 +329,21 @@
                     orderIsBulk.textContent = isBulk;
                     orderPrice.textContent = parseFloat(price).toLocaleString('en-US', { style: 'currency', currency: 'PHP' });
                     orderDownpayment.textContent = parseFloat(downpayment).toLocaleString('en-US', { style: 'currency', currency: 'PHP' });
+                    
+                    // Handle ETA display
+                    if (eta && eta !== 'null') {
+                        const etaDate = new Date(eta);
+                        const formattedEta = etaDate.toLocaleDateString('en-US', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+                        orderEta.textContent = formattedEta;
+                        etaContainer.classList.remove('hidden');
+                    } else {
+                        etaContainer.classList.add('hidden');
+                    }
 
                     let statusColorClass = '';
                     if (orderStatus === 'Completed') {

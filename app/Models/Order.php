@@ -31,6 +31,7 @@ class Order extends Model
         'custom_design_info',
         'revision_count',
         'token',
+        'eta',
     ];
 
     public function user()

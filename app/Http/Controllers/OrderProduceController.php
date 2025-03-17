@@ -216,16 +216,21 @@ class OrderProduceController extends Controller {
         return view('partner.printer.awaiting.order', compact('order'));
     }
 
-    public function awaitingOrderPost($order_id)
+    public function awaitingOrderPost(Request $request, $order_id)
     {
         try {
+            $request->validate([
+                'eta' => 'required|date|after:today',
+            ]);
+
             $order = Order::findOrFail($order_id);
             $order->status_id = 5;
+            $order->eta = $request->eta;
             $order->save();
 
             Notification::create([
                 'user_id'  => $order->user->user_id,
-                'message'  => 'Your Order Is Being Printed',
+                'message'  => 'Your Order Is Being Printed. Expected completion date: ' . date('F j, Y', strtotime($request->eta)),
                 'is_read'  => false,
                 'order_id' => $order->order_id,
             ]);
