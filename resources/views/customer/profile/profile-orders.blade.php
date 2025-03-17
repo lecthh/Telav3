@@ -178,14 +178,14 @@
                                     <div id="order-notifications" class="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar"></div>
                                 </div>
 
-                                <div class="flex flex-wrap gap-4 border-t border-gray-200 pt-4">
+                                <!-- <div class="flex flex-wrap gap-4 border-t border-gray-200 pt-4">
                                     <button class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
                                         Contact Support
                                     </button>
                                     <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-cPrimary hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
                                         Track Order
                                     </button>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>

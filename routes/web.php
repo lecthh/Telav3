@@ -30,6 +30,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/production-services', [App\Http\Controllers\ProductionCompanyController::class, 'index'])->name('production.services');
+Route::get('/production-company/{id}', [App\Http\Controllers\ProductionCompanyController::class, 'show'])->name('production.company.show');
 Route::get('/order/details/{productionCompany}', [App\Http\Controllers\OrderController::class, 'details'])->name('order.details');
 
 // FRONTEND BECOME A PARTNER ROUTES

@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use App\Models\ProductionType;
+use App\Models\ProductionCompanyPricing;
+use App\Models\ApparelType;
+use App\Models\ProductionCompany;
 
 class ProductionCompanyController extends Controller
 {
@@ -38,5 +41,25 @@ class ProductionCompanyController extends Controller
         return view('prod-services', [
             'productionTypes' => $productionTypes
         ]);
+    }
+
+    public function show($id)
+    {
+        $productionCompany = ProductionCompany::findOrFail($id);
+        
+        $pricingRecords = ProductionCompanyPricing::with(['apparelType', 'productionType'])
+            ->where('production_company_id', $id)
+            ->get();
+        
+        $apparelTypes = ApparelType::all();
+        $productionTypes = ProductionType::all();
+        
+        return view('production-company-profile', compact(
+            'productionCompany',
+            'pricingRecords',
+            'apparelTypes',
+            'productionTypes'
+        ));
+        
     }
 }

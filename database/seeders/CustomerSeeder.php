@@ -87,6 +87,20 @@ class CustomerSeeder extends Seeder
                     'phone_number' => '555-234-5678',
                 ],
             ],
+            [
+                'user_id' => Str::uuid()->toString(),
+                'name' => 'Alexis Customer',
+                'email' => 'dev.lecth@gmail.com',
+                'password' => Hash::make('password123'),
+                'role_type_id' => 1, // Customer
+                'address' => [
+                    'address' => 'Honey St',
+                    'state' => 'Cebu',
+                    'city' => 'Cebu City',
+                    'zip_code' => '6000',
+                    'phone_number' => '534-254-5628',
+                ],
+            ],
         ];
 
         foreach ($customers as $customer) {
