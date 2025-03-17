@@ -16,19 +16,15 @@
 @include('layout.nav')
 
 <body class="flex flex-col h-screen justify-between">
-    <div class="font-inter bg-white flex flex-col px-[200px] py-[100px] gap-y-[60px]">
-        <div class="flex flex-col gap-y-10">
+    <div class="font-inter bg-white flex flex-col px-[200px] py-[60px] gap-y-[40px]">
+        <div class="flex flex-col gap-y-6">
             <div class="flex flex-col gap-y-3">
                 <h1 class="font-gilroy font-bold text-5xl">Partnered Production Companies</h1>
+                <p class="text-gray-600 max-w-3xl">Find the perfect production partner for your custom apparel needs. Filter by apparel type, production method, and price to narrow down your options.</p>
             </div>
         </div>
         <div class="flex flex-col gap-y-6 animate-fade-in">
-            <div class="flex justify-start">
-                @livewire('include.base-price-filter')
-            </div>
-            <div class="flex gap-y-6">
-                @livewire('production-companies-component')
-            </div>
+            @livewire('production-companies-component')
         </div>
     </div>
     @livewireScripts
