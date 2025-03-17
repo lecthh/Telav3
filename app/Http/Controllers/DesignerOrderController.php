@@ -30,18 +30,35 @@ class DesignerOrderController extends Controller
                 return redirect()->route('login')->with('error', 'Designer session not found');
             }
     
+            // Active orders (still in progress)
             $assignedOrdersCount = Order::where('assigned_designer_id', $designer->designer_id)
                 ->where('status_id', '>=', 2)
                 ->where('status_id', '!=', 7)
                 ->count();
     
-    
+            // Completed orders
             $completedOrdersCount = Order::where('assigned_designer_id', $designer->designer_id)
                 ->where('status_id', 7)
                 ->count();
+                
+            // Get most recent assigned orders for quick access
+            $recentOrders = Order::where('assigned_designer_id', $designer->designer_id)
+                ->where('status_id', '>=', 2)
+                ->where('status_id', '!=', 7)
+                ->orderBy('created_at', 'desc')
+                ->take(3)
+                ->get();
+                
+            // Total orders handled
+            $totalOrdersHandled = $assignedOrdersCount + $completedOrdersCount;
     
-                return view('partner.designer.dashboard', compact('designer', 'assignedOrdersCount', 'completedOrdersCount'))
-                ->with('productionCompany', $designer);
+            return view('partner.designer.dashboard', compact(
+                'designer', 
+                'assignedOrdersCount', 
+                'completedOrdersCount',
+                'recentOrders',
+                'totalOrdersHandled'
+            ));
         } catch (\Exception $e) {
             Log::error('Error in designer dashboard: ' . $e->getMessage(), [
                 'exception' => $e
@@ -75,6 +92,7 @@ class DesignerOrderController extends Controller
         $assignedOrders = Order::where('assigned_designer_id', $designer->designer_id)
             ->where('status_id', '>=', 2)
             ->where('status_id', '!=', 7)
+            ->orderBy('created_at', 'desc') // Order by newest first
             ->get();
 
         return view('partner.designer.orders', compact('assignedOrders'));
@@ -218,6 +236,7 @@ class DesignerOrderController extends Controller
         $designer = session('admin');
         $orders = Order::where('assigned_designer_id', $designer->designer_id)
             ->where('status_id', '=', 7)
+            ->orderBy('created_at', 'desc') // Order by newest first
             ->get();
         return view('partner.designer.complete.orders-complete', compact('orders'));
     }

@@ -29,9 +29,10 @@ class OrderProduceController extends Controller {
             $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
         }
         
-        // Filter by production company ID
+        // Filter by production company ID and order by created_at descending (newest first)
         $pendingOrders = Order::where('status_id', '1')
             ->where('production_company_id', $productionCompanyId)
+            ->orderBy('created_at', 'desc')
             ->get();
             
         Log::info('Pending orders', [
@@ -85,9 +86,10 @@ class OrderProduceController extends Controller {
             'id' => $productionCompanyId
         ]);
         
-        // Filter by production company ID
+        // Filter by production company ID and order by created_at descending (newest first)
         $orders = Order::where('status_id', '2')
             ->where('production_company_id', $productionCompanyId)
+            ->orderBy('created_at', 'desc')
             ->get();
             
         Log::info('Filtered design in progress orders', [
@@ -121,9 +123,10 @@ class OrderProduceController extends Controller {
             $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
         }
         
-        // Filter by production company ID
+        // Filter by production company ID and order by created_at descending (newest first)
         $finalizeOrders = Order::where('status_id', '3')
             ->where('production_company_id', $productionCompanyId)
+            ->orderBy('created_at', 'desc')
             ->get();
             
         \Log::info('Finalize orders', [
@@ -194,9 +197,10 @@ class OrderProduceController extends Controller {
             $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
         }
         
-        // Filter by production company ID
+        // Filter by production company ID and order by created_at descending (newest first)
         $awaitingPrinting = Order::where('status_id', '4')
             ->where('production_company_id', $productionCompanyId)
+            ->orderBy('created_at', 'desc')
             ->get();
             
         \Log::info('Awaiting printing orders', [
@@ -264,9 +268,10 @@ class OrderProduceController extends Controller {
             $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
         }
         
-        // Filter by production company ID
+        // Filter by production company ID and order by created_at descending (newest first)
         $printingInProgress = Order::where('status_id', '5')
             ->where('production_company_id', $productionCompanyId)
+            ->orderBy('created_at', 'desc')
             ->get();
             
         \Log::info('Printing in progress orders', [
@@ -325,9 +330,10 @@ class OrderProduceController extends Controller {
             $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
         }
         
-        // Filter by production company ID
+        // Filter by production company ID and order by created_at descending (newest first)
         $readyOrders = Order::where('status_id', '6')
             ->where('production_company_id', $productionCompanyId)
+            ->orderBy('created_at', 'desc')
             ->get();
             
         \Log::info('Ready for collection orders', [
@@ -407,9 +413,10 @@ class OrderProduceController extends Controller {
             $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
         }
         
-        // Filter by production company ID
+        // Filter by production company ID and order by created_at descending (newest first)
         $completedOrders = Order::where('status_id', '7')
             ->where('production_company_id', $productionCompanyId)
+            ->orderBy('created_at', 'desc')
             ->get();
             
         \Log::info('Completed orders', [

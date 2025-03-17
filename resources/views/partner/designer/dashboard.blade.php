@@ -30,19 +30,84 @@
                         </p>
                     </div>
 
-                    <div class="flex gap-x-5 mb-8">
-                        @livewire('dashboard-card', ['svg' => 'svgs.shipping-box', 'heading' => 'Assigned Orders', 'value' => $assignedOrdersCount])
-                        @livewire('dashboard-card', ['svg' => 'svgs.shredder-device', 'heading' => 'Completed Orders', 'value' => $completedOrdersCount])
-                    </div>
-
-                    <ul class="flex gap-x-5 justify-between mb-8">
-                        <li class="flex flex-col p-5 bg-white drop-shadow-sm rounded-lg text-base justify-between w-full h-[113px] border border-cGrey">
-                            <div class="flex gap-x-3 items-center">
-                                <h5>Payouts</h5>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+                        <a href="{{ route('partner.designer.orders') }}" class="bg-white shadow-sm rounded-lg p-5 border border-gray-200 hover:shadow-md transition-shadow duration-300">
+                            <div class="flex items-center gap-x-3 mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-cGreen" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                                <h5 class="font-medium text-gray-700">Assigned Orders</h5>
                             </div>
-                            <h3 class="font-gilroy font-bold text-xl text-black">3</h3>
-                        </li>
-                    </ul>
+                            <h3 class="font-gilroy font-bold text-2xl text-cGreen">{{ $assignedOrdersCount }}</h3>
+                            <p class="text-sm text-gray-500 mt-1">In-progress design work</p>
+                        </a>
+                        
+                        <a href="{{ route('partner.designer.complete') }}" class="bg-white shadow-sm rounded-lg p-5 border border-gray-200 hover:shadow-md transition-shadow duration-300">
+                            <div class="flex items-center gap-x-3 mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-cGreen" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <h5 class="font-medium text-gray-700">Completed Orders</h5>
+                            </div>
+                            <h3 class="font-gilroy font-bold text-2xl text-cGreen">{{ $completedOrdersCount }}</h3>
+                            <p class="text-sm text-gray-500 mt-1">Successfully finished designs</p>
+                        </a>
+                        
+                        <div class="bg-white shadow-sm rounded-lg p-5 border border-gray-200">
+                            <div class="flex items-center gap-x-3 mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-cGreen" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                </svg>
+                                <h5 class="font-medium text-gray-700">Total Designs</h5>
+                            </div>
+                            <h3 class="font-gilroy font-bold text-2xl text-cGreen">{{ $totalOrdersHandled }}</h3>
+                            <p class="text-sm text-gray-500 mt-1">All-time design work</p>
+                        </div>
+                    </div>
+                    
+                    @if($recentOrders->count() > 0)
+                    <div class="bg-white shadow-md rounded-lg border border-gray-200 mb-8 overflow-hidden">
+                        <div class="border-b border-gray-200 p-4">
+                            <h3 class="font-semibold text-gray-800">Recent Design Assignments</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach($recentOrders as $order)
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {{ $order->created_at->format('M d, Y') }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">{{ substr($order->order_id, 0, 8) }}</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">{{ $order->user->name }}</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                                {{ $order->status->name ?? 'N/A' }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <a href="{{ route('partner.designer.assigned-x', ['order_id' => $order->order_id]) }}" class="text-cGreen hover:text-green-700">View Details</a>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    @endif
 
                     <div class="mt-8">
                         <h3 class="text-xl font-bold text-gray-900 mb-4">Statistics</h3>

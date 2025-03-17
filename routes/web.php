@@ -13,6 +13,7 @@ use App\Http\Controllers\OrderProduceController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\DesignerOrderController;
 use App\Http\Controllers\DesignerProfileController;
+use App\Http\Controllers\PrinterDashboardController;
 use App\Http\Controllers\EditProducerAccountController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Auth\PartnerRegistration;
@@ -39,9 +40,8 @@ Route::get('/partner-registration', [PartnerRegistration::class, 'partnerRegistr
 Route::get('/partner-confirmation', [PartnerRegistration::class, 'partnerConfirmation'])->name('partner-confirmation');
 
 // Printer Partner Routes
-Route::get('/printer-dashboard', function () {
-    return view('partner.printer.dashboard');
-})->name('printer-dashboard')->middleware('ProductionAdminOnly');
+Route::get('/printer-dashboard', [PrinterDashboardController::class, 'index'])
+    ->name('printer-dashboard')->middleware('ProductionAdminOnly');
 
 // Printer Partner Routes
 Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->group(function () {
