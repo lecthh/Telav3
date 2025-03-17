@@ -50,7 +50,7 @@
     <div class="container">
         <h1>Hello {{$name}},</h1>
         <p>Good day! We are pleased to inform you that your order has been confirmed by {{$Designer}}.</p>
-        <p>To view your design and add more details please visit this link {{$url}}</p>
+        <p>To view your design and add more details please <a href="{{$url}}" style="color: #4CAF50; font-weight: bold; text-decoration: underline;">click here</a>.</p>
         <p>If you did not request this, please ignore this email</p>
         <p>Thank you for choosing our service!</p>
         <div class="footer">

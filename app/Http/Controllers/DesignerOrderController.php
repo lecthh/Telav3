@@ -130,37 +130,81 @@ class DesignerOrderController extends Controller
             $designer = $order->designer->user->name;
             $token = uniqid();
             $user = $order->user;
+            $url = null;
 
+            // Generate the appropriate URL based on order type
             if ($order->is_bulk_order) {
                 if (!$order->is_customized) {
+                    // Bulk order with standard sizes
                     $url = URL::temporarySignedRoute(
                         'confirm-bulk',
                         now()->addMinutes(60),
                         ['token' => $token, 'email' => $user->email, 'order_id' => $order->order_id]
                     );
                 } else if ($order->is_customized && $order->apparelType->id != 1) {
+                    // Bulk order with customization (non-jersey)
                     $url = URL::temporarySignedRoute(
                         'confirm-bulk-custom',
                         now()->addMinutes(60),
                         ['token' => $token, 'email' => $user->email, 'order_id' => $order->order_id]
                     );
                 } else if ($order->is_customized && $order->apparelType->id == 1) {
+                    // Bulk order with jersey customization
                     $url = URL::temporarySignedRoute(
                         'confirm-jerseybulk-custom',
                         now()->addMinutes(60),
                         ['token' => $token, 'email' => $user->email, 'order_id' => $order->order_id]
                     );
                 }
+            } else {
+                // Single orders with customization
+                if ($order->is_customized) {
+                    // Handle single order customization here
+                    // You may need to create a new route for this
+                    Log::info('Single customized order confirmation, route needs to be created');
+                    $url = URL::temporarySignedRoute(
+                        'confirm-bulk-custom', // Use this for now, create a dedicated route later
+                        now()->addMinutes(60),
+                        ['token' => $token, 'email' => $user->email, 'order_id' => $order->order_id]
+                    );
+                } else {
+                    // Single orders with standard sizes
+                    $url = URL::temporarySignedRoute(
+                        'confirm-bulk', // Use this for now, create a dedicated route later
+                        now()->addMinutes(60),
+                        ['token' => $token, 'email' => $user->email, 'order_id' => $order->order_id]
+                    );
+                }
             }
 
+            // Save the token to the order
             $name = $user->name;
             $order->update(['token' => $token]);
             $order->save();
 
-            Mail::send('mail.confirmationLink', ['url' => $url, 'name' => $name, 'Designer' => $designer], function ($message) use ($user) {
-                $message->to($user->email);
-                $message->subject('Order Is Confirmed');
-            });
+            // Log for debugging
+            Log::info('Sending confirmation email', [
+                'order_id' => $order->order_id,
+                'user_email' => $user->email,
+                'is_bulk' => $order->is_bulk_order,
+                'is_customized' => $order->is_customized,
+                'apparel_type_id' => $order->apparelType->id,
+                'url' => $url,
+            ]);
+
+            // Send email only if we have a URL
+            if ($url) {
+                Mail::send('mail.confirmationLink', ['url' => $url, 'name' => $name, 'Designer' => $designer], function ($message) use ($user) {
+                    $message->to($user->email);
+                    $message->subject('Order Is Confirmed');
+                });
+            } else {
+                Log::error('No confirmation URL generated for order', [
+                    'order_id' => $order->order_id,
+                    'is_bulk' => $order->is_bulk_order,
+                    'is_customized' => $order->is_customized
+                ]);
+            }
 
             $this->toast('Designs uploaded and order finalized successfully!', 'success');
             return redirect()->route('partner.designer.orders');
