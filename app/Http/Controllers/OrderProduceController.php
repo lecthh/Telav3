@@ -15,7 +15,30 @@ class OrderProduceController extends Controller {
     //PENDING
     public function pending()
     {
-        $pendingOrders = Order::where('status_id', '1')->get();
+        // Get production company ID
+        $productionCompany = session('admin');
+        $productionCompanyId = null;
+        
+        // Handle the nested object structure
+        if (is_object($productionCompany) && isset($productionCompany->id)) {
+            $productionCompanyId = $productionCompany->id;
+        } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
+            $productionCompanyId = $productionCompany['App\\Models\\ProductionCompany']['id'];
+        } elseif (is_object($productionCompany) && property_exists($productionCompany, 'App\\Models\\ProductionCompany')) {
+            $pcData = $productionCompany->{'App\\Models\\ProductionCompany'};
+            $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
+        }
+        
+        // Filter by production company ID
+        $pendingOrders = Order::where('status_id', '1')
+            ->where('production_company_id', $productionCompanyId)
+            ->get();
+            
+        Log::info('Pending orders', [
+            'count' => $pendingOrders->count(),
+            'production_company_id' => $productionCompanyId
+        ]);
+        
         return view('partner.printer.orders', compact('pendingOrders'));
     }
 
@@ -29,8 +52,50 @@ class OrderProduceController extends Controller {
     //DESIGN IN PROGRESS
     public function designInProgress()
     {
-        $designInProgress = Order::where('status_id', '2')->get();
-        return view('partner.printer.design.orders-design', compact('designInProgress'));
+        // Get production company ID
+        $productionCompany = session('admin');
+        
+        Log::info('Design In Progress - Session Admin Data', [
+            'admin_session' => $productionCompany,
+            'user_id' => auth()->id(),
+            'auth_check' => auth()->check()
+        ]);
+        
+        // Get all status 2 orders first
+        $allInProgressOrders = Order::where('status_id', '2')->get();
+        Log::info('All design in progress orders', [
+            'count' => $allInProgressOrders->count(),
+            'orders' => $allInProgressOrders->toArray()
+        ]);
+        
+        // The issue is we need to filter by production company
+        $productionCompanyId = null;
+        
+        // Handle the nested object structure
+        if (is_object($productionCompany) && isset($productionCompany->id)) {
+            $productionCompanyId = $productionCompany->id;
+        } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
+            $productionCompanyId = $productionCompany['App\\Models\\ProductionCompany']['id'];
+        } elseif (is_object($productionCompany) && property_exists($productionCompany, 'App\\Models\\ProductionCompany')) {
+            $pcData = $productionCompany->{'App\\Models\\ProductionCompany'};
+            $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
+        }
+        
+        Log::info('Extracted production company ID', [
+            'id' => $productionCompanyId
+        ]);
+        
+        // Filter by production company ID
+        $orders = Order::where('status_id', '2')
+            ->where('production_company_id', $productionCompanyId)
+            ->get();
+            
+        Log::info('Filtered design in progress orders', [
+            'count' => $orders->count(),
+            'production_company_id' => $productionCompanyId
+        ]);
+        
+        return view('partner.printer.design.orders-design', compact('orders'));
     }
 
     public function designOrder($order_id)
@@ -42,8 +107,34 @@ class OrderProduceController extends Controller {
     //FINALIZE ORDER
     public function finalize()
     {
-        $finalizeOrders = Order::where('status_id', '3')->get();
-        return view('partner.printer.finalize.orders-finalize', compact('finalizeOrders'));
+        // Get production company ID
+        $productionCompany = session('admin');
+        $productionCompanyId = null;
+        
+        // Handle the nested object structure
+        if (is_object($productionCompany) && isset($productionCompany->id)) {
+            $productionCompanyId = $productionCompany->id;
+        } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
+            $productionCompanyId = $productionCompany['App\\Models\\ProductionCompany']['id'];
+        } elseif (is_object($productionCompany) && property_exists($productionCompany, 'App\\Models\\ProductionCompany')) {
+            $pcData = $productionCompany->{'App\\Models\\ProductionCompany'};
+            $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
+        }
+        
+        // Filter by production company ID
+        $finalizeOrders = Order::where('status_id', '3')
+            ->where('production_company_id', $productionCompanyId)
+            ->get();
+            
+        \Log::info('Finalize orders', [
+            'count' => $finalizeOrders->count(),
+            'production_company_id' => $productionCompanyId
+        ]);
+        
+        // The template expects variable name 'orders'
+        $orders = $finalizeOrders;
+        
+        return view('partner.printer.finalize.orders-finalize', compact('orders'));
     }
 
     public function finalizeOrder($order_id)

@@ -1,4 +1,4 @@
-<div class="flex flex-col border-r border-gray-200 h-full w-[280px] bg-white shadow-sm">
+<div class="flex flex-col border-r border-gray-200 h-screen w-[280px] bg-white shadow-sm">
     <div class="flex items-center gap-x-3 p-4 border-b border-gray-200 bg-gradient-to-r from-cGreen/10 to-white">
         <div class="flex p-1.5 bg-cGreen rounded-md text-white">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
