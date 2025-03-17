@@ -65,7 +65,7 @@
             <!-- Main Form Section -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <h2 class="font-gilroy font-bold text-xl mb-6">Specify Size Quantities</h2>
-                <p class="text-gray-600 mb-6">Please indicate how many items of each size you would like to order.</p>
+                <p class="text-gray-600 mb-6">Please indicate how many items of each size you would like to order. For single orders, the total should be between 1 and 9 items.</p>
                 
                 <form action="{{ route('confirm-single-post') }}" method="POST">
                     @csrf
@@ -123,7 +123,7 @@
                                     <line x1="12" y1="16" x2="12.01" y2="16"></line>
                                 </svg>
                             </div>
-                            <span class="text-sm text-gray-700">The total quantity must be at least 10 items for bulk orders.</span>
+                            <span class="text-sm text-gray-700">For single orders, please select between 1 and 9 items. For 10 or more items, please place a bulk order.</span>
                         </div>
                         <div id="quantity-counter" class="font-medium text-lg">Total: <span id="total-quantity">0</span></div>
                     </div>
@@ -165,7 +165,7 @@
                 totalQuantityDisplay.textContent = total;
                 
                 // Visual feedback based on quantity
-                if (total >= 10) {
+                if (total >= 1 && total <= 9) {
                     quantityCounter.classList.remove('text-red-500');
                     quantityCounter.classList.add('text-green-600');
                     confirmButton.classList.remove('opacity-50', 'cursor-not-allowed');

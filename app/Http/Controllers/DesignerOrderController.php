@@ -159,18 +159,16 @@ class DesignerOrderController extends Controller
             } else {
                 // Single orders with customization
                 if ($order->is_customized) {
-                    // Handle single order customization here
-                    // You may need to create a new route for this
-                    Log::info('Single customized order confirmation, route needs to be created');
+                    Log::info('Single customized order confirmation');
                     $url = URL::temporarySignedRoute(
-                        'confirm-bulk-custom', // Use this for now, create a dedicated route later
+                        'confirm-single-custom',
                         now()->addMinutes(60),
                         ['token' => $token, 'email' => $user->email, 'order_id' => $order->order_id]
                     );
                 } else {
                     // Single orders with standard sizes
                     $url = URL::temporarySignedRoute(
-                        'confirm-bulk', // Use this for now, create a dedicated route later
+                        'confirm-single',
                         now()->addMinutes(60),
                         ['token' => $token, 'email' => $user->email, 'order_id' => $order->order_id]
                     );

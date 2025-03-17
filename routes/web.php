@@ -158,6 +158,7 @@ Route::get('/login', [BusinessAuthController::class, 'login'])->name('login');
 Route::post('/login/user', [BusinessAuthController::class, 'loginPost'])->name('login.post');
 Route::get('/logout', [BusinessAuthController::class, 'logout'])->name('logout')->middleware(PreventBackHistory::class);
 
+// Bulk order confirmation routes
 Route::get('/confirm-bulk/{token}', [ConfirmBulkController::class, 'confirmBulk'])->name('confirm-bulk');
 Route::post('/confirm-bulk/post', [ConfirmBulkController::class, 'confirmBulkPost'])->name('confirm-bulk-post');
 
@@ -166,6 +167,13 @@ Route::post('/confirm-bulk-custom/post', [ConfirmationLinkController::class, 'co
 
 Route::get('/confirm-jerseybulk-custom/{token}', [ConfirmationLinkController::class, 'confirmJerseyBulkCustom'])->name('confirm-jerseybulk-custom');
 Route::post('/confirm-jerseybulk-custom/post', [ConfirmationLinkController::class, 'confirmJerseyBulkCustomPost'])->name('confirm-jerseybulk-custom-post');
+
+// Single order confirmation routes
+Route::get('/confirm-single/{token}', [ConfirmBulkController::class, 'confirmSingle'])->name('confirm-single');
+Route::post('/confirm-single/post', [ConfirmBulkController::class, 'confirmSinglePost'])->name('confirm-single-post');
+
+Route::get('/confirm-single-custom/{token}', [ConfirmationLinkController::class, 'confirmSingleCustom'])->name('confirm-single-custom');
+Route::post('/confirm-single-custom/post', [ConfirmationLinkController::class, 'confirmSingleCustomPost'])->name('confirm-single-custom-post');
 
 Route::get('export-customization/{order_id}', [CustomizationExportController::class, 'exportExcel'])->name('export.customization')->withoutMiddleware(PreventBackHistory::class);
 Route::get('/export/customization/{order_id}', [CustomizationExportController::class, 'export'])->name('export.customization');
