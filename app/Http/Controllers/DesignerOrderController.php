@@ -17,30 +17,37 @@ class DesignerOrderController extends Controller
     use Toastable;
     public function dashboard()
     {
-        $designer = session('admin');
-        $assignedOrdersCount = 0;
-        $completedOrdersCount = 0;
-
-        $assignedOrdersCount = Order::where('assigned_designer_id', $designer->designer_id)
-            ->where('status_id', '>=', 2)
-            ->where('status_id', '!=', 7)
-            ->count();
-
-
-        $completedOrdersCount = Order::where('assigned_designer_id', $designer->designer_id)
-            ->where('status_id', 7)
-            ->count();
-
+        try {
+            $designer = session('admin');
+            
             Log::info('Dashboard accessed', [
                 'session_has_admin' => session()->has('admin'),
                 'designer' => $designer ? $designer->toArray() : null
             ]);
             
             if (!$designer) {
+                Log::error('Designer session not found');
                 return redirect()->route('login')->with('error', 'Designer session not found');
             }
-
-        return view('partner.designer.dashboard', compact('assignedOrdersCount', 'completedOrdersCount'));
+    
+            $assignedOrdersCount = Order::where('assigned_designer_id', $designer->designer_id)
+                ->where('status_id', '>=', 2)
+                ->where('status_id', '!=', 7)
+                ->count();
+    
+    
+            $completedOrdersCount = Order::where('assigned_designer_id', $designer->designer_id)
+                ->where('status_id', 7)
+                ->count();
+    
+                return view('partner.designer.dashboard', compact('designer', 'assignedOrdersCount', 'completedOrdersCount'))
+                ->with('productionCompany', $designer);
+        } catch (\Exception $e) {
+            Log::error('Error in designer dashboard: ' . $e->getMessage(), [
+                'exception' => $e
+            ]);
+            return redirect()->route('login')->with('error', 'An error occurred loading the dashboard');
+        }
     }
 
     public function cancelDesignAssignment($order_id)

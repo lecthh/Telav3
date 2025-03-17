@@ -1,8 +1,6 @@
 <?php
 
-use App\Exports\CustomizationDetailsExport;
 use App\Http\Controllers\Auth\PasswordResetController;
-use App\Http\Controllers\AwaitingOrderController;
 use App\Http\Controllers\Auth\BusinessAuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
@@ -20,7 +18,6 @@ use App\Http\Controllers\Auth\PartnerRegistration;
 use App\Http\Controllers\Auth\GoogleAuth;
 use App\Http\Middleware\PreventBackHistory;
 use Illuminate\Support\Facades\Route;
-use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -95,7 +92,8 @@ Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->g
 });
 
 //Designer Routes
-Route::get('/designer-dashboard', [DesignerOrderController::class, 'dashboard'])->name('designer-dashboard')->middleware('DesignerOnly');
+Route::get('/designer-dashboard', [DesignerOrderController::class, 'dashboard'])
+    ->name('designer-dashboard')->middleware('DesignerOnly');
 Route::prefix('partner')->name('partner.')->middleware('DesignerOnly')->group(function () {
     Route::prefix('designer')->name('designer.')->group(function () {
         Route::get('/orders', [DesignerOrderController::class, 'index'])->name('orders');

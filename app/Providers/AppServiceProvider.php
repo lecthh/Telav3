@@ -28,8 +28,14 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer('partner.designer.*', function ($view) {
-            $productionCompany = ProductionCompany::where('user_id', auth()->id())->firstOrFail();
-            $view->with('productionCompany', $productionCompany);
+            try {
+                $productionCompany = ProductionCompany::where('user_id', auth()->id())->first();
+                if ($productionCompany) {
+                    $view->with('productionCompany', $productionCompany);
+                }
+            } catch (\Exception $e) {
+                // Don't add productionCompany to view if it doesn't exist
+            }
         });
 
         View::composer('partner.printer.dashboard', function ($view) {
