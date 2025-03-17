@@ -45,7 +45,10 @@ class ProductionCompanyController extends Controller
 
     public function show($id)
     {
+        
         $productionCompany = ProductionCompany::findOrFail($id);
+        $productionCompany->apparel_type = json_decode($productionCompany->apparel_type);
+        $productionCompany->production_type = json_decode($productionCompany->production_type);
         
         $pricingRecords = ProductionCompanyPricing::with(['apparelType', 'productionType'])
             ->where('production_company_id', $id)

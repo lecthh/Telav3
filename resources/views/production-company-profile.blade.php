@@ -53,7 +53,7 @@
                     <div class="md:w-1/3 p-6 flex items-center justify-center">
                         <div class="bg-gray-100 rounded-xl p-6 flex items-center justify-center w-full h-full">
                             @if($productionCompany->company_logo && $productionCompany->company_logo != 'imgs/companyLogo/placeholder.jpg')
-                                <img src="{{ asset('storage/' . $productionCompany->company_logo) }}" alt="{{ $productionCompany->company_name }}" class="max-w-full max-h-48 object-contain">
+                                <img src="{{ asset($productionCompany->company_logo) }}" alt="{{ $productionCompany->company_name }}" class="max-w-full max-h-48 object-contain">
                             @else
                                 <div class="flex flex-col items-center justify-center text-gray-400">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
