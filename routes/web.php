@@ -12,6 +12,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\OrderProduceController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\DesignerOrderController;
+use App\Http\Controllers\DesignerProfileController;
 use App\Http\Controllers\EditProducerAccountController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Auth\PartnerRegistration;
@@ -103,6 +104,12 @@ Route::prefix('partner')->name('partner.')->middleware('DesignerOnly')->group(fu
         Route::get('/completed', [DesignerOrderController::class, 'complete'])->name('complete');
         Route::get('/complete-x/{order_id}', [DesignerOrderController::class, 'completeOrder'])->name('complete-x');
         Route::post('/cancel-design-assignment/{order_id}', [DesignerOrderController::class, 'cancelDesignAssignment'])->name('cancel-design-assignment');
+        
+        // Designer Profile Routes
+        Route::prefix('profile')->name('profile.')->group(function () {
+            Route::get('/basics', [DesignerProfileController::class, 'basics'])->name('basics');
+            Route::post('/update', [DesignerProfileController::class, 'update'])->name('update');
+        });
     });
 });
 
