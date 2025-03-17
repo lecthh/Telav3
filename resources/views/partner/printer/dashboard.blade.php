@@ -70,9 +70,19 @@
 
                     <div class="mt-8">
                         <h3 class="text-xl font-bold text-gray-900 mb-4">Production Statistics</h3>
-                        <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200 min-h-[300px]">
-                            <p class="text-center text-gray-500">Statistics chart coming soon</p>
-                            <!-- Placeholder for future chart integration -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200">
+                                <h4 class="text-gray-700 font-semibold mb-4">Orders by Status</h4>
+                                <div class="h-64">
+                                    <canvas id="orderStatusChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200">
+                                <h4 class="text-gray-700 font-semibold mb-4">Monthly Production Volume</h4>
+                                <div class="h-64">
+                                    <canvas id="monthlyProductionChart"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -83,6 +93,9 @@
     @include('layout.footer')
     @include('chat.chat-widget')
 
+    <!-- Add Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <script>
         // Optional: Add some interactivity
         document.addEventListener('DOMContentLoaded', () => {
@@ -95,7 +108,121 @@
                     card.classList.remove('transform', 'scale-105', 'transition', 'duration-300');
                 });
             });
+            
+            // Initialize charts
+            initializeOrderStatusChart();
+            initializeMonthlyProductionChart();
         });
+        
+        function initializeOrderStatusChart() {
+            const ctx = document.getElementById('orderStatusChart').getContext('2d');
+            
+            // Use the data from controller
+            const statusData = {
+                labels: ['Pending', 'Design', 'Finalize', 'Awaiting', 'Printing', 'Ready', 'Completed'],
+                datasets: [{
+                    label: 'Orders by Status',
+                    data: [
+                        {{ $pendingCount }}, 
+                        {{ $designInProgressCount }}, 
+                        {{ $finalizeOrderCount }}, 
+                        {{ $awaitingPrintingCount }}, 
+                        {{ $printingInProgressCount }}, 
+                        {{ $readyForCollectionCount }},
+                        {{ count($completedOrders) }}
+                    ],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)',
+                        'rgba(255, 159, 64, 0.6)',
+                        'rgba(76, 175, 80, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(76, 175, 80, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            };
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: statusData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                boxWidth: 15,
+                                padding: 15,
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.raw;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function initializeMonthlyProductionChart() {
+            const ctx = document.getElementById('monthlyProductionChart').getContext('2d');
+            
+            // Use real data from controller
+            const months = {!! $monthlyLabelsJSON !!};
+            const completedData = {!! $monthlyOrdersJSON !!};
+            
+            const productionData = {
+                labels: months,
+                datasets: [{
+                    label: 'Completed Orders',
+                    data: completedData,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    tension: 0.4
+                }]
+            };
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: productionData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
     </script>
 </body>
 

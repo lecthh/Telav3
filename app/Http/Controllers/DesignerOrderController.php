@@ -51,13 +51,46 @@ class DesignerOrderController extends Controller
                 
             // Total orders handled
             $totalOrdersHandled = $assignedOrdersCount + $completedOrdersCount;
+            
+            // Get monthly assigned and completed orders for the chart (last 6 months)
+            $monthlyAssigned = [];
+            $monthlyCompleted = [];
+            $monthlyLabels = [];
+            
+            for ($i = 5; $i >= 0; $i--) {
+                $month = now()->subMonths($i);
+                $startOfMonth = $month->copy()->startOfMonth();
+                $endOfMonth = $month->copy()->endOfMonth();
+                
+                $assignedCount = Order::where('assigned_designer_id', $designer->designer_id)
+                    ->where('status_id', '>=', 2)
+                    ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+                    ->count();
+                    
+                $completedCount = Order::where('assigned_designer_id', $designer->designer_id)
+                    ->where('status_id', 7)
+                    ->whereBetween('updated_at', [$startOfMonth, $endOfMonth])
+                    ->count();
+                    
+                $monthlyAssigned[] = $assignedCount;
+                $monthlyCompleted[] = $completedCount;
+                $monthlyLabels[] = $month->format('M');
+            }
+            
+            // Convert to JSON for JavaScript
+            $monthlyAssignedJSON = json_encode($monthlyAssigned);
+            $monthlyCompletedJSON = json_encode($monthlyCompleted);
+            $monthlyLabelsJSON = json_encode($monthlyLabels);
     
             return view('partner.designer.dashboard', compact(
                 'designer', 
                 'assignedOrdersCount', 
                 'completedOrdersCount',
                 'recentOrders',
-                'totalOrdersHandled'
+                'totalOrdersHandled',
+                'monthlyAssignedJSON',
+                'monthlyCompletedJSON',
+                'monthlyLabelsJSON'
             ));
         } catch (\Exception $e) {
             Log::error('Error in designer dashboard: ' . $e->getMessage(), [

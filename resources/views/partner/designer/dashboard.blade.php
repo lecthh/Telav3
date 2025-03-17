@@ -110,10 +110,20 @@
                     @endif
 
                     <div class="mt-8">
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">Statistics</h3>
-                        <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200 min-h-[200px] flex items-center justify-center">
-                            <p class="text-center text-gray-500">Statistics chart coming soon</p>
-                            <!-- Placeholder for future chart integration -->
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">Design Performance</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200">
+                                <h4 class="text-gray-700 font-semibold mb-4">Design Workload Distribution</h4>
+                                <div class="h-64">
+                                    <canvas id="workloadChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200">
+                                <h4 class="text-gray-700 font-semibold mb-4">Monthly Design Activity</h4>
+                                <div class="h-64">
+                                    <canvas id="monthlyActivityChart"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -123,6 +133,9 @@
 
     @include('layout.footer')
 
+    <!-- Add Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const cards = document.querySelectorAll('[data-dashboard-card]');
@@ -134,7 +147,114 @@
                     card.classList.remove('transform', 'scale-105', 'transition', 'duration-300');
                 });
             });
+            
+            // Initialize charts
+            initializeWorkloadChart();
+            initializeMonthlyActivityChart();
         });
+        
+        function initializeWorkloadChart() {
+            const ctx = document.getElementById('workloadChart').getContext('2d');
+            
+            // Data visualization showing assigned vs completed work
+            const workloadData = {
+                labels: ['Assigned', 'Completed'],
+                datasets: [{
+                    label: 'Design Orders',
+                    data: [{{ $assignedOrdersCount }}, {{ $completedOrdersCount }}],
+                    backgroundColor: [
+                        'rgba(255, 193, 7, 0.6)',
+                        'rgba(0, 200, 81, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 193, 7, 1)',
+                        'rgba(0, 200, 81, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            };
+            
+            new Chart(ctx, {
+                type: 'pie',
+                data: workloadData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const percentage = Math.round(context.raw / ({{ $assignedOrdersCount + $completedOrdersCount }}) * 100);
+                                    return context.label + ': ' + context.raw + ' (' + percentage + '%)';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function initializeMonthlyActivityChart() {
+            const ctx = document.getElementById('monthlyActivityChart').getContext('2d');
+            
+            // Use real data from controller
+            const months = {!! $monthlyLabelsJSON !!};
+            const assignedData = {!! $monthlyAssignedJSON !!};
+            const completedData = {!! $monthlyCompletedJSON !!};
+            
+            const activityData = {
+                labels: months,
+                datasets: [
+                    {
+                        label: 'Assigned',
+                        data: assignedData,
+                        backgroundColor: 'rgba(255, 193, 7, 0.5)',
+                        borderColor: 'rgba(255, 193, 7, 1)',
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Completed',
+                        data: completedData,
+                        backgroundColor: 'rgba(0, 200, 81, 0.5)',
+                        borderColor: 'rgba(0, 200, 81, 1)',
+                        borderWidth: 2
+                    }
+                ]
+            };
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: activityData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    barPercentage: 0.7,
+                    categoryPercentage: 0.6
+                }
+            });
+        }
     </script>
 </body>
 

@@ -59,6 +59,28 @@ class PrinterDashboardController extends Controller
         // Format for display with comma thousands separator
         $formattedTotalEarnings = number_format($totalEarnings, 2);
         
+        // Get monthly completed orders for the chart (last 6 months)
+        $monthlyOrders = [];
+        $monthlyLabels = [];
+        
+        for ($i = 5; $i >= 0; $i--) {
+            $month = now()->subMonths($i);
+            $startOfMonth = $month->copy()->startOfMonth();
+            $endOfMonth = $month->copy()->endOfMonth();
+            
+            $count = Order::where('production_company_id', $productionCompanyId)
+                ->where('status_id', 7) // Completed orders
+                ->whereBetween('updated_at', [$startOfMonth, $endOfMonth])
+                ->count();
+                
+            $monthlyOrders[] = $count;
+            $monthlyLabels[] = $month->format('M');
+        }
+        
+        // Convert to JSON for JavaScript
+        $monthlyOrdersJSON = json_encode($monthlyOrders);
+        $monthlyLabelsJSON = json_encode($monthlyLabels);
+        
         return view('partner.printer.dashboard', compact(
             'productionCompany',
             'pendingCount',
@@ -67,7 +89,10 @@ class PrinterDashboardController extends Controller
             'awaitingPrintingCount',
             'printingInProgressCount',
             'readyForCollectionCount',
-            'formattedTotalEarnings'
+            'completedOrders',
+            'formattedTotalEarnings',
+            'monthlyOrdersJSON',
+            'monthlyLabelsJSON'
         ));
     }
 }
