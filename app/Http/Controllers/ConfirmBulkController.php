@@ -40,6 +40,8 @@ class ConfirmBulkController extends Controller
                 'sizes' => 'required|array',
                 'sizes.*' => 'nullable|integer|min:0',
                 'token' => 'required|exists:orders,token',
+                'new_total_price' => 'nullable|numeric|min:0',
+                'new_quantity' => 'nullable|integer|min:0',
             ]);
 
             $order = Order::where('order_id', $request->order_id)
@@ -75,6 +77,14 @@ class ConfirmBulkController extends Controller
             }
 
             $order->token = null;
+            
+            // Update the total price if provided
+            if ($request->has('new_total_price') && $request->has('new_quantity')) {
+                $order->final_price = $request->new_total_price;
+                $order->quantity = $request->new_quantity;
+                // Note: We're not updating the downpayment since it's already been paid
+            }
+            
             $order->save();
 
             $this->toast('Order customization details saved successfully!', 'success');
@@ -113,6 +123,8 @@ class ConfirmBulkController extends Controller
                 'sizes' => 'required|array',
                 'sizes.*' => 'nullable|integer|min:0',
                 'token' => 'required|exists:orders,token',
+                'new_total_price' => 'nullable|numeric|min:0',
+                'new_quantity' => 'nullable|integer|min:0',
             ]);
 
             $order = Order::where('order_id', $request->order_id)
@@ -153,6 +165,14 @@ class ConfirmBulkController extends Controller
             }
 
             $order->token = null;
+            
+            // Update the total price if provided
+            if ($request->has('new_total_price') && $request->has('new_quantity')) {
+                $order->final_price = $request->new_total_price;
+                $order->quantity = $request->new_quantity;
+                // Note: We're not updating the downpayment since it's already been paid
+            }
+            
             $order->save();
 
             $this->toast('Order customization details saved successfully!', 'success');

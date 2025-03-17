@@ -58,6 +58,15 @@
                             <p class="text-gray-500 mb-1">Production Method</p>
                             <p class="font-medium">{{$order->productionType->name}}</p>
                         </div>
+                        <div class="p-3 bg-gray-50 rounded-lg">
+                            <p class="text-gray-500 mb-1">Unit Price</p>
+                            <p class="font-medium">₱{{ number_format($order->final_price / $order->quantity, 2) }}</p>
+                            <input type="hidden" id="unit-price" value="{{ $order->final_price / $order->quantity }}">
+                        </div>
+                        <div class="p-3 bg-gray-50 rounded-lg">
+                            <p class="text-gray-500 mb-1">Original Total Price</p>
+                            <p class="font-medium">₱{{ number_format($order->final_price, 2) }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -67,7 +76,7 @@
                 <h2 class="font-gilroy font-bold text-xl mb-6">Specify Size Quantities</h2>
                 <p class="text-gray-600 mb-6">Please indicate how many items of each size you would like to order.</p>
                 
-                <form action="{{ route('confirm-single-post') }}" method="POST">
+                <form action="{{ route('confirm-bulk-post') }}" method="POST">
                     @csrf
                     <input type="hidden" name="order_id" value="{{ $order->order_id }}">
                     <input type="hidden" name="token" value="{{ $order->token }}">
@@ -127,6 +136,36 @@
                         </div>
                         <div id="quantity-counter" class="font-medium text-lg">Total: <span id="total-quantity">0</span></div>
                     </div>
+                    
+                    <!-- Order Price Summary -->
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+                        <h3 class="font-gilroy font-medium text-lg text-gray-900 mb-3">Order Summary</h3>
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-600">Quantity:</span>
+                                <span id="summary-quantity" class="font-medium">0 items</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-600">Unit Price:</span>
+                                <span id="summary-unit-price" class="font-medium">₱{{ number_format($order->final_price / $order->quantity, 2) }}</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-600">Original Downpayment (Paid):</span>
+                                <span class="font-medium">₱{{ number_format($order->downpayment_amount, 2) }}</span>
+                                <input type="hidden" id="original-downpayment" value="{{ $order->downpayment_amount }}">
+                            </div>
+                            <div class="flex justify-between items-center border-t border-gray-200 pt-2 mt-2">
+                                <span class="text-gray-800 font-medium">New Total Price:</span>
+                                <span id="summary-total-price" class="text-cPrimary font-bold text-lg">₱0.00</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm pt-1">
+                                <span class="text-gray-600">Balance Due:</span>
+                                <span id="summary-balance" class="font-bold">₱0.00</span>
+                            </div>
+                        </div>
+                        <input type="hidden" name="new_total_price" id="new-total-price-input" value="0">
+                        <input type="hidden" name="new_quantity" id="new-quantity-input" value="0">
+                    </div>
 
                     <div class="flex flex-col sm:flex-row justify-between gap-4">
                         <a href="{{ route('home') }}" class="inline-flex justify-center items-center px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
@@ -164,6 +203,9 @@
                 
                 totalQuantityDisplay.textContent = total;
                 
+                // Update the order summary
+                updateOrderSummary(total);
+                
                 // Visual feedback based on quantity
                 if (total >= 10) {
                     quantityCounter.classList.remove('text-red-500');
@@ -174,6 +216,21 @@
                     quantityCounter.classList.remove('text-green-600');
                     quantityCounter.classList.add('text-red-500');
                 }
+            }
+            
+            function updateOrderSummary(totalQuantity) {
+                const unitPrice = parseFloat(document.getElementById('unit-price').value);
+                const originalDownpayment = parseFloat(document.getElementById('original-downpayment').value);
+                const totalPrice = unitPrice * totalQuantity;
+                const balanceDue = totalPrice - originalDownpayment;
+                
+                document.getElementById('summary-quantity').textContent = totalQuantity + ' item' + (totalQuantity !== 1 ? 's' : '');
+                document.getElementById('summary-total-price').textContent = '₱' + totalPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('summary-balance').textContent = '₱' + Math.max(0, balanceDue).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                // Update hidden inputs for form submission
+                document.getElementById('new-total-price-input').value = totalPrice.toFixed(2);
+                document.getElementById('new-quantity-input').value = totalQuantity;
             }
             
             // Set initial state
