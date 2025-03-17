@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 
 class BusinessAuthController extends Controller
@@ -74,6 +75,12 @@ class BusinessAuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
+
+            Log::info('User login attempt', [
+                'user_id' => $user->user_id,
+                'role_type_id' => $user->role_type_id,
+                'is_designer' => $user->role_type_id == 3
+            ]);
 
             if ($user->role_type_id == 2) {
                 $admin = ProductionCompany::where('user_id', $user->user_id)->first();

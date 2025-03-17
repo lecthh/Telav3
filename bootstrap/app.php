@@ -19,7 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'ProductionAdminOnly' => ProductionAdmin::class,
             'CustomerOnly' => \App\Http\Middleware\Customer::class,
-            'DesignerOnly' => \App\Http\Middleware\DesignerAdmin::class,
+            'DesignerOnly' => \App\Http\Middleware\DesignerOnly::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -3,7 +3,13 @@
         <div class="flex p-1 bg-black bg-opacity-10 rounded-sm">
             @include('svgs.home')
         </div>
-        <h4 class="font-gilroy font-bold text-base text-black">{{ $productionCompany->company_name }}</h4>
+        @if(isset($productionCompany) && isset($productionCompany->company_name))
+            {{ $productionCompany->company_name }}
+        @elseif(isset($designer) && isset($designer->user) && isset($designer->user->name))
+            {{ $designer->user->name }}'s Hub
+        @else
+            Designer Hub
+        @endif
     </div>
     <ul class="flex flex-col gap-y-2 px-3 py-2">
         <a href="{{ route('designer-dashboard') }}">
