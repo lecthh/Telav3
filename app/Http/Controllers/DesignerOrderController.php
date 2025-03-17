@@ -82,8 +82,9 @@ class DesignerOrderController extends Controller
 
     public function assignedOrder($order_id)
     {
+        $designer = session('admin');
         $order = Order::find($order_id);
-        return view('partner.designer.order', compact('order'));
+        return view('partner.designer.order', compact('order', 'designer'));
     }
 
     public function assignedOrderPost(Request $request, $order_id)
@@ -181,7 +182,8 @@ class DesignerOrderController extends Controller
 
     public function completeOrder($order_id)
     {
+        $designer = session('admin');
         $order = Order::find($order_id);
-        return view('partner.designer.complete.order', compact('order'));
+        return view('partner.designer.complete.order', compact('order', 'designer'));
     }
 }

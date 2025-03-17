@@ -16,7 +16,7 @@
     <div class="flex flex-col">
         <div class="flex p-1 bg-cGreen font-gilroy font-bold text-black text-sm justify-center">Designer Hub</div>
         <div class="flex">
-            @include('layout.printer')
+            @include('layout.designer')
             <div class="flex flex-col gap-y-10 p-14 bg-[#F9F9F9] w-full">
                 <div class="flex flex-col gap-y-5">
                     <div class="flex flex-col gap-y-10">
