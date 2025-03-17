@@ -63,7 +63,15 @@
                                 data-order-id="{{ $order->order_id }}"
                                 data-order-status="{{ $order->status->name }}"
                                 data-order-created-at="{{ $order->created_at }}"
-                                data-order-notifications='@json($order->notifications)'>
+                                data-order-notifications='@json($order->notifications)'
+                                data-order-quantity="{{ $order->quantity }}"
+                                data-order-production-type="{{ $order->productionType ? $order->productionType->name : 'N/A' }}"
+                                data-order-apparel-type="{{ $order->apparelType ? $order->apparelType->name : 'N/A' }}"
+                                data-order-company="{{ $order->productionCompany ? $order->productionCompany->company_name : 'N/A' }}"
+                                data-order-is-customized="{{ $order->is_customized ? 'Yes' : 'No' }}"
+                                data-order-is-bulk="{{ $order->is_bulk_order ? 'Yes' : 'No' }}"
+                                data-order-price="{{ $order->final_price }}"
+                                data-order-downpayment="{{ $order->downpayment_amount }}">
                                 <div class="flex justify-between items-start">
                                     <div>
                                         <h3 class="font-inter font-bold text-gray-900 group-hover:text-cPrimary transition duration-150">
@@ -74,6 +82,9 @@
                                                     {{ $order->status->name == 'Completed' ? 'bg-green-100 text-green-800' : 
                                                     ($order->status->name == 'Cancelled' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800') }}">
                                                 {{ $order->status->name }}
+                                            </span>
+                                            <span class="text-xs text-gray-500">
+                                                {{ $order->apparelType ? $order->apparelType->name : '' }}
                                             </span>
                                         </div>
                                     </div>
@@ -115,20 +126,66 @@
 
                             <div class="space-y-6">
                                 <div id="order-status-details" class="p-4 bg-gray-50 rounded-lg"></div>
+                                
+                                <!-- Added order specifications -->
+                                <div class="border-t border-gray-200 pt-4">
+                                    <h3 class="font-inter font-bold text-lg mb-4">Order Specifications</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="p-3 bg-gray-50 rounded-lg">
+                                            <p class="text-gray-500 text-sm">Apparel Type</p>
+                                            <p id="order-apparel-type" class="font-medium"></p>
+                                        </div>
+                                        <div class="p-3 bg-gray-50 rounded-lg">
+                                            <p class="text-gray-500 text-sm">Production Method</p>
+                                            <p id="order-production-type" class="font-medium"></p>
+                                        </div>
+                                        <div class="p-3 bg-gray-50 rounded-lg">
+                                            <p class="text-gray-500 text-sm">Production Company</p>
+                                            <p id="order-company" class="font-medium"></p>
+                                        </div>
+                                        <div class="p-3 bg-gray-50 rounded-lg">
+                                            <p class="text-gray-500 text-sm">Quantity</p>
+                                            <p id="order-quantity" class="font-medium"></p>
+                                        </div>
+                                        <div class="p-3 bg-gray-50 rounded-lg">
+                                            <p class="text-gray-500 text-sm">Customized</p>
+                                            <p id="order-is-customized" class="font-medium"></p>
+                                        </div>
+                                        <div class="p-3 bg-gray-50 rounded-lg">
+                                            <p class="text-gray-500 text-sm">Bulk Order</p>
+                                            <p id="order-is-bulk" class="font-medium"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Payment information -->
+                                <div class="border-t border-gray-200 pt-4">
+                                    <h3 class="font-inter font-bold text-lg mb-4">Payment Details</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="p-3 bg-gray-50 rounded-lg">
+                                            <p class="text-gray-500 text-sm">Total Price</p>
+                                            <p id="order-price" class="font-medium"></p>
+                                        </div>
+                                        <div class="p-3 bg-gray-50 rounded-lg">
+                                            <p class="text-gray-500 text-sm">Downpayment</p>
+                                            <p id="order-downpayment" class="font-medium"></p>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <div class="border-t border-gray-200 pt-4">
                                     <h3 class="font-inter font-bold text-lg mb-4">Order Status Timeline</h3>
                                     <div id="order-notifications" class="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar"></div>
                                 </div>
 
-                                <!-- <div class="flex flex-wrap gap-4 border-t border-gray-200 pt-4">
+                                <div class="flex flex-wrap gap-4 border-t border-gray-200 pt-4">
                                     <button class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
                                         Contact Support
                                     </button>
                                     <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-cPrimary hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
                                         Track Order
                                     </button>
-                                </div> -->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -196,6 +253,16 @@
             const orderNotifications = document.getElementById('order-notifications');
             const closeDetails = document.getElementById('close-details');
             const orderSearch = document.getElementById('order-search');
+            
+            // New elements for order details
+            const orderApparelType = document.getElementById('order-apparel-type');
+            const orderProductionType = document.getElementById('order-production-type');
+            const orderCompany = document.getElementById('order-company');
+            const orderQuantity = document.getElementById('order-quantity');
+            const orderIsCustomized = document.getElementById('order-is-customized');
+            const orderIsBulk = document.getElementById('order-is-bulk');
+            const orderPrice = document.getElementById('order-price');
+            const orderDownpayment = document.getElementById('order-downpayment');
 
             orderDetails.classList.add('hidden');
             noOrderSelected.classList.remove('hidden');
@@ -208,6 +275,17 @@
                     const orderId = this.getAttribute('data-order-id');
                     const orderStatus = this.getAttribute('data-order-status');
                     const orderCreatedAt = new Date(this.getAttribute('data-order-created-at'));
+                    
+                    // Get the additional order details
+                    const quantity = this.getAttribute('data-order-quantity');
+                    const productionType = this.getAttribute('data-order-production-type');
+                    const apparelType = this.getAttribute('data-order-apparel-type');
+                    const company = this.getAttribute('data-order-company');
+                    const isCustomized = this.getAttribute('data-order-is-customized');
+                    const isBulk = this.getAttribute('data-order-is-bulk');
+                    const price = this.getAttribute('data-order-price');
+                    const downpayment = this.getAttribute('data-order-downpayment');
+                    
                     const formattedDate = orderCreatedAt.toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'short',
@@ -221,6 +299,16 @@
                     orderIdDisplay.textContent = orderId.substr(-6);
                     orderDetails.classList.remove('hidden');
                     noOrderSelected.classList.add('hidden');
+                    
+                    // Set values for the additional fields
+                    orderApparelType.textContent = apparelType;
+                    orderProductionType.textContent = productionType;
+                    orderCompany.textContent = company;
+                    orderQuantity.textContent = quantity + ' item(s)';
+                    orderIsCustomized.textContent = isCustomized;
+                    orderIsBulk.textContent = isBulk;
+                    orderPrice.textContent = parseFloat(price).toLocaleString('en-US', { style: 'currency', currency: 'PHP' });
+                    orderDownpayment.textContent = parseFloat(downpayment).toLocaleString('en-US', { style: 'currency', currency: 'PHP' });
 
                     let statusColorClass = '';
                     if (orderStatus === 'Completed') {
@@ -250,7 +338,12 @@
                     let notificationsHTML = '';
 
                     if (notifications && notifications.length > 0) {
-                        notifications.forEach((notification, index) => {
+                        // Sort notifications by created_at date in descending order (newest first)
+                        const sortedNotifications = [...notifications].sort((a, b) => {
+                            return new Date(b.created_at) - new Date(a.created_at);
+                        });
+                        
+                        sortedNotifications.forEach((notification, index) => {
                             const notifDate = new Date(notification.created_at);
                             const formattedNotifDate = notifDate.toLocaleDateString('en-US', {
                                 year: 'numeric',
@@ -303,8 +396,15 @@
                     orderButtons.forEach(button => {
                         const orderId = button.getAttribute('data-order-id').toLowerCase();
                         const orderStatus = button.getAttribute('data-order-status').toLowerCase();
+                        const apparelType = button.getAttribute('data-order-apparel-type').toLowerCase();
+                        const productionType = button.getAttribute('data-order-production-type').toLowerCase();
+                        const company = button.getAttribute('data-order-company').toLowerCase();
 
-                        if (orderId.includes(searchTerm) || orderStatus.includes(searchTerm)) {
+                        if (orderId.includes(searchTerm) || 
+                            orderStatus.includes(searchTerm) || 
+                            apparelType.includes(searchTerm) ||
+                            productionType.includes(searchTerm) ||
+                            company.includes(searchTerm)) {
                             button.classList.remove('hidden');
                         } else {
                             button.classList.add('hidden');
