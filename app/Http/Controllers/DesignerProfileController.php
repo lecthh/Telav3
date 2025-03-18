@@ -28,7 +28,6 @@ class DesignerProfileController extends Controller
         $user = Auth::user();
         $designer = Designer::where('user_id', $user->user_id)->firstOrFail();
 
-        // Different validation rules based on designer status
         if ($designer->production_company_id || $request->is_freelancer == 0) {
             // Company-affiliated designers only need basic info
             $request->validate([
@@ -52,7 +51,6 @@ class DesignerProfileController extends Controller
             ]);
         }
 
-        // We removed the profile picture upload functionality
 
         // Update user information
         $user->name = $request->name;
@@ -67,8 +65,6 @@ class DesignerProfileController extends Controller
         $designer->is_freelancer = $request->is_freelancer;
         $designer->is_available = $request->has('is_available');
 
-        // Only update production_company_id if designer doesn't already have one
-        // Once assigned to a company, this can only be changed by an admin
         if (!$designer->production_company_id && !$designer->is_freelancer) {
             $designer->production_company_id = $request->production_company_id;
         }

@@ -29,7 +29,7 @@ class CheckoutController extends Controller
         $user = Auth::user();
         $contactInformation = $user->addressInformation;
 
-        \Log::info('Cart items in checkout:', ['items' => $cartItems->toArray()]);
+        Log::info('Cart items in checkout:', ['items' => $cartItems->toArray()]);
         return view('cart.checkout', compact('cartItems', 'user'));
     }
 

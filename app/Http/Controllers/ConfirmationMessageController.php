@@ -14,7 +14,6 @@ class ConfirmationMessageController extends Controller
             ->latest()
             ->first();
             
-        // If no order is found, redirect to home with a message
         if (!$order) {
             return redirect()->route('home')
                 ->with('error', 'No order found to confirm.');

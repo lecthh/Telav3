@@ -27,7 +27,6 @@ class PrinterDashboardController extends Controller
             $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
         }
         
-        // Get the production company with its reviews
         $company = \App\Models\ProductionCompany::with(['reviews' => function($query) {
             $query->with('user')->orderBy('created_at', 'desc');
         }])->findOrFail($productionCompanyId);
@@ -53,11 +52,9 @@ class PrinterDashboardController extends Controller
 
     public function index()
     {
-        // Get production company ID
         $productionCompany = session('admin');
         $productionCompanyId = null;
         
-        // Log the admin session content for debugging
         Log::info('Dashboard session admin data', [
             'admin_session' => $productionCompany,
             'type' => gettype($productionCompany),
@@ -65,7 +62,6 @@ class PrinterDashboardController extends Controller
             'user_role' => auth()->user()->role_type_id ?? 'none'
         ]);
         
-        // If session admin is missing, try to recover it from the database
         if (empty($productionCompany) && auth()->check() && auth()->user()->role_type_id == 2) {
             $productionCompany = \App\Models\ProductionCompany::where('user_id', auth()->id())->first();
             if ($productionCompany) {
@@ -74,7 +70,6 @@ class PrinterDashboardController extends Controller
             }
         }
         
-        // Handle different possible data structures
         if (is_object($productionCompany) && isset($productionCompany->id)) {
             $productionCompanyId = $productionCompany->id;
         } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
@@ -84,7 +79,6 @@ class PrinterDashboardController extends Controller
             $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
         }
         
-        // Get counts for each order status
         $pendingCount = Order::where('status_id', 1)
             ->where('production_company_id', $productionCompanyId)
             ->count();
@@ -109,17 +103,16 @@ class PrinterDashboardController extends Controller
             ->where('production_company_id', $productionCompanyId)
             ->count();
             
-        // Calculate total earnings from completed orders
+        // Calculate total earnings
         $completedOrders = Order::where('status_id', 7)
             ->where('production_company_id', $productionCompanyId)
             ->get();
             
         $totalEarnings = $completedOrders->sum('final_price');
         
-        // Format for display with comma thousands separator
         $formattedTotalEarnings = number_format($totalEarnings, 2);
         
-        // Get monthly completed orders for the chart (last 6 months)
+        // Get monthly completed orders lst 6 months
         $monthlyOrders = [];
         $monthlyLabels = [];
         
@@ -129,7 +122,7 @@ class PrinterDashboardController extends Controller
             $endOfMonth = $month->copy()->endOfMonth();
             
             $count = Order::where('production_company_id', $productionCompanyId)
-                ->where('status_id', 7) // Completed orders
+                ->where('status_id', 7) 
                 ->whereBetween('updated_at', [$startOfMonth, $endOfMonth])
                 ->count();
                 
@@ -137,7 +130,6 @@ class PrinterDashboardController extends Controller
             $monthlyLabels[] = $month->format('M');
         }
         
-        // Convert to JSON for JavaScript
         $monthlyOrdersJSON = json_encode($monthlyOrders);
         $monthlyLabelsJSON = json_encode($monthlyLabels);
         

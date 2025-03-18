@@ -29,7 +29,7 @@ class CartController extends Controller
                     ->with(['cartItemImages', 'apparelType', 'productionCompany', 'productionType'])
                     ->get();
                     
-                // Ensure all cart items have properly calculated fields
+                // Ensure cart items have properly calculated fields
                 foreach ($cartItems as $cartItem) {
                     if (!$cartItem->total_price || $cartItem->total_price == 0) {
                         $cartItem->total_price = $cartItem->price * $cartItem->quantity;

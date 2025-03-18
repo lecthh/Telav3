@@ -82,7 +82,6 @@ class ConfirmBulkController extends Controller
             if ($request->has('new_total_price') && $request->has('new_quantity')) {
                 $order->final_price = $request->new_total_price;
                 $order->quantity = $request->new_quantity;
-                // Note: We're not updating the downpayment since it's already been paid
             }
             
             $order->save();
@@ -170,7 +169,6 @@ class ConfirmBulkController extends Controller
             if ($request->has('new_total_price') && $request->has('new_quantity')) {
                 $order->final_price = $request->new_total_price;
                 $order->quantity = $request->new_quantity;
-                // Note: We're not updating the downpayment since it's already been paid
             }
             
             $order->save();
