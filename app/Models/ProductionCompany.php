@@ -43,4 +43,27 @@ class ProductionCompany extends Model
         
         return $isBulk ? $pricing->bulk_price : $pricing->base_price;
     }
+    
+    /**
+     * Get the reviews for this production company.
+     */
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'production_company_id');
+    }
+    
+    /**
+     * Update the average rating based on all visible reviews.
+     */
+    public function updateAverageRating()
+    {
+        $avgRating = $this->reviews()->where('is_visible', true)->avg('rating') ?? 0;
+        $reviewCount = $this->reviews()->where('is_visible', true)->count();
+        
+        $this->avg_rating = round($avgRating, 1);
+        $this->review_count = $reviewCount;
+        $this->save();
+        
+        return $this->avg_rating;
+    }
 }

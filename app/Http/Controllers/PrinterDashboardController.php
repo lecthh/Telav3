@@ -8,6 +8,49 @@ use Illuminate\Support\Facades\Log;
 
 class PrinterDashboardController extends Controller
 {
+    /**
+     * Show the reviews for the production company.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function reviews()
+    {
+        $productionCompany = session('admin');
+        $productionCompanyId = null;
+        
+        if (is_object($productionCompany) && isset($productionCompany->id)) {
+            $productionCompanyId = $productionCompany->id;
+        } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
+            $productionCompanyId = $productionCompany['App\\Models\\ProductionCompany']['id'];
+        } elseif (is_object($productionCompany) && property_exists($productionCompany, 'App\\Models\\ProductionCompany')) {
+            $pcData = $productionCompany->{'App\\Models\\ProductionCompany'};
+            $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
+        }
+        
+        // Get the production company with its reviews
+        $company = \App\Models\ProductionCompany::with(['reviews' => function($query) {
+            $query->with('user')->orderBy('created_at', 'desc');
+        }])->findOrFail($productionCompanyId);
+        
+        $avgRating = $company->avg_rating;
+        $reviewCount = $company->review_count;
+        
+        $ratingDistribution = [
+            5 => $company->reviews()->where('rating', 5)->count(),
+            4 => $company->reviews()->where('rating', 4)->count(),
+            3 => $company->reviews()->where('rating', 3)->count(),
+            2 => $company->reviews()->where('rating', 2)->count(),
+            1 => $company->reviews()->where('rating', 1)->count(),
+        ];
+        
+        return view('partner.printer.profile.reviews', compact(
+            'company', 
+            'avgRating', 
+            'reviewCount', 
+            'ratingDistribution'
+        ));
+    }
+
     public function index()
     {
         // Get production company ID

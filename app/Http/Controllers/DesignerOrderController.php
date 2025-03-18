@@ -178,6 +178,7 @@ class DesignerOrderController extends Controller
 
             $user_id = $order->user->user_id;
 
+            // Notification for customer to finalize order
             Notification::create([
                 'user_id' => $user_id,
                 'message' => 'Finalize Order',
@@ -185,9 +186,18 @@ class DesignerOrderController extends Controller
                 'order_id' => $order->order_id,
             ]);
 
+            // Second notification for customer about confirmation link
             Notification::create([
                 'user_id' => $user_id,
                 'message' => 'A confirmation link has been sent to your email. Please confirm your order.',
+                'is_read' => false,
+                'order_id' => $order->order_id,
+            ]);
+            
+            // Notification for production company/printer that design is completed
+            Notification::create([
+                'user_id' => $order->productionCompany->user_id,
+                'message' => 'Design completed for order #' . $order->order_id,
                 'is_read' => false,
                 'order_id' => $order->order_id,
             ]);
