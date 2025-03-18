@@ -16,12 +16,16 @@ use App\Http\Controllers\EditProducerAccountController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Auth\PartnerRegistration;
 use App\Http\Controllers\Auth\GoogleAuth;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderProduceController;
 use App\Http\Middleware\PreventBackHistory;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 require base_path('routes/channels.php');
 
@@ -45,7 +49,7 @@ Route::get('/printer-dashboard', function () {
 Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->group(function () {
     // Printer Routes
     Route::prefix('printer')->name('printer.')->group(function () {
-        
+
         // Profile Management
         Route::get('/profile/basics', function () {
             return view('partner.printer.profile.basics');
@@ -178,8 +182,7 @@ Route::get('/chat/users', [ChatController::class, 'fetchChatUsers']);
 Route::get('/chat/messages/{user_id}', [ChatController::class, 'fetchMessages']);
 Route::post('/chat/send/message', [ChatController::class, 'sendMessage']);
 
-
-
+// For Chat Auth
 Route::middleware(['auth'])->post('/broadcasting/auth', function (Request $request) {
     Log::info('Broadcasting auth request', [
         'user' => Auth::user(),
@@ -187,9 +190,4 @@ Route::middleware(['auth'])->post('/broadcasting/auth', function (Request $reque
         'headers' => $request->headers->all(),
     ]);
     return Broadcast::auth($request);
-});
-
-
-Route::get('/user', function () {
-    return response()->json(Auth::user());
 });
