@@ -17,21 +17,87 @@ class DesignerOrderController extends Controller
     use Toastable;
     public function dashboard()
     {
-        $designer = session('admin');
-        $assignedOrdersCount = 0;
-        $completedOrdersCount = 0;
-
-        $assignedOrdersCount = Order::where('assigned_designer_id', $designer->designer_id)
-            ->where('status_id', '>=', 2)
-            ->where('status_id', '!=', 7)
-            ->count();
-
-
-        $completedOrdersCount = Order::where('assigned_designer_id', $designer->designer_id)
-            ->where('status_id', 7)
-            ->count();
-
-        return view('partner.designer.dashboard', compact('assignedOrdersCount', 'completedOrdersCount'));
+        try {
+            $designer = session('admin');
+            
+            Log::info('Dashboard accessed', [
+                'session_has_admin' => session()->has('admin'),
+                'designer' => $designer ? $designer->toArray() : null
+            ]);
+            
+            if (!$designer) {
+                Log::error('Designer session not found');
+                return redirect()->route('login')->with('error', 'Designer session not found');
+            }
+    
+            // Active orders (still in progress)
+            $assignedOrdersCount = Order::where('assigned_designer_id', $designer->designer_id)
+                ->where('status_id', '>=', 2)
+                ->where('status_id', '!=', 7)
+                ->count();
+    
+            // Completed orders
+            $completedOrdersCount = Order::where('assigned_designer_id', $designer->designer_id)
+                ->where('status_id', 7)
+                ->count();
+                
+            // Get most recent assigned orders for quick access
+            $recentOrders = Order::where('assigned_designer_id', $designer->designer_id)
+                ->where('status_id', '>=', 2)
+                ->where('status_id', '!=', 7)
+                ->orderBy('created_at', 'desc')
+                ->take(3)
+                ->get();
+                
+            // Total orders handled
+            $totalOrdersHandled = $assignedOrdersCount + $completedOrdersCount;
+            
+            // Get monthly assigned and completed orders for the chart (last 6 months)
+            $monthlyAssigned = [];
+            $monthlyCompleted = [];
+            $monthlyLabels = [];
+            
+            for ($i = 5; $i >= 0; $i--) {
+                $month = now()->subMonths($i);
+                $startOfMonth = $month->copy()->startOfMonth();
+                $endOfMonth = $month->copy()->endOfMonth();
+                
+                $assignedCount = Order::where('assigned_designer_id', $designer->designer_id)
+                    ->where('status_id', '>=', 2)
+                    ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+                    ->count();
+                    
+                $completedCount = Order::where('assigned_designer_id', $designer->designer_id)
+                    ->where('status_id', 7)
+                    ->whereBetween('updated_at', [$startOfMonth, $endOfMonth])
+                    ->count();
+                    
+                $monthlyAssigned[] = $assignedCount;
+                $monthlyCompleted[] = $completedCount;
+                $monthlyLabels[] = $month->format('M');
+            }
+            
+            // Convert to JSON for JavaScript
+            $monthlyAssignedJSON = json_encode($monthlyAssigned);
+            $monthlyCompletedJSON = json_encode($monthlyCompleted);
+            $monthlyLabelsJSON = json_encode($monthlyLabels);
+    
+            return view('partner.designer.dashboard', compact(
+                'designer', 
+                'assignedOrdersCount', 
+                'completedOrdersCount',
+                'recentOrders',
+                'totalOrdersHandled',
+                'monthlyAssignedJSON',
+                'monthlyCompletedJSON',
+                'monthlyLabelsJSON'
+            ));
+        } catch (\Exception $e) {
+            Log::error('Error in designer dashboard: ' . $e->getMessage(), [
+                'exception' => $e
+            ]);
+            return redirect()->route('login')->with('error', 'An error occurred loading the dashboard');
+        }
     }
 
     public function cancelDesignAssignment($order_id)
@@ -59,6 +125,7 @@ class DesignerOrderController extends Controller
         $assignedOrders = Order::where('assigned_designer_id', $designer->designer_id)
             ->where('status_id', '>=', 2)
             ->where('status_id', '!=', 7)
+            ->orderBy('created_at', 'desc') // Order by newest first
             ->get();
 
         return view('partner.designer.orders', compact('assignedOrders'));
@@ -66,8 +133,9 @@ class DesignerOrderController extends Controller
 
     public function assignedOrder($order_id)
     {
+        $designer = session('admin');
         $order = Order::find($order_id);
-        return view('partner.designer.order', compact('order'));
+        return view('partner.designer.order', compact('order', 'designer'));
     }
 
     public function assignedOrderPost(Request $request, $order_id)
@@ -113,37 +181,79 @@ class DesignerOrderController extends Controller
             $designer = $order->designer->user->name;
             $token = uniqid();
             $user = $order->user;
+            $url = null;
 
+            // Generate the appropriate URL based on order type
             if ($order->is_bulk_order) {
                 if (!$order->is_customized) {
+                    // Bulk order with standard sizes
                     $url = URL::temporarySignedRoute(
                         'confirm-bulk',
                         now()->addMinutes(60),
                         ['token' => $token, 'email' => $user->email, 'order_id' => $order->order_id]
                     );
                 } else if ($order->is_customized && $order->apparelType->id != 1) {
+                    // Bulk order with customization (non-jersey)
                     $url = URL::temporarySignedRoute(
                         'confirm-bulk-custom',
                         now()->addMinutes(60),
                         ['token' => $token, 'email' => $user->email, 'order_id' => $order->order_id]
                     );
                 } else if ($order->is_customized && $order->apparelType->id == 1) {
+                    // Bulk order with jersey customization
                     $url = URL::temporarySignedRoute(
                         'confirm-jerseybulk-custom',
                         now()->addMinutes(60),
                         ['token' => $token, 'email' => $user->email, 'order_id' => $order->order_id]
                     );
                 }
+            } else {
+                // Single orders with customization
+                if ($order->is_customized) {
+                    Log::info('Single customized order confirmation');
+                    $url = URL::temporarySignedRoute(
+                        'confirm-single-custom',
+                        now()->addMinutes(60),
+                        ['token' => $token, 'email' => $user->email, 'order_id' => $order->order_id]
+                    );
+                } else {
+                    // Single orders with standard sizes
+                    $url = URL::temporarySignedRoute(
+                        'confirm-single',
+                        now()->addMinutes(60),
+                        ['token' => $token, 'email' => $user->email, 'order_id' => $order->order_id]
+                    );
+                }
             }
 
+            // Save the token to the order
             $name = $user->name;
             $order->update(['token' => $token]);
             $order->save();
 
-            Mail::send('mail.confirmationLink', ['url' => $url, 'name' => $name, 'Designer' => $designer], function ($message) use ($user) {
-                $message->to($user->email);
-                $message->subject('Order Is Confirmed');
-            });
+            // Log for debugging
+            Log::info('Sending confirmation email', [
+                'order_id' => $order->order_id,
+                'user_email' => $user->email,
+                'is_bulk' => $order->is_bulk_order,
+                'is_customized' => $order->is_customized,
+                'apparel_type_id' => $order->apparelType->id,
+                'url' => $url,
+            ]);
+
+            // Send email only if we have a URL
+            if ($url) {
+                Mail::send('mail.confirmationLink', ['url' => $url, 'name' => $name, 'Designer' => $designer], function ($message) use ($user) {
+                    $message->to($user->email);
+                    $message->subject('Order Is Confirmed');
+                });
+            } else {
+                Log::error('No confirmation URL generated for order', [
+                    'order_id' => $order->order_id,
+                    'is_bulk' => $order->is_bulk_order,
+                    'is_customized' => $order->is_customized
+                ]);
+            }
 
             $this->toast('Designs uploaded and order finalized successfully!', 'success');
             return redirect()->route('partner.designer.orders');
@@ -159,13 +269,15 @@ class DesignerOrderController extends Controller
         $designer = session('admin');
         $orders = Order::where('assigned_designer_id', $designer->designer_id)
             ->where('status_id', '=', 7)
+            ->orderBy('created_at', 'desc') // Order by newest first
             ->get();
         return view('partner.designer.complete.orders-complete', compact('orders'));
     }
 
     public function completeOrder($order_id)
     {
+        $designer = session('admin');
         $order = Order::find($order_id);
-        return view('partner.designer.complete.order', compact('order'));
+        return view('partner.designer.complete.order', compact('order', 'designer'));
     }
 }

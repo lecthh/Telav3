@@ -1,44 +1,30 @@
-<div class="flex gap-x-5">
-    <ul>
-        <a href="{{ route('partner.printer.orders') }}"
-           class="flex gap-x-[60px] py-3 font-inter font-bold text-base {{ Request::routeIs('partner.printer.orders') ? 'text-cPrimary border-b border-cPrimary' : 'text-black' }} hover:border-cPrimary hover:text-cPrimary transition ease-in-out delay-100">
-            <li>Pending Requests</li>
+<div class="flex overflow-x-auto border-b border-gray-200 mb-6">
+    <nav class="flex space-x-1 w-full">
+        @php
+        $navItems = [
+        ['route' => 'partner.printer.orders', 'label' => 'Pending Requests', 'icon' => 'svgs.shipping-box'],
+        ['route' => 'partner.printer.design-in-progress', 'label' => 'Design in Progress', 'icon' => 'svgs.print-palette'],
+        ['route' => 'partner.printer.finalize-order', 'label' => 'Finalize Order', 'icon' => 'svgs.receipt-check'],
+        ['route' => 'partner.printer.awaiting-printing', 'label' => 'Awaiting Printing', 'icon' => 'svgs.square-clock'],
+        ['route' => 'partner.printer.printing-in-progress', 'label' => 'Printing Progress', 'icon' => 'svgs.shredder-device'],
+        ['route' => 'partner.printer.ready', 'label' => 'Ready', 'icon' => 'svgs.check-circle'],
+        ['route' => 'partner.printer.completed', 'label' => 'Completed', 'icon' => 'svgs.award']
+        ];
+        @endphp
+
+        @foreach($navItems as $item)
+        <a href="{{ route($item['route']) }}" class="
+                flex items-center space-x-2 px-4 py-3 
+                {{ Request::routeIs($item['route']) ? 'text-cPrimary border-b-2 border-cPrimary' : 'text-gray-600 hover:text-cPrimary' }} 
+                transition-colors duration-200 group
+            ">
+            <div class="{{ Request::routeIs($item['route']) ? 'text-cPrimary' : 'text-gray-400 group-hover:text-cPrimary' }} transition-colors duration-200">
+                @include($item['icon'])
+            </div>
+            <span class="font-inter font-semibold text-base whitespace-nowrap">
+                {{ $item['label'] }}
+            </span>
         </a>
-    </ul>
-    <ul>
-        <a href="{{ route('partner.printer.design-in-progress') }}"
-           class="flex gap-x-[60px] py-3 font-inter font-bold text-base {{ Request::routeIs('partner.printer.design-in-progress') ? 'text-cPrimary border-b border-cPrimary' : 'text-black' }} hover:border-cPrimary hover:text-cPrimary transition ease-in-out delay-100">
-            <li>Design in Progress</li>
-        </a>
-    </ul>
-    <ul>
-        <a href="{{ route('partner.printer.finalize-order') }}"
-           class="flex gap-x-[60px] py-3 font-inter font-bold text-base {{ Request::routeIs('partner.printer.finalize-order') ? 'text-cPrimary border-b border-cPrimary' : 'text-black' }} hover:border-cPrimary hover:text-cPrimary transition ease-in-out delay-100">
-            <li>Finalize Order</li>
-        </a>
-    </ul>
-    <ul>
-        <a href="{{ route('partner.printer.awaiting-printing') }}"
-           class="flex gap-x-[60px] py-3 font-inter font-bold text-base {{ Request::routeIs('partner.printer.awaiting-printing') ? 'text-cPrimary border-b border-cPrimary' : 'text-black' }} hover:border-cPrimary hover:text-cPrimary transition ease-in-out delay-100">
-            <li>Awaiting Printing</li>
-        </a>
-    </ul>
-    <ul>
-        <a href="{{ route('partner.printer.printing-in-progress') }}"
-           class="flex gap-x-[60px] py-3 font-inter font-bold text-base {{ Request::routeIs('partner.printer.printing-in-progress') ? 'text-cPrimary border-b border-cPrimary' : 'text-black' }} hover:border-cPrimary hover:text-cPrimary transition ease-in-out delay-100">
-            <li>Printing in Progress</li>
-        </a>
-    </ul>
-    <ul>
-        <a href="{{ route('partner.printer.ready') }}"
-           class="flex gap-x-[60px] py-3 font-inter font-bold text-base {{ Request::routeIs('partner.printer.ready') ? 'text-cPrimary border-b border-cPrimary' : 'text-black' }} hover:border-cPrimary hover:text-cPrimary transition ease-in-out delay-100">
-            <li>Ready</li>
-        </a>
-    </ul>
-    <ul>
-        <a href="{{ route('partner.printer.completed') }}"
-           class="flex gap-x-[60px] py-3 font-inter font-bold text-base {{ Request::routeIs('partner.printer.completed') ? 'text-cPrimary border-b border-cPrimary' : 'text-black' }} hover:border-cPrimary hover:text-cPrimary transition ease-in-out delay-100">
-            <li>Completed</li>
-        </a>
-    </ul>
+        @endforeach
+    </nav>
 </div>

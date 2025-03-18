@@ -25,8 +25,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'role_type_id',
         'passwordToken',
         'avatar',
-        'active_status',
-        'email_verified_at',
+
     ];
 
     public function roleType()

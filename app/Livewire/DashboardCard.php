@@ -9,12 +9,14 @@ class DashboardCard extends Component
     public $svg;
     public $heading;
     public $value;
+    public $route;
 
-    public function mount($svg, $heading, $value)
+    public function mount($svg, $heading, $value, $route = null)
     {
         $this->svg = $svg;
         $this->heading = $heading;
         $this->value = $value;
+        $this->route = $route;
     }
     
     public function render()

@@ -24,4 +24,23 @@ class ProductionCompany extends Model
     {
         return $this->hasMany(ProductionCompanyPricing::class, 'production_company_id', 'id');
     }
+
+    public function pricing()
+    {
+        return $this->hasMany(ProductionCompanyPricing::class, 'production_company_id');
+    }
+
+    public function getPriceFor($apparelTypeId, $productionTypeId, $isBulk = false)
+    {
+        $pricing = $this->pricing()
+            ->where('apparel_type', $apparelTypeId)
+            ->where('production_type', $productionTypeId)
+            ->first();
+            
+        if (!$pricing) {
+            return 0;
+        }
+        
+        return $isBulk ? $pricing->bulk_price : $pricing->base_price;
+    }
 }

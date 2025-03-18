@@ -22,10 +22,35 @@ class CartController extends Controller
     {
         if (Auth::check()) {
             $cart = Cart::where('user_id', Auth::id())->first();
-            $cartItems = $cart ? CartItem::where('cart_id', $cart->cart_id)
-                ->with(['cartItemImages', 'apparelType', 'productionCompany', 'productionType'])
-                ->get() : collect();
+            $cartItems = collect();
+            
+            if ($cart) {
+                $cartItems = CartItem::where('cart_id', $cart->cart_id)
+                    ->with(['cartItemImages', 'apparelType', 'productionCompany', 'productionType'])
+                    ->get();
+                    
+                // Ensure all cart items have properly calculated fields
+                foreach ($cartItems as $cartItem) {
+                    if (!$cartItem->total_price || $cartItem->total_price == 0) {
+                        $cartItem->total_price = $cartItem->price * $cartItem->quantity;
+                        $cartItem->save();
+                    }
+                    
+                    if (!$cartItem->downpayment || $cartItem->downpayment == 0) {
+                        $cartItem->downpayment = $cartItem->total_price / 2;
+                        $cartItem->save();
+                    }
+                }
+                
+                \Illuminate\Support\Facades\Log::info('Cart items loaded:', [
+                    'count' => $cartItems->count(),
+                    'items' => $cartItems->toArray()
+                ]);
+            }
+        } else {
+            $cartItems = collect();
         }
+        
         return view('cart.cart', compact('cartItems'));
     }
 
@@ -78,6 +103,18 @@ class CartController extends Controller
             if ($cartItems->isEmpty()) {
                 $this->toast('Selected items not found in cart.', 'error');
                 return redirect()->back();
+            }
+
+            foreach ($cartItems as $item) {
+                if (!$item->total_price) {
+                    $item->total_price = $item->price * $item->quantity;
+                }
+                
+                if (!$item->downpayment) {
+                    $item->downpayment = $item->total_price / 2;
+                }
+                
+                $item->save();
             }
 
             session()->put('selected_cart_items', $cartItems);

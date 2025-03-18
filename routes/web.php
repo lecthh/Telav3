@@ -1,8 +1,6 @@
 <?php
 
-use App\Exports\CustomizationDetailsExport;
 use App\Http\Controllers\Auth\PasswordResetController;
-use App\Http\Controllers\AwaitingOrderController;
 use App\Http\Controllers\Auth\BusinessAuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
@@ -11,7 +9,11 @@ use App\Http\Controllers\ConfirmationMessageController;
 use App\Http\Controllers\ConfirmBulkController;
 use App\Http\Controllers\CustomizationExportController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\OrderProduceController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\DesignerOrderController;
+use App\Http\Controllers\DesignerProfileController;
+use App\Http\Controllers\PrinterDashboardController;
 use App\Http\Controllers\EditProducerAccountController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Auth\PartnerRegistration;
@@ -21,11 +23,11 @@ use App\Http\Controllers\OrderProduceController;
 use App\Http\Middleware\PreventBackHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 
 require base_path('routes/channels.php');
 
@@ -34,6 +36,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/production-services', [App\Http\Controllers\ProductionCompanyController::class, 'index'])->name('production.services');
+Route::get('/production-company/{id}', [App\Http\Controllers\ProductionCompanyController::class, 'show'])->name('production.company.show');
 Route::get('/order/details/{productionCompany}', [App\Http\Controllers\OrderController::class, 'details'])->name('order.details');
 
 // FRONTEND BECOME A PARTNER ROUTES
@@ -41,9 +44,8 @@ Route::get('/partner-registration', [PartnerRegistration::class, 'partnerRegistr
 Route::get('/partner-confirmation', [PartnerRegistration::class, 'partnerConfirmation'])->name('partner-confirmation');
 
 // Printer Partner Routes
-Route::get('/printer-dashboard', function () {
-    return view('partner.printer.dashboard');
-})->name('printer-dashboard')->middleware('ProductionAdminOnly');
+Route::get('/printer-dashboard', [PrinterDashboardController::class, 'index'])
+    ->name('printer-dashboard')->middleware('ProductionAdminOnly');
 
 // Printer Partner Routes
 Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->group(function () {
@@ -96,7 +98,8 @@ Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->g
 });
 
 //Designer Routes
-Route::get('/designer-dashboard', [DesignerOrderController::class, 'dashboard'])->name('designer-dashboard')->middleware('DesignerOnly');
+Route::get('/designer-dashboard', [DesignerOrderController::class, 'dashboard'])
+    ->name('designer-dashboard')->middleware('DesignerOnly');
 Route::prefix('partner')->name('partner.')->middleware('DesignerOnly')->group(function () {
     Route::prefix('designer')->name('designer.')->group(function () {
         Route::get('/orders', [DesignerOrderController::class, 'index'])->name('orders');
@@ -105,6 +108,12 @@ Route::prefix('partner')->name('partner.')->middleware('DesignerOnly')->group(fu
         Route::get('/completed', [DesignerOrderController::class, 'complete'])->name('complete');
         Route::get('/complete-x/{order_id}', [DesignerOrderController::class, 'completeOrder'])->name('complete-x');
         Route::post('/cancel-design-assignment/{order_id}', [DesignerOrderController::class, 'cancelDesignAssignment'])->name('cancel-design-assignment');
+        
+        // Designer Profile Routes
+        Route::prefix('profile')->name('profile.')->group(function () {
+            Route::get('/basics', [DesignerProfileController::class, 'basics'])->name('basics');
+            Route::post('/update', [DesignerProfileController::class, 'update'])->name('update');
+        });
     });
 });
 
@@ -160,6 +169,7 @@ Route::get('/login', [BusinessAuthController::class, 'login'])->name('login');
 Route::post('/login/user', [BusinessAuthController::class, 'loginPost'])->name('login.post');
 Route::get('/logout', [BusinessAuthController::class, 'logout'])->name('logout')->middleware(PreventBackHistory::class);
 
+// Bulk order confirmation routes
 Route::get('/confirm-bulk/{token}', [ConfirmBulkController::class, 'confirmBulk'])->name('confirm-bulk');
 Route::post('/confirm-bulk/post', [ConfirmBulkController::class, 'confirmBulkPost'])->name('confirm-bulk-post');
 
@@ -168,6 +178,13 @@ Route::post('/confirm-bulk-custom/post', [ConfirmationLinkController::class, 'co
 
 Route::get('/confirm-jerseybulk-custom/{token}', [ConfirmationLinkController::class, 'confirmJerseyBulkCustom'])->name('confirm-jerseybulk-custom');
 Route::post('/confirm-jerseybulk-custom/post', [ConfirmationLinkController::class, 'confirmJerseyBulkCustomPost'])->name('confirm-jerseybulk-custom-post');
+
+// Single order confirmation routes
+Route::get('/confirm-single/{token}', [ConfirmBulkController::class, 'confirmSingle'])->name('confirm-single');
+Route::post('/confirm-single/post', [ConfirmBulkController::class, 'confirmSinglePost'])->name('confirm-single-post');
+
+Route::get('/confirm-single-custom/{token}', [ConfirmationLinkController::class, 'confirmSingleCustom'])->name('confirm-single-custom');
+Route::post('/confirm-single-custom/post', [ConfirmationLinkController::class, 'confirmSingleCustomPost'])->name('confirm-single-custom-post');
 
 Route::get('export-customization/{order_id}', [CustomizationExportController::class, 'exportExcel'])->name('export.customization')->withoutMiddleware(PreventBackHistory::class);
 Route::get('/export/customization/{order_id}', [CustomizationExportController::class, 'export'])->name('export.customization');

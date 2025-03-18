@@ -1,184 +1,34 @@
-<html>
+@php
+$orderStatusText = "Awaiting Printing";
+$nextStageRoute = "partner.printer.awaiting-x-post";
+$nextStageText = "Start Printing";
+$showCustomizationDetails = true;
+@endphp
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
-        rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/pagedone@1.2.2/src/css/pagedone.css " rel="stylesheet" />
-    @vite('resources/css/app.css')
-</head>
-
-<body class="flex flex-col h-screen justify-between">
-    <div class="flex flex-col">
-        <div class="flex p-1 bg-cPrimary font-gilroy font-bold text-white text-sm justify-center">Production Hub</div>
-        <div class="flex">
-            @include('layout.printer')
-            <div class="flex flex-col gap-y-10 p-14 bg-[#F9F9F9] w-full">
-                <div class="flex flex-col gap-y-5">
-                    <div class="flex flex-col gap-y-10">
-                        <h1 class="font-gilroy font-bold text-2xl">Orders</h1>
-                        @include('partner.printer.order-nav')
-                        <div class="flex items-center space-x-2">
-                            <h1 class="font-gilroy font-bold text-xl text-black">
-                                Pending Request - Order No. {{$order->order_id}}
-                            </h1>
-                            <x-popover>
-                                <x-slot name="trigger">
-                                    <x-start-chat :user="$order->user" />
-                                </x-slot>
-                                Start chatting with {{$order->user->name}}
-                            </x-popover>
-                        </div>
-                        <div class="flex gap-x-10">
-                            <div class="flex flex-col">
-                                <div class="flex w-full">
-                                    <div class="w-[10px] bg-cPrimary"></div>
-                                    <div class="flex flex-col bg-white rounded-tr-lg p-5 border-t border-r borer-l w-full">
-                                        <div class="flex gap-x-6">
-                                            <div class="flex gap-x-2 px-3 rounded-lg bg-cPrimary bg-opacity-20 items-center justify-center w-[45px] h-[50px]">@include('svgs.calendar')</div>
-                                            <div class="flex flex-col gap-y-2">
-                                                <h4 class="font-inter font-bold text-base">Date Requested</h4>
-                                                <h4 class="font-inter text-base">{{ $order->created_at->format('F j, Y') }}</h4>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="flex">
-                                    <div class="w-[10px] bg-cPrimary"></div>
-                                    <div class="flex flex-col bg-white p-5 border-t border-r borer-l w-full">
-                                        <div class="flex gap-x-6">
-                                            <div class="flex gap-x-2 px-3 py-3 rounded-lg bg-cPrimary bg-opacity-20 items-center justify-center w-[45px] h-[50px]">@include('svgs.user-single')</div>
-                                            <div class="flex flex-col gap-y-2">
-                                                <h4 class="font-inter font-bold text-base">Customer Name</h4>
-                                                <h4 class="font-inter text-base">{{$order->user->name}}</h4>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="flex">
-                                    <div class="w-[10px] bg-cPrimary"></div>
-                                    <div class="flex flex-col bg-white p-5 border-t border-r borer-l w-full">
-                                        <div class="flex gap-x-6">
-                                            <div class="flex gap-x-2 px-3 py-3 rounded-lg bg-cPrimary bg-opacity-20 items-center justify-center w-[45px] h-[50px]">@include('svgs.email')</div>
-                                            <div class="flex flex-col gap-y-2">
-                                                <h4 class="font-inter font-bold text-base">Email</h4>
-                                                <h4 class="font-inter text-base">{{$order->user->email}}</h4>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="flex">
-                                    <div class="w-[10px] bg-cPrimary"></div>
-                                    <div class="flex flex-col bg-white p-5 border-t border-r borer-l w-full">
-                                        <div class="flex gap-x-6">
-                                            <div class="flex gap-x-2 px-3 py-3 rounded-lg bg-cPrimary bg-opacity-20 items-center justify-center w-[45px] h-[50px]">@include('svgs.shirt')</div>
-                                            <div class="flex flex-col gap-y-2">
-                                                <h4 class="font-inter font-bold text-base">Apparel Type</h4>
-                                                <h4 class="font-inter text-base">{{$order->apparelType->name}}</h4>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="flex">
-                                    <div class="w-[10px] bg-cPrimary"></div>
-                                    <div class="flex flex-col bg-white p-5 border-t border-r border-l w-full">
-                                        <div class="flex gap-x-6">
-                                            <div class="flex gap-x-2 px-3 py-3 rounded-lg bg-cPrimary bg-opacity-20 items-center justify-center w-[45px] h-[50px]">@include('svgs.receipt-check')</div>
-                                            <div class="flex flex-col gap-y-2">
-                                                <h4 class="font-inter font-bold text-base">Order Type</h4>
-                                                <h4 class="font-inter text-base">{{ $order->is_bulk_order ? 'Bulk' : 'Single' }}</h4>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="flex">
-                                    <div class="w-[10px] bg-cPrimary"></div>
-                                    <div class="flex flex-col bg-white p-5 border-t border-r border-l w-full">
-                                        <div class="flex gap-x-6">
-                                            <div class="flex gap-x-2 px-3 py-3 rounded-lg bg-cPrimary bg-opacity-20 items-center justify-center w-[45px] h-[50px]">@include('svgs.paintbrush')</div>
-                                            <div class="flex flex-col gap-y-2">
-                                                <h4 class="font-inter font-bold text-base">Customization</h4>
-                                                <h4 class="font-inter text-base">{{ $order->is_customized ? 'Personalized' : 'Standard' }}</h4>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="flex">
-                                    <div class="w-[10px] bg-cPrimary"></div>
-                                    <div class="flex flex-col bg-white p-5 border rounded-br-lg w-full">
-                                        <div class="flex gap-x-6">
-                                            <div class="flex gap-x-2 px-3 py-3 rounded-lg bg-cPrimary bg-opacity-20 items-center justify-center w-[45px] h-[50px]">@include('svgs.paintbrush-1')</div>
-                                            <div class="flex flex-col gap-y-2">
-                                                <h4 class="font-inter font-bold text-base">Designer</h4>
-                                                <h4 class="font-inter text-base">{{ $order->designer->user->name }}</h4>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex flex-col gap-y-8 w-full">
-                                <div class="flex flex-col">
-                                    <div class="flex p-3 bg-cPrimary font-gilroy font-bold text-white text-base rounded-t-lg">
-                                        <h3>Final Design</h3>
-                                    </div>
-                                    <div class="flex gap-x-3 p-3 bg-white border rounded-b-lg">
-                                        <div class="flex  gap-y-3">
-                                            @foreach ($order->imagesWithStatusFour as $image)
-                                            <div class="w-[245px] h-[186px]">
-                                                <img src="{{ asset('storage/' . $image->image) }}" alt="Order Image" class="w-full h-full object-cover">
-                                            </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="flex flex-col">
-                                    <div class="flex p-3 bg-cPrimary font-gilroy font-bold text-white text-base rounded-t-lg">
-                                        <h3>Job Order</h3>
-                                    </div>
-                                    <div class="flex flex-col gap-y-3 p-3 bg-white border rounded-b-lg">
-                                        <a href="{{ route('export.customization', $order->order_id) }}">
-                                            <div class="flex p-3 gap-x-[18px] w-full rounded-lg cursor-pointer items-center justify-start">
-                                                <div class="flex w-8 h-8 bg-cAccent bg-opacity-20 rounded-lg justify-center items-center">
-                                                    @include('svgs.download')
-                                                </div>
-                                                <h3 class="font-gilroy font-bold text-base">{{ $order->order_id }}_JobOrder.xlsx</h3>
-                                            </div>
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="flex flex-col">
-                                    <div class="flex p-3 bg-cPrimary font-gilroy font-bold text-white text-base rounded-t-lg">
-                                        <h3>Actions</h3>
-                                    </div>
-                                    <div class="flex flex-col gap-y-3 p-3 bg-white border rounded-b-lg">
-                                        <div class="flex justify-start gap-x-3">
-                                            <form action="{{ route('partner.printer.cancel-order', ['order_id' => $order->order_id]) }}" method="post">
-                                                <button type="button" class="flex bg-red-500 rounded-xl text-white text-base gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-red-600">
-                                                    Cancel Order
-                                                </button>
-                                            </form>
-                                            <form action="{{ route('partner.printer.awaiting-x-post', ['order_id' => $order->order_id]) }}" method="post">
-                                                @csrf
-                                                <button type="submit" class="flex bg-cPrimary rounded-xl text-white text-base gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]">
-                                                    Next Stage
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+@extends('partner.printer.layout.order-detail-template')
+@section('pageSpecificContent')
+<div class="bg-white rounded-lg shadow-sm mb-6">
+    <div class="bg-cPrimary px-4 py-3 rounded-t-lg">
+        <h3 class="font-gilroy font-bold text-white text-base">Set Estimated Completion Date</h3>
     </div>
-
-    @include('layout.footer')
-</body>
-
-</html>
+    <div class="p-6">
+        <form action="{{ route('partner.printer.awaiting-x-post', $order->order_id) }}" method="POST">
+            @csrf
+            <div class="mb-4">
+                <label for="eta" class="block text-sm font-medium text-gray-700 mb-1">Estimated Completion Date</label>
+                <input type="date" id="eta" name="eta" required min="{{ date('Y-m-d', strtotime('+1 day')) }}" 
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-cPrimary focus:border-cPrimary sm:text-sm">
+                <p class="mt-1 text-sm text-gray-500">This date will be visible to the customer and will appear on their order tracking.</p>
+            </div>
+            <div class="flex justify-end">
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-cPrimary hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Set ETA and Start Printing
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection
