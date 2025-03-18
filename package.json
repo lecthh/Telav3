@@ -24,6 +24,7 @@
     "dependencies": {
         "@tailwindcss/forms": "^0.5.9",
         "alpinejs": "^3.14.8",
-        "tailwindcss-animate": "^1.0.7"
+        "tailwindcss-animate": "^1.0.7",
+        "toastr": "^2.1.4"
     }
 }

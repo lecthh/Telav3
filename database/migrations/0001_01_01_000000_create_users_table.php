@@ -13,8 +13,8 @@ return new class extends Migration
     {
 
         Schema::create('role_types', function (Blueprint $table) {
-            $table->id(); 
-            $table->string('role_name')->unique();  
+            $table->id();
+            $table->string('role_name')->unique();
             $table->timestamps();
         });
 
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
-            $table->unsignedBigInteger('role_type_id')->default(1); 
+            $table->unsignedBigInteger('role_type_id')->default(1);
             $table->rememberToken();
             $table->timestamps();
             $table->string('passwordToken')->nullable();
@@ -51,7 +51,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
     }
 };

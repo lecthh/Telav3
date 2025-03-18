@@ -6,19 +6,23 @@ use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use App\Traits\Toastable;
 
 class UpdateProfile extends Component
 {
+    use Toastable;
     public $name;
     public $email;
 
-    public function mount() {
+    public function mount()
+    {
         $user = Auth::user();
         $this->name = $user->name;
         $this->email = $user->email;
     }
 
-    public function save() {
+    public function save()
+    {
         $user = Auth::user();
 
         $validatedData = Validator::make([
@@ -32,8 +36,10 @@ class UpdateProfile extends Component
 
         $user->fill($validatedData);
         $user->save();
-
-        session()->flash('message', 'Profile updated successfully.');
+        $this->dispatch('toast', [
+            'message' => 'Your operation was successful!',
+            'type'    => 'success',
+        ]);
     }
 
     public function render()

@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Designer;
 use App\Models\Notification;
 use App\Models\Order;
+use App\Traits\Toastable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class PendingRequestController extends Controller
 {
+    use Toastable;
     public function index()
     {
         $pendingOrders = Order::where('status_id', '1')->get();
@@ -24,23 +27,30 @@ class PendingRequestController extends Controller
     // Create/update notification here
     public function assignDesigner(Request $request, $order_id)
     {
-        $request->validate([
-            'selected_designer_id' => 'required',
-        ]);
-        $order = Order::find($order_id);
-        $order->assigned_designer_id = intval($request->selected_designer_id);
-        $order->status_id = 2;
-        $order->save();
+        try {
+            $validatedData = $request->validate([
+                'selected_designer_id' => 'required|integer|exists:users,user_id',
+            ]);
 
-        $user_id = $order->user->user_id;
+            $order = Order::findOrFail($order_id);
+            $order->update([
+                'assigned_designer_id' => intval($validatedData['selected_designer_id']),
+                'status_id' => 2,
+            ]);
 
-        Notification::create([
-            'user_id' => $user_id,
-            'message' => 'Design in Progress',
-            'is_read' => false,
-            'order_id' => $order->order_id,
-        ]);
+            Notification::create([
+                'user_id' => $order->user->user_id,
+                'message' => 'Design in Progress',
+                'is_read' => false,
+                'order_id' => $order->order_id,
+            ]);
 
-        return redirect()->route('partner.printer.orders');
+            $this->toast('Designer assigned successfully!', 'success');
+            return redirect()->route('partner.printer.orders');
+        } catch (\Exception $e) {
+            Log::error('Assign Designer Error: ' . $e->getMessage());
+            $this->toast('An error occurred while assigning the designer.', 'error');
+            return redirect()->back();
+        }
     }
 }
