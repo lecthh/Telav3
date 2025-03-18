@@ -18,17 +18,19 @@ class DesignerOrderController extends Controller
     public function dashboard()
     {
         try {
-            $designer = session('admin');
+            // Get the designer data from session or create it if needed
+            $designer = $this->getOrCreateDesignerSession();
             
-            Log::info('Dashboard accessed', [
-                'session_has_admin' => session()->has('admin'),
-                'designer' => $designer ? $designer->toArray() : null
-            ]);
-            
+            // If still no designer data after recovery attempts, redirect to login
             if (!$designer) {
-                Log::error('Designer session not found');
+                Log::error('Designer session not found and could not be recovered');
                 return redirect()->route('login')->with('error', 'Designer session not found');
             }
+            
+            Log::info('Designer dashboard rendered successfully', [
+                'designer_id' => $designer->designer_id ?? null,
+                'user_id' => auth()->id()
+            ]);
     
             // Active orders (still in progress)
             $assignedOrdersCount = Order::where('assigned_designer_id', $designer->designer_id)
@@ -121,7 +123,14 @@ class DesignerOrderController extends Controller
 
     public function index()
     {
-        $designer = session('admin');
+        $designer = $this->getOrCreateDesignerSession();
+        
+        // If still no designer data, redirect to login
+        if (!$designer) {
+            Log::error('Designer session not found in index method');
+            return redirect()->route('login')->with('error', 'Designer session not found');
+        }
+        
         $assignedOrders = Order::where('assigned_designer_id', $designer->designer_id)
             ->where('status_id', '>=', 2)
             ->where('status_id', '!=', 7)
@@ -133,7 +142,12 @@ class DesignerOrderController extends Controller
 
     public function assignedOrder($order_id)
     {
-        $designer = session('admin');
+        $designer = $this->getOrCreateDesignerSession();
+        
+        if (!$designer) {
+            return redirect()->route('login')->with('error', 'Designer session not found');
+        }
+        
         $order = Order::find($order_id);
         return view('partner.designer.order', compact('order', 'designer'));
     }
@@ -266,7 +280,12 @@ class DesignerOrderController extends Controller
 
     public function complete()
     {
-        $designer = session('admin');
+        $designer = $this->getOrCreateDesignerSession();
+        
+        if (!$designer) {
+            return redirect()->route('login')->with('error', 'Designer session not found');
+        }
+        
         $orders = Order::where('assigned_designer_id', $designer->designer_id)
             ->where('status_id', '=', 7)
             ->orderBy('created_at', 'desc') // Order by newest first
@@ -276,8 +295,49 @@ class DesignerOrderController extends Controller
 
     public function completeOrder($order_id)
     {
-        $designer = session('admin');
+        $designer = $this->getOrCreateDesignerSession();
+        
+        if (!$designer) {
+            return redirect()->route('login')->with('error', 'Designer session not found');
+        }
+        
         $order = Order::find($order_id);
         return view('partner.designer.complete.order', compact('order', 'designer'));
+    }
+    
+    /**
+     * Get designer data from session or create it if needed
+     * 
+     * @return \App\Models\Designer|null
+     */
+    private function getOrCreateDesignerSession()
+    {
+        $designer = session('admin');
+        
+        Log::info('Designer session check', [
+            'session_has_admin' => session()->has('admin'),
+            'designer' => $designer ? (is_object($designer) ? get_class($designer) : gettype($designer)) : null,
+            'auth_id' => auth()->id(),
+            'user_role' => auth()->user()->role_type_id ?? 'none'
+        ]);
+        
+        // If session admin is missing, try to recover it from the database
+        if ((empty($designer) || !($designer instanceof \App\Models\Designer)) && auth()->check() && auth()->user()->role_type_id == 3) {
+            $designer = \App\Models\Designer::where('user_id', auth()->id())->first();
+            if ($designer) {
+                session(['admin' => $designer]);
+                Log::info('Created or restored designer session data', [
+                    'designer_id' => $designer->designer_id,
+                    'user_id' => auth()->id()
+                ]);
+            } else {
+                Log::error('Could not find designer record for authenticated user', [
+                    'user_id' => auth()->id(),
+                    'email' => auth()->user()->email
+                ]);
+            }
+        }
+        
+        return $designer;
     }
 }

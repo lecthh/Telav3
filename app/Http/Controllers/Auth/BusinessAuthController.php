@@ -85,11 +85,20 @@ class BusinessAuthController extends Controller
             if ($user->role_type_id == 2) {
                 $admin = ProductionCompany::where('user_id', $user->user_id)->first();
                 session(['admin' => $admin]);
-                return redirect()->intended('printer-dashboard')->with('success', 'Logged in successfully');
+                Log::info('Production company login - redirecting to printer dashboard', [
+                    'user_id' => $user->user_id,
+                    'admin_id' => $admin ? $admin->id : null
+                ]);
+                return redirect()->route('printer-dashboard')->with('success', 'Logged in successfully');
             } else if ($user->role_type_id == 3) {
                 $admin = Designer::where('user_id', $user->user_id)->first();
                 session(['admin' => $admin]);
-                return redirect()->intended(route('designer-dashboard'))->with('success', 'Logged in successfully');
+                Log::info('Designer login - redirecting to designer dashboard', [
+                    'user_id' => $user->user_id, 
+                    'designer_id' => $admin ? $admin->designer_id : null
+                ]);
+                // Directly use the URL, don't use the route helper or intended
+                return redirect('/designer-dashboard')->with('success', 'Logged in successfully');
             }
         } else {
             return back()->withErrors(['email' => 'Invalid email or password'])->withInput();

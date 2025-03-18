@@ -14,7 +14,24 @@ class PrinterDashboardController extends Controller
         $productionCompany = session('admin');
         $productionCompanyId = null;
         
-        // Handle the nested object structure
+        // Log the admin session content for debugging
+        Log::info('Dashboard session admin data', [
+            'admin_session' => $productionCompany,
+            'type' => gettype($productionCompany),
+            'auth_id' => auth()->id(),
+            'user_role' => auth()->user()->role_type_id ?? 'none'
+        ]);
+        
+        // If session admin is missing, try to recover it from the database
+        if (empty($productionCompany) && auth()->check() && auth()->user()->role_type_id == 2) {
+            $productionCompany = \App\Models\ProductionCompany::where('user_id', auth()->id())->first();
+            if ($productionCompany) {
+                session(['admin' => $productionCompany]);
+                Log::info('Recovered missing admin session data', ['company_id' => $productionCompany->id]);
+            }
+        }
+        
+        // Handle different possible data structures
         if (is_object($productionCompany) && isset($productionCompany->id)) {
             $productionCompanyId = $productionCompany->id;
         } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {

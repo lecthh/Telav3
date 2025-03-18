@@ -19,8 +19,7 @@ class GoogleAuth extends Controller
     {
         try {
             $googleUser = Socialite::driver('google')->user();
-            $this->_registerOrLoginUser($googleUser);
-            return redirect()->intended(route('home'));
+            return $this->_registerOrLoginUser($googleUser);
         } catch (\Exception $e) {
             return redirect()->route('home')->withErrors('Error logging in with Google.');
         }
@@ -29,7 +28,7 @@ class GoogleAuth extends Controller
 
     private function _registerOrLoginUser($googleUser)
     {
-        $user = User::where('user_id', $googleUser->id)->first();
+        $user = User::where('email', $googleUser->email)->first();
 
         if (!$user) {
             $user = User::create([
@@ -39,10 +38,30 @@ class GoogleAuth extends Controller
                 'password' => bcrypt('random_password'),
                 'email_verified_at' => now(),
                 'avatar' => $googleUser->avatar ?? null,
+                'role_type_id' => 1, // Default to customer role
             ]);
         }
+        
         Auth::login($user);
-
-        return redirect()->route('home');
+        
+        // Redirect based on user role
+        if ($user->role_type_id == 2) {
+            // Production company
+            $admin = \App\Models\ProductionCompany::where('user_id', $user->user_id)->first();
+            if ($admin) {
+                session(['admin' => $admin]);
+                return redirect()->route('printer-dashboard')->with('success', 'Logged in successfully');
+            }
+        } else if ($user->role_type_id == 3) {
+            // Designer
+            $admin = \App\Models\Designer::where('user_id', $user->user_id)->first();
+            if ($admin) {
+                session(['admin' => $admin]);
+                return redirect()->route('designer-dashboard')->with('success', 'Logged in successfully');
+            }
+        }
+        
+        // Default redirect to home for customers or if admin object not found
+        return redirect()->route('home')->with('success', 'Logged in successfully');
     }
 }
