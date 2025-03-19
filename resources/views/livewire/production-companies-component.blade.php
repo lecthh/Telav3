@@ -29,13 +29,13 @@
                         class="flex flex-col p-4 rounded-lg bg-white border hover:shadow-md transition-all duration-200 {{ $selectedProductionCompany === $productionCompany->id ? 'border-cPrimary ring-2 ring-cPrimary/30' : 'border-gray-200' }}"
                         wire:click="selectProductionCompany({{ $productionCompany->id }})"
                     >
-                        <div class="h-40 mb-4 rounded-md overflow-hidden bg-gray-50 flex items-center justify-center p-4">
+                        <div class="h-42 mb-4 rounded-md overflow-hidden bg-gray-50 flex items-center justify-center p-4">
                             @if($productionCompany->company_logo && Str::startsWith($productionCompany->company_logo, 'company_logos/'))
-                                <img class="object-contain w-full h-full" src="{{ Storage::url($productionCompany->company_logo) }}" alt="{{ $productionCompany->company_name }}">
+                                <img class="object-cover w-full h-full" src="{{ Storage::url($productionCompany->company_logo) }}" alt="{{ $productionCompany->company_name }}">
                             @elseif($productionCompany->company_logo)
-                                <img class="object-contain w-full h-full" src="{{ asset($productionCompany->company_logo) }}" alt="{{ $productionCompany->company_name }}">
+                                <img class="object-cover w-full h-full" src="{{ asset($productionCompany->company_logo) }}" alt="{{ $productionCompany->company_name }}">
                             @else
-                                <img class="object-contain w-full h-full" src="{{ asset('imgs/companyLogo/placeholder.jpg') }}" alt="{{ $productionCompany->company_name }}">
+                                <img class="object-cover w-full h-full" src="{{ asset('imgs/companyLogo/placeholder.jpg') }}" alt="{{ $productionCompany->company_name }}">
                             @endif
                         </div>
                         
