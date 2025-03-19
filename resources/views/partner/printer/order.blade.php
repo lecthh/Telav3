@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -10,9 +11,11 @@
         rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/pagedone@1.2.2/src/css/pagedone.css " rel="stylesheet" />
     @vite('resources/css/app.css')
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
 <body class="flex flex-col h-screen justify-between bg-gray-50">
+    @include('chat.chat-widget')
     <div class="flex flex-col">
         <div class="flex p-1.5 bg-cPrimary font-gilroy font-bold text-white text-sm justify-center">Production Hub</div>
         <div class="flex">
@@ -42,19 +45,14 @@
                             Order No. {{$order->order_id}}
                         </h1>
                         <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                            Pending Request
+                            {{ $order->form_filled ? 'Ready for Production' : 'Waiting for Customization Form' }}
                         </span>
                     </div>
                     <x-popover>
                         <x-slot name="trigger">
-                            <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-cPrimary hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                                </svg>
-                                Chat with Customer
-                            </button>
+                            <x-start-chat :user="$order->user" />
                         </x-slot>
-                        Start chatting with {{$order->user->name}}
+                        Start chatting with {{ $order->user->name }}
                     </x-popover>
                 </div>
 

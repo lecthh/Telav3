@@ -64,7 +64,7 @@
                                 data-order-status="{{ $order->status->name }}"
                                 data-order-status-id="{{ $order->status_id }}"
                                 data-order-created-at="{{ $order->created_at }}"
-                                data-order-notifications='@json($order->notifications)'
+                                data-order-notifications='@json($order->notifications->sortByDesc("created_at"))'
                                 data-order-quantity="{{ $order->quantity }}"
                                 data-order-production-type="{{ $order->productionType ? $order->productionType->name : 'N/A' }}"
                                 data-order-apparel-type="{{ $order->apparelType ? $order->apparelType->name : 'N/A' }}"

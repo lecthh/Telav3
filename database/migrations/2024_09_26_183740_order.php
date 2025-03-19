@@ -20,6 +20,7 @@ return new class extends Migration
             $table->boolean('is_customized')->default(false);
             $table->boolean('is_bulk_order')->default(false);
             $table->integer('quantity')->nullable();
+            $table->string('token')->nullable();
             $table->foreignId('status_id')->constrained('order_statuses', 'status_id')->onDelete('cascade');
             $table->foreignId('apparel_type')->constrained('apparel_types')->onDelete('cascade');
             $table->foreignId('production_type')->constrained('production_types')->onDelete('cascade');
@@ -27,7 +28,6 @@ return new class extends Migration
             $table->decimal('final_price', 10, 2)->nullable();
             $table->text('custom_design_info')->nullable();
             $table->integer('revision_count')->default(0);
-            $table->string('token')->nullable();
             $table->timestamps();
         });
     }

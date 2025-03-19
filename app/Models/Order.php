@@ -88,4 +88,15 @@ class Order extends Model
     {
         return $this->hasMany(Notification::class, 'order_id', 'order_id');
     }
+    
+    /**
+     * Get the form_filled attribute.
+     * An order form is considered filled when the token is null.
+     *
+     * @return bool
+     */
+    public function getFormFilledAttribute()
+    {
+        return $this->token === null;
+    }
 }

@@ -218,3 +218,20 @@ Route::middleware(['auth'])->post('/broadcasting/auth', function (Request $reque
     ]);
     return Broadcast::auth($request);
 });
+
+// Payment routes
+Route::get('/payment/{order_id}/{additional_payment}', function ($orderId, $additionalPayment) {
+    return view('customer.payment.payment-methods', [
+        'order_id' => $orderId,
+        'additionalPayment' => $additionalPayment
+    ]);
+})->name('customer.payment.methods');
+
+// Payment processing route
+Route::get('/payment/methods/{order_id}', [App\Http\Controllers\PaymentController::class, 'showPaymentMethods'])
+    ->name('customer.payment.methods')
+    ->middleware('auth');
+    
+Route::post('/payment/process', [App\Http\Controllers\PaymentController::class, 'processPayment'])
+    ->name('customer.payment.process')
+    ->middleware('auth');

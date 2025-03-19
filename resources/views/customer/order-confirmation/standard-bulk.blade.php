@@ -159,12 +159,37 @@
                                 <span id="summary-total-price" class="text-cPrimary font-bold text-lg">₱0.00</span>
                             </div>
                             <div class="flex justify-between items-center text-sm pt-1">
+                                <span class="text-gray-600">Additional Payment Required:</span>
+                                <span id="additional-payment" class="font-bold text-orange-600">₱0.00</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm pt-1">
                                 <span class="text-gray-600">Balance Due:</span>
                                 <span id="summary-balance" class="font-bold">₱0.00</span>
                             </div>
                         </div>
+                        
+                        <!-- Payment Notification -->
+                        <div id="payment-notification" class="mt-4 bg-yellow-50 border border-yellow-200 rounded-md p-4 hidden">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-yellow-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-medium text-yellow-800">Additional Payment Required</h3>
+                                    <div class="mt-2 text-sm text-yellow-700">
+                                        <p>Your order quantity has changed. Please pay the additional downpayment of <span id="notification-amount" class="font-bold">₱0.00</span> to proceed with your updated order.</p>
+                                    </div>
+                                    <div class="mt-4">
+                                        <!-- Payment button has been removed -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <input type="hidden" name="new_total_price" id="new-total-price-input" value="0">
                         <input type="hidden" name="new_quantity" id="new-quantity-input" value="0">
+                        <input type="hidden" name="additional_payment_required" id="additional-payment-input" value="0">
                     </div>
 
                     <div class="flex flex-col sm:flex-row justify-between gap-4">
@@ -174,12 +199,20 @@
                             </svg>
                             Back to Home
                         </a>
-                        <button type="submit" id="confirm-button" class="inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-cPrimary hover:bg-cPrimary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
-                            Confirm Order
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
+                        <div class="inline-flex gap-3">
+                            <button type="button" id="payment-button" class="hidden inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                                Pay Additional Amount
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            <button type="submit" id="confirm-button" class="inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-cPrimary hover:bg-cPrimary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary disabled:opacity-50 disabled:cursor-not-allowed">
+                                Confirm Order
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -221,16 +254,61 @@
             function updateOrderSummary(totalQuantity) {
                 const unitPrice = parseFloat(document.getElementById('unit-price').value);
                 const originalDownpayment = parseFloat(document.getElementById('original-downpayment').value);
-                const totalPrice = unitPrice * totalQuantity;
-                const balanceDue = totalPrice - originalDownpayment;
+                const originalQuantity = {{ $order->quantity }};
+                const confirmButton = document.getElementById('confirm-button');
+                const paymentButton = document.getElementById('payment-button');
                 
+                // Calculate prices
+                const originalTotalPrice = unitPrice * originalQuantity;
+                const newTotalPrice = unitPrice * totalQuantity;
+                const priceDifference = newTotalPrice - originalTotalPrice;
+                
+                // Calculate required payments
+                const additionalPaymentRequired = priceDifference > 0 ? priceDifference / 2 : 0; // 50% downpayment on additional items
+                const newBalanceDue = newTotalPrice - originalDownpayment - additionalPaymentRequired;
+                
+                // Update display elements
                 document.getElementById('summary-quantity').textContent = totalQuantity + ' item' + (totalQuantity !== 1 ? 's' : '');
-                document.getElementById('summary-total-price').textContent = '₱' + totalPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                document.getElementById('summary-balance').textContent = '₱' + Math.max(0, balanceDue).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('summary-total-price').textContent = '₱' + newTotalPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 
-                // Update hidden inputs for form submission
-                document.getElementById('new-total-price-input').value = totalPrice.toFixed(2);
+                const additionalPaymentElement = document.getElementById('additional-payment');
+                if (additionalPaymentElement) {
+                    additionalPaymentElement.textContent = '₱' + additionalPaymentRequired.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                }
+                
+                document.getElementById('summary-balance').textContent = '₱' + Math.max(0, newBalanceDue).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                // Update notification amount
+                const notificationAmountElement = document.getElementById('notification-amount');
+                if (notificationAmountElement) {
+                    notificationAmountElement.textContent = '₱' + additionalPaymentRequired.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                }
+                
+                // Show/hide notification based on whether additional payment is required
+                const paymentNotification = document.getElementById('payment-notification');
+                if (paymentNotification) {
+                    if (additionalPaymentRequired > 0) {
+                        paymentNotification.classList.remove('hidden');
+                    } else {
+                        paymentNotification.classList.add('hidden');
+                    }
+                }
+                
+                // Update hidden fields for form submission
+                document.getElementById('new-total-price-input').value = newTotalPrice.toFixed(2);
                 document.getElementById('new-quantity-input').value = totalQuantity;
+                document.getElementById('additional-payment-input').value = additionalPaymentRequired.toFixed(2);
+                
+                // Enable/disable confirm button based on additional payment required
+                if (additionalPaymentRequired > 0) {
+                    // Disable confirm button and show payment button when additional payment is required
+                    confirmButton.disabled = true;
+                    paymentButton.classList.remove('hidden');
+                } else {
+                    // Enable confirm button and hide payment button when no additional payment is required
+                    confirmButton.disabled = false;
+                    paymentButton.classList.add('hidden');
+                }
             }
             
             // Set initial state
