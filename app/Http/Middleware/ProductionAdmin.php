@@ -17,6 +17,14 @@ class ProductionAdmin
     public function handle(Request $request, Closure $next): Response
     {
         if (Auth::check() && Auth::user()->role_type_id == 2) {
+            // If the admin session data is missing, set it
+            if (!session()->has('admin')) {
+                $productionCompany = \App\Models\ProductionCompany::where('user_id', Auth::user()->user_id)->first();
+                if ($productionCompany) {
+                    session(['admin' => $productionCompany]);
+                    \Illuminate\Support\Facades\Log::info('Setting missing production company admin session data', ['company_id' => $productionCompany->id]);
+                }
+            }
             return $next($request);
         }
         abort(401, 'Unauthorized Access');

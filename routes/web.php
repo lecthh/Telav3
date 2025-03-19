@@ -9,8 +9,6 @@ use App\Http\Controllers\ConfirmationMessageController;
 use App\Http\Controllers\ConfirmBulkController;
 use App\Http\Controllers\CustomizationExportController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\OrderProduceController;
-use App\Http\Controllers\OrderController;
 use App\Http\Controllers\DesignerOrderController;
 use App\Http\Controllers\DesignerProfileController;
 use App\Http\Controllers\PrinterDashboardController;
@@ -20,8 +18,8 @@ use App\Http\Controllers\Auth\PartnerRegistration;
 use App\Http\Controllers\Auth\GoogleAuth;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderProduceController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Middleware\PreventBackHistory;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Auth;
@@ -58,8 +56,12 @@ Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->g
         })->name('profile.basics');
 
         Route::get('/profile/pricing', [EditProducerAccountController::class, 'index'])->name('profile.pricing');
+        Route::get('/profile/reviews', [PrinterDashboardController::class, 'reviews'])->name('profile.reviews');
         Route::post('/profile/update', [EditProducerAccountController::class, 'update'])->name('profile.update');
         Route::post('/profile/pricing/update', [EditProducerAccountController::class, 'updatePricing'])->name('profile.pricing.update');
+        Route::get('/profile/notifications', [PrinterDashboardController::class, 'notifications'])->name('profile.notifications');
+        Route::post('/profile/notifications/{id}/mark-read', [PrinterDashboardController::class, 'markNotificationAsRead'])->name('profile.notifications.mark-read');
+        Route::post('/profile/notifications/mark-all-read', [PrinterDashboardController::class, 'markAllNotificationsAsRead'])->name('profile.notifications.mark-all-read');
 
         // Order Management
         Route::get('/orders', [OrderProduceController::class, 'pending'])->name('orders');
@@ -113,6 +115,10 @@ Route::prefix('partner')->name('partner.')->middleware('DesignerOnly')->group(fu
         Route::prefix('profile')->name('profile.')->group(function () {
             Route::get('/basics', [DesignerProfileController::class, 'basics'])->name('basics');
             Route::post('/update', [DesignerProfileController::class, 'update'])->name('update');
+            Route::get('/reviews', [DesignerProfileController::class, 'reviews'])->name('reviews');
+            Route::get('/notifications', [DesignerOrderController::class, 'notifications'])->name('notifications');
+            Route::post('/notifications/{id}/mark-read', [DesignerOrderController::class, 'markNotificationAsRead'])->name('notifications.mark-read');
+            Route::post('/notifications/mark-all-read', [DesignerOrderController::class, 'markAllNotificationsAsRead'])->name('notifications.mark-all-read');
         });
     });
 });
@@ -149,6 +155,10 @@ Route::middleware(['CustomerOnly'])->group(function () {
     Route::get('/profile-orders', [ProfileController::class, 'profileOrders'])->name('customer.profile.orders');
     Route::get('/profile-reviews', [ProfileController::class, 'profileReviews'])->name('customer.profile.reviews');
     Route::get('/confirmation', [ConfirmationMessageController::class, 'confirmation'])->name('customer.confirmation');
+    
+    // Review routes
+    Route::get('/review/{order_id}', [ReviewController::class, 'showReviewForm'])->name('customer.review.form');
+    Route::post('/review', [ReviewController::class, 'storeReview'])->name('customer.review.store');
 
     Route::get('/inbox', function () {
         return view('customer.inbox.messages');

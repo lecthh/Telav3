@@ -39,14 +39,38 @@
                 <span>Completed Work</span>
             </a>
             
-            <a href="#" class="flex items-center gap-x-3 px-3 py-2.5 rounded-md text-gray-700 hover:bg-cGreen/10 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
-                </svg>
+            @php
+                // Get the designer's user ID
+                $designerUserId = null;
+                if (isset($designer) && isset($designer->user_id)) {
+                    $designerUserId = $designer->user_id;
+                }
+                
+                // Get unread notification count
+                $unreadCount = 0;
+                if ($designerUserId) {
+                    $unreadCount = \App\Models\Notification::where('user_id', $designerUserId)
+                        ->where('is_read', false)
+                        ->count();
+                }
+            @endphp
+            
+            <a href="{{ route('partner.designer.profile.notifications') }}" class="flex items-center gap-x-3 px-3 py-2.5 rounded-md {{ request()->routeIs('partner.designer.profile.notifications') ? 'bg-cGreen/20 text-cGreen font-medium' : 'text-gray-700 hover:bg-cGreen/10' }} transition-colors">
+                <div class="relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                    </svg>
+                    
+                    @if($unreadCount > 0)
+                    <span class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs">
+                        {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+                    </span>
+                    @endif
+                </div>
                 <span>Notifications</span>
             </a>
             
-            <a href="#" class="flex items-center gap-x-3 px-3 py-2.5 rounded-md text-gray-700 hover:bg-cGreen/10 transition-colors">
+            <a href="{{ route('partner.designer.profile.reviews') }}" class="flex items-center gap-x-3 px-3 py-2.5 rounded-md {{ request()->routeIs('partner.designer.profile.reviews') ? 'bg-cGreen/20 text-cGreen font-medium' : 'text-gray-700 hover:bg-cGreen/10' }} transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd" />
                 </svg>
@@ -54,7 +78,7 @@
             </a>
             
             <div class="pt-4 mt-4 border-t border-gray-200">
-                <a href="{{ route('partner.designer.profile.basics') }}" class="flex items-center gap-x-3 px-3 py-2.5 rounded-md {{ request()->routeIs('partner.designer.profile*') ? 'bg-cGreen/20 text-cGreen font-medium' : 'text-gray-700 hover:bg-cGreen/10' }} transition-colors">
+                <a href="{{ route('partner.designer.profile.basics') }}" class="flex items-center gap-x-3 px-3 py-2.5 rounded-md {{ request()->routeIs('partner.designer.profile.basics') ? 'bg-cGreen/20 text-cGreen font-medium' : 'text-gray-700 hover:bg-cGreen/10' }} transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
                     </svg>

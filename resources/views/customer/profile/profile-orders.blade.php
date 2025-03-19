@@ -62,6 +62,7 @@
                             <button class="order-button w-full text-left p-4 rounded-lg border border-gray-200 hover:border-cPrimary hover:bg-purple-50 transition duration-150 focus:outline-none focus:ring-2 focus:ring-cPrimary focus:ring-offset-2 group"
                                 data-order-id="{{ $order->order_id }}"
                                 data-order-status="{{ $order->status->name }}"
+                                data-order-status-id="{{ $order->status_id }}"
                                 data-order-created-at="{{ $order->created_at }}"
                                 data-order-notifications='@json($order->notifications)'
                                 data-order-quantity="{{ $order->quantity }}"
@@ -195,14 +196,12 @@
                                     <div id="order-notifications" class="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar"></div>
                                 </div>
 
-                                <!-- <div class="flex flex-wrap gap-4 border-t border-gray-200 pt-4">
-                                    <button class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
-                                        Contact Support
-                                    </button>
-                                    <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-cPrimary hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
-                                        Track Order
-                                    </button>
-                                </div> -->
+                                <div id="order-actions" class="flex flex-wrap gap-4 border-t border-gray-200 pt-4">
+                                    <!-- Review button - only shows for completed orders -->
+                                    <a id="review-button" href="#" class="hidden inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-cPrimary hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
+                                        Leave a Review
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -344,11 +343,24 @@
                     } else {
                         etaContainer.classList.add('hidden');
                     }
+                    
+                    // Show/hide review button based on order status
+                    const reviewButton = document.getElementById('review-button');
+                    const statusId = this.getAttribute('data-order-status-id');
+                    
+                    // Check both status name and numeric ID (7 is completed)
+                    if (orderStatus === 'Completed' || statusId === '7') {
+                        console.log('Showing review button for completed order:', orderId, 'Status ID:', statusId);
+                        reviewButton.classList.remove('hidden');
+                        reviewButton.href = `/review/${orderId}`;
+                    } else {
+                        reviewButton.classList.add('hidden');
+                    }
 
                     let statusColorClass = '';
-                    if (orderStatus === 'Completed') {
+                    if (orderStatus === 'Completed' || statusId === '7') {
                         statusColorClass = 'bg-green-100 text-green-800';
-                    } else if (orderStatus === 'Cancelled') {
+                    } else if (orderStatus === 'Cancelled' || statusId === '8') {
                         statusColorClass = 'bg-red-100 text-red-800';
                     } else {
                         statusColorClass = 'bg-blue-100 text-blue-800';
@@ -360,7 +372,6 @@
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusColorClass}">
                                     ${orderStatus}
                                 </span>
-                                <p class="mt-2 text-sm text-gray-600">Order is being processed</p>
                             </div>
                             <div class="text-right">
                                 <p class="text-sm font-medium text-gray-900">Date Placed</p>

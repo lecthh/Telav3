@@ -18,30 +18,27 @@ class DesignerOrderController extends Controller
     public function dashboard()
     {
         try {
-            $designer = session('admin');
-            
-            Log::info('Dashboard accessed', [
-                'session_has_admin' => session()->has('admin'),
-                'designer' => $designer ? $designer->toArray() : null
-            ]);
+            $designer = $this->getOrCreateDesignerSession();
             
             if (!$designer) {
-                Log::error('Designer session not found');
+                Log::error('Designer session not found and could not be recovered');
                 return redirect()->route('login')->with('error', 'Designer session not found');
             }
+            
+            Log::info('Designer dashboard rendered successfully', [
+                'designer_id' => $designer->designer_id ?? null,
+                'user_id' => auth()->id()
+            ]);
     
-            // Active orders (still in progress)
             $assignedOrdersCount = Order::where('assigned_designer_id', $designer->designer_id)
                 ->where('status_id', '>=', 2)
                 ->where('status_id', '!=', 7)
                 ->count();
     
-            // Completed orders
             $completedOrdersCount = Order::where('assigned_designer_id', $designer->designer_id)
                 ->where('status_id', 7)
                 ->count();
                 
-            // Get most recent assigned orders for quick access
             $recentOrders = Order::where('assigned_designer_id', $designer->designer_id)
                 ->where('status_id', '>=', 2)
                 ->where('status_id', '!=', 7)
@@ -49,10 +46,9 @@ class DesignerOrderController extends Controller
                 ->take(3)
                 ->get();
                 
-            // Total orders handled
             $totalOrdersHandled = $assignedOrdersCount + $completedOrdersCount;
             
-            // Get monthly assigned and completed orders for the chart (last 6 months)
+            //monthly assigned and completed orders for last 6 months
             $monthlyAssigned = [];
             $monthlyCompleted = [];
             $monthlyLabels = [];
@@ -77,7 +73,6 @@ class DesignerOrderController extends Controller
                 $monthlyLabels[] = $month->format('M');
             }
             
-            // Convert to JSON for JavaScript
             $monthlyAssignedJSON = json_encode($monthlyAssigned);
             $monthlyCompletedJSON = json_encode($monthlyCompleted);
             $monthlyLabelsJSON = json_encode($monthlyLabels);
@@ -121,11 +116,17 @@ class DesignerOrderController extends Controller
 
     public function index()
     {
-        $designer = session('admin');
+        $designer = $this->getOrCreateDesignerSession();
+        
+        if (!$designer) {
+            Log::error('Designer session not found in index method');
+            return redirect()->route('login')->with('error', 'Designer session not found');
+        }
+        
         $assignedOrders = Order::where('assigned_designer_id', $designer->designer_id)
             ->where('status_id', '>=', 2)
             ->where('status_id', '!=', 7)
-            ->orderBy('created_at', 'desc') // Order by newest first
+            ->orderBy('created_at', 'desc')
             ->get();
 
         return view('partner.designer.orders', compact('assignedOrders'));
@@ -133,7 +134,12 @@ class DesignerOrderController extends Controller
 
     public function assignedOrder($order_id)
     {
-        $designer = session('admin');
+        $designer = $this->getOrCreateDesignerSession();
+        
+        if (!$designer) {
+            return redirect()->route('login')->with('error', 'Designer session not found');
+        }
+        
         $order = Order::find($order_id);
         return view('partner.designer.order', compact('order', 'designer'));
     }
@@ -164,6 +170,7 @@ class DesignerOrderController extends Controller
 
             $user_id = $order->user->user_id;
 
+            // Notification for customer to finalize order
             Notification::create([
                 'user_id' => $user_id,
                 'message' => 'Finalize Order',
@@ -171,9 +178,18 @@ class DesignerOrderController extends Controller
                 'order_id' => $order->order_id,
             ]);
 
+            // Second notification for customer about confirmation link
             Notification::create([
                 'user_id' => $user_id,
                 'message' => 'A confirmation link has been sent to your email. Please confirm your order.',
+                'is_read' => false,
+                'order_id' => $order->order_id,
+            ]);
+            
+            // Notification for production company/printer that design is completed
+            Notification::create([
+                'user_id' => $order->productionCompany->user_id,
+                'message' => 'Design completed for order #' . $order->order_id,
                 'is_read' => false,
                 'order_id' => $order->order_id,
             ]);
@@ -226,12 +242,10 @@ class DesignerOrderController extends Controller
                 }
             }
 
-            // Save the token to the order
             $name = $user->name;
             $order->update(['token' => $token]);
             $order->save();
 
-            // Log for debugging
             Log::info('Sending confirmation email', [
                 'order_id' => $order->order_id,
                 'user_email' => $user->email,
@@ -266,7 +280,12 @@ class DesignerOrderController extends Controller
 
     public function complete()
     {
-        $designer = session('admin');
+        $designer = $this->getOrCreateDesignerSession();
+        
+        if (!$designer) {
+            return redirect()->route('login')->with('error', 'Designer session not found');
+        }
+        
         $orders = Order::where('assigned_designer_id', $designer->designer_id)
             ->where('status_id', '=', 7)
             ->orderBy('created_at', 'desc') // Order by newest first
@@ -276,8 +295,117 @@ class DesignerOrderController extends Controller
 
     public function completeOrder($order_id)
     {
-        $designer = session('admin');
+        $designer = $this->getOrCreateDesignerSession();
+        
+        if (!$designer) {
+            return redirect()->route('login')->with('error', 'Designer session not found');
+        }
+        
         $order = Order::find($order_id);
         return view('partner.designer.complete.order', compact('order', 'designer'));
+    }
+    
+    /**
+     * Get designer data from session or create it if needed
+     * 
+     * @return \App\Models\Designer|null
+     */
+    private function getOrCreateDesignerSession()
+    {
+        $designer = session('admin');
+        
+        Log::info('Designer session check', [
+            'session_has_admin' => session()->has('admin'),
+            'designer' => $designer ? (is_object($designer) ? get_class($designer) : gettype($designer)) : null,
+            'auth_id' => auth()->id(),
+            'user_role' => auth()->user()->role_type_id ?? 'none'
+        ]);
+        
+        // If session admin is missing, try to recover it from the database
+        if ((empty($designer) || !($designer instanceof \App\Models\Designer)) && auth()->check() && auth()->user()->role_type_id == 3) {
+            $designer = \App\Models\Designer::where('user_id', auth()->id())->first();
+            if ($designer) {
+                session(['admin' => $designer]);
+                Log::info('Created or restored designer session data', [
+                    'designer_id' => $designer->designer_id,
+                    'user_id' => auth()->id()
+                ]);
+            } else {
+                Log::error('Could not find designer record for authenticated user', [
+                    'user_id' => auth()->id(),
+                    'email' => auth()->user()->email
+                ]);
+            }
+        }
+        
+        return $designer;
+    }
+
+    public function notifications()
+    {
+        Log::info('Designer notifications method called', [
+            'session_admin' => session('admin'),
+            'user_id' => auth()->id(),
+            'is_authenticated' => auth()->check()
+        ]);
+        
+        $designer = $this->getOrCreateDesignerSession();
+        
+        if (!$designer) {
+            Log::error('Designer session not found in notifications method');
+            return redirect()->route('login')->with('error', 'Designer session not found');
+        }
+        
+        $userId = $designer->user_id;
+        
+        if (!$userId) {
+            Log::error('No user ID associated with designer', ['designer_id' => $designer->designer_id]);
+            return redirect()->route('designer-dashboard')->with('error', 'User information not found.');
+        }
+        
+        $notifications = \App\Models\Notification::where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+            
+        // Mark notifications as read
+        \App\Models\Notification::where('user_id', $userId)
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+        
+        return view('partner.designer.profile.notifications', compact('notifications', 'designer'));
+    }
+
+    public function markNotificationAsRead($id)
+    {
+        try {
+            $notification = \App\Models\Notification::findOrFail($id);
+            $notification->is_read = true;
+            $notification->save();
+            
+            return redirect()->back()->with('success', 'Notification marked as read');
+        } catch (\Exception $e) {
+            Log::error('Mark notification read error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred');
+        }
+    }
+
+    public function markAllNotificationsAsRead()
+    {
+        try {
+            $designer = $this->getOrCreateDesignerSession();
+            
+            if (!$designer) {
+                return redirect()->back()->with('error', 'Designer session not found');
+            }
+            
+            \App\Models\Notification::where('user_id', $designer->user_id)
+                ->where('is_read', false)
+                ->update(['is_read' => true]);
+                
+            return redirect()->back()->with('success', 'All notifications marked as read');
+        } catch (\Exception $e) {
+            Log::error('Mark all notifications read error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred');
+        }
     }
 }

@@ -1,5 +1,6 @@
 <!doctype html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     @vite('resources/css/app.css')
-    
+
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
@@ -50,18 +51,20 @@
             <!-- Company Overview Section -->
             <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
                 <div class="md:flex">
-                    <div class="md:w-1/3 p-6 flex items-center justify-center">
-                        <div class="bg-gray-100 rounded-xl p-6 flex items-center justify-center w-full h-full">
+                    <div class="md:w-1/3 p-6">
+                        <div class="bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center w-full h-full min-h-[200px]">
                             @if($productionCompany->company_logo && $productionCompany->company_logo != 'imgs/companyLogo/placeholder.jpg')
-                                <img src="{{ asset($productionCompany->company_logo) }}" alt="{{ $productionCompany->company_name }}" class="max-w-full max-h-48 object-contain">
+                            <div class="w-full h-full">
+                                <img src="{{ asset($productionCompany->company_logo) }}" alt="{{ $productionCompany->company_name }}" class="w-full h-full object-cover">
+                            </div>
                             @else
-                                <div class="flex flex-col items-center justify-center text-gray-400">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                    <p class="text-sm font-medium">Company Logo</p>
-                                </div>
+                            <div class="flex flex-col items-center justify-center text-gray-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <p class="text-sm font-medium">Company Logo</p>
+                            </div>
                             @endif
                         </div>
                     </div>
@@ -76,7 +79,7 @@
                                 <span class="ml-1 text-xs text-gray-500">({{ $productionCompany->review_count ?? 0 }} reviews)</span>
                             </div>
                         </div>
-                        
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                             <div>
                                 <h3 class="text-sm font-medium text-gray-500">Contact Information</h3>
@@ -88,25 +91,25 @@
                                 <p class="text-gray-800 mt-1">{{ $productionCompany->address }}</p>
                             </div>
                         </div>
-                        
+
                         <div class="mb-6">
                             <h3 class="text-sm font-medium text-gray-500 mb-2">Production Capabilities</h3>
                             <div class="flex flex-wrap gap-2">
                                 @foreach($productionTypes as $type)
-                                    @if(in_array($type->id, is_array($productionCompany->production_type) ? $productionCompany->production_type : []))
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">{{ $type->name }}</span>
-                                    @endif
+                                @if(in_array($type->id, is_array($productionCompany->production_type) ? $productionCompany->production_type : []))
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">{{ $type->name }}</span>
+                                @endif
                                 @endforeach
                             </div>
                         </div>
-                        
+
                         <div>
                             <h3 class="text-sm font-medium text-gray-500 mb-2">Apparel Types</h3>
                             <div class="flex flex-wrap gap-2">
                                 @foreach($apparelTypes as $type)
-                                    @if(in_array($type->id, is_array($productionCompany->apparel_type) ? $productionCompany->apparel_type : []))
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">{{ $type->name }}</span>
-                                    @endif
+                                @if(in_array($type->id, is_array($productionCompany->apparel_type) ? $productionCompany->apparel_type : []))
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">{{ $type->name }}</span>
+                                @endif
                                 @endforeach
                             </div>
                         </div>
@@ -118,14 +121,14 @@
             <div x-data="{ activeTab: 'pricing' }">
                 <div class="mb-8 border-b border-gray-200">
                     <nav class="flex -mb-px space-x-8">
-                        <button 
-                            @click="activeTab = 'pricing'" 
+                        <button
+                            @click="activeTab = 'pricing'"
                             :class="{'text-cPrimary border-cPrimary': activeTab === 'pricing', 'text-gray-500 hover:text-gray-700 border-transparent hover:border-gray-300': activeTab !== 'pricing'}"
                             class="py-4 px-1 border-b-2 font-medium text-lg transition duration-150 ease-in-out">
                             Pricing
                         </button>
-                        <button 
-                            @click="activeTab = 'reviews'" 
+                        <button
+                            @click="activeTab = 'reviews'"
                             :class="{'text-cPrimary border-cPrimary': activeTab === 'reviews', 'text-gray-500 hover:text-gray-700 border-transparent hover:border-gray-300': activeTab !== 'reviews'}"
                             class="py-4 px-1 border-b-2 font-medium text-lg transition duration-150 ease-in-out">
                             Reviews
@@ -167,11 +170,10 @@
                                             <div class="text-sm text-gray-900">{{ number_format($record->bulk_price, 2) }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            <a 
-                                                href="{{ route('customer.place-order.select-apparel') }}" 
+                                            <a
+                                                href="{{ route('customer.place-order.select-apparel') }}"
                                                 class="text-cPrimary hover:text-purple-700 font-medium"
-                                                onclick="localStorage.setItem('selectedCompany', '{{ $productionCompany->id }}'); localStorage.setItem('selectedApparelType', '{{ $record->apparel_type }}'); localStorage.setItem('selectedProductionType', '{{ $record->production_type }}');"
-                                            >
+                                                onclick="localStorage.setItem('selectedCompany', '{{ $productionCompany->id }}'); localStorage.setItem('selectedApparelType', '{{ $record->apparel_type }}'); localStorage.setItem('selectedProductionType', '{{ $record->production_type }}');">
                                                 Order Now
                                             </a>
                                         </td>
@@ -204,9 +206,9 @@
                                     <div class="flex items-center">
                                         @for($i = 1; $i <= 5; $i++)
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 {{ $i <= ($productionCompany->avg_rating ?? 0) ? 'text-yellow-400' : 'text-gray-300' }}" viewBox="0 0 20 20" fill="currentColor">
-                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z" />
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z" />
                                             </svg>
-                                        @endfor
+                                            @endfor
                                     </div>
                                     <span class="ml-2 text-lg font-medium text-gray-900">{{ number_format($productionCompany->avg_rating ?? 0, 1) }} out of 5</span>
                                 </div>
@@ -222,9 +224,9 @@
                                             <div class="flex items-center">
                                                 @for($i = 1; $i <= 5; $i++)
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 {{ $i <= 5 ? 'text-yellow-400' : 'text-gray-300' }}" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z" />
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z" />
                                                     </svg>
-                                                @endfor
+                                                    @endfor
                                             </div>
                                             <span class="ml-2 text-sm font-medium text-gray-900">Excellent service!</span>
                                         </div>
@@ -242,7 +244,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Sample Review 2 -->
                             <div class="p-6">
                                 <div class="flex justify-between items-start mb-4">
@@ -251,9 +253,9 @@
                                             <div class="flex items-center">
                                                 @for($i = 1; $i <= 5; $i++)
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 {{ $i <= 4 ? 'text-yellow-400' : 'text-gray-300' }}" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z" />
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z" />
                                                     </svg>
-                                                @endfor
+                                                    @endfor
                                             </div>
                                             <span class="ml-2 text-sm font-medium text-gray-900">Great quality, slight delay</span>
                                         </div>
@@ -263,7 +265,7 @@
                                 </div>
                                 <p class="text-gray-800 mt-2">The final product was excellent and our customers loved the design. There was a slight delay in production, but the company was communicative throughout the process. Would use their services again.</p>
                             </div>
-                            
+
                             <!-- Sample Review 3 -->
                             <div class="p-6">
                                 <div class="flex justify-between items-start mb-4">
@@ -272,9 +274,9 @@
                                             <div class="flex items-center">
                                                 @for($i = 1; $i <= 5; $i++)
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 {{ $i <= 5 ? 'text-yellow-400' : 'text-gray-300' }}" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z" />
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z" />
                                                     </svg>
-                                                @endfor
+                                                    @endfor
                                             </div>
                                             <span class="ml-2 text-sm font-medium text-gray-900">Amazing bulk order</span>
                                         </div>
@@ -290,7 +292,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="px-6 py-4 bg-gray-50 flex justify-between items-center">
                             <p class="text-sm text-gray-600">
                                 Showing 3 of {{ $productionCompany->review_count ?? 0 }} reviews
@@ -309,4 +311,5 @@
 
     @include('layout.footer')
 </body>
+
 </html>

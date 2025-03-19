@@ -68,6 +68,14 @@ class ConfirmationLinkController extends Controller
 
             $order->token = null;
             $order->save();
+            
+            // Notification for production company/printer
+            \App\Models\Notification::create([
+                'user_id' => $order->productionCompany->user_id,
+                'message' => 'Bulk customization details submitted for order #' . $order->order_id,
+                'is_read' => false,
+                'order_id' => $order->order_id,
+            ]);
 
             $this->toast('Customization details submitted successfully!', 'success');
             return redirect()->route('home');
@@ -153,6 +161,14 @@ class ConfirmationLinkController extends Controller
 
             $order->token = null;
             $order->save();
+            
+            // Notification for production company/printer
+            \App\Models\Notification::create([
+                'user_id' => $order->productionCompany->user_id,
+                'message' => 'Jersey customization details submitted for order #' . $order->order_id,
+                'is_read' => false,
+                'order_id' => $order->order_id,
+            ]);
 
             $this->toast('Jersey customization details submitted successfully!', 'success');
             return redirect()->route('home');
@@ -223,6 +239,14 @@ class ConfirmationLinkController extends Controller
 
             $order->token = null;
             $order->save();
+            
+            // Notification for production company/printer
+            \App\Models\Notification::create([
+                'user_id' => $order->productionCompany->user_id,
+                'message' => 'Single item customization details submitted for order #' . $order->order_id,
+                'is_read' => false,
+                'order_id' => $order->order_id,
+            ]);
 
             $this->toast('Customization details submitted successfully!', 'success');
             return redirect()->route('home');
