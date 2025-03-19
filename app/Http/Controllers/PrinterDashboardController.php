@@ -152,4 +152,103 @@ class PrinterDashboardController extends Controller
             'monthlyLabelsJSON'
         ));
     }
+
+    public function notifications()
+    {
+        Log::info('Notifications method called', [
+            'session_admin' => session('admin'),
+            'user_id' => auth()->id(),
+            'is_authenticated' => auth()->check()
+        ]);
+        
+        $productionCompany = session('admin');
+        $productionCompanyId = null;
+        
+        if (is_object($productionCompany) && isset($productionCompany->id)) {
+            $productionCompanyId = $productionCompany->id;
+        } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
+            $productionCompanyId = $productionCompany['App\\Models\\ProductionCompany']['id'];
+        } elseif (is_object($productionCompany) && property_exists($productionCompany, 'App\\Models\\ProductionCompany')) {
+            $pcData = $productionCompany->{'App\\Models\\ProductionCompany'};
+            $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
+        }
+        
+        Log::info('Production company ID extracted', [
+            'productionCompanyId' => $productionCompanyId
+        ]);
+        
+        // Recover admin session if needed (same as in index method)
+        if (empty($productionCompany) && auth()->check() && auth()->user()->role_type_id == 2) {
+            $productionCompany = \App\Models\ProductionCompany::where('user_id', auth()->id())->first();
+            if ($productionCompany) {
+                session(['admin' => $productionCompany]);
+                $productionCompanyId = $productionCompany->id;
+                Log::info('Recovered missing admin session data', ['company_id' => $productionCompany->id]);
+            }
+        }
+        
+        if (!$productionCompanyId) {
+            Log::error('No production company ID found for notifications');
+            return redirect()->route('printer-dashboard')->with('error', 'Session data is missing. Please try again.');
+        }
+        
+        // Get the production company
+        $company = \App\Models\ProductionCompany::find($productionCompanyId);
+        
+        if (!$company) {
+            Log::error('Production company not found', ['id' => $productionCompanyId]);
+            return redirect()->route('printer-dashboard')->with('error', 'Production company not found.');
+        }
+        
+        // Get user ID from the production company
+        $userId = $company->user_id;
+        
+        if (!$userId) {
+            Log::error('No user ID associated with production company', ['company_id' => $productionCompanyId]);
+            return redirect()->route('printer-dashboard')->with('error', 'User information not found.');
+        }
+        
+        $notifications = \App\Models\Notification::where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+            
+        // Mark notifications as read
+        \App\Models\Notification::where('user_id', $userId)
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+        
+        return view('partner.printer.profile.notifications', compact('notifications'));
+    }
+
+    public function markAllNotificationsAsRead()
+    {
+        try {
+            $productionCompany = session('admin');
+            $productionCompanyId = null;
+            
+            if (is_object($productionCompany) && isset($productionCompany->id)) {
+                $productionCompanyId = $productionCompany->id;
+            } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
+                $productionCompanyId = $productionCompany['App\\Models\\ProductionCompany']['id'];
+            } elseif (is_object($productionCompany) && property_exists($productionCompany, 'App\\Models\\ProductionCompany')) {
+                $pcData = $productionCompany->{'App\\Models\\ProductionCompany'};
+                $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
+            }
+            
+            $user = \App\Models\ProductionCompany::where('id', $productionCompanyId)->first()->user;
+            
+            if (!$user) {
+                return redirect()->back()->with('error', 'User not found');
+            }
+            
+            \App\Models\Notification::where('user_id', $user->user_id)
+                ->where('is_read', false)
+                ->update(['is_read' => true]);
+                
+            return redirect()->back()->with('success', 'All notifications marked as read');
+        } catch (\Exception $e) {
+            Log::error('Mark all notifications read error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred');
+        }
+    }
 }

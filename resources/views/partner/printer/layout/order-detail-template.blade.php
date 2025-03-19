@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -171,6 +172,7 @@
                                 <h3 class="font-gilroy font-bold text-white text-base">Actions</h3>
                             </div>
                             <div class="p-4 space-y-3">
+                                @if($orderStatusText !== "Completed")
                                 <form action="{{ route('partner.printer.cancel-order', ['order_id' => $order->order_id]) }}" method="POST" class="w-full">
                                     @csrf
                                     <button type="submit" onclick="return confirm('Are you sure you want to cancel this order?')" class="w-full flex justify-center items-center px-4 py-3 bg-red-500 hover:bg-red-600 rounded-lg text-white font-medium transition duration-150 ease-in-out">
@@ -180,7 +182,8 @@
                                         Cancel Order
                                     </button>
                                 </form>
-                                
+                                @endif
+
                                 @if(isset($nextStageRoute))
                                 <form action="{{ route($nextStageRoute, ['order_id' => $order->order_id]) }}" method="POST" class="w-full">
                                     @csrf
@@ -288,7 +291,7 @@
                                         </div>
                                     </a>
                                 </div>
-                                
+
                                 @if(isset($showCustomizationDetails) && $showCustomizationDetails)
                                 <div class="mt-4">
                                     <h4 class="font-gilroy font-bold text-gray-900 text-base mb-3">Order Specifications</h4>
@@ -345,9 +348,9 @@
 
                         <!-- Stage-Specific Content -->
                         @hasSection('pageSpecificContent')
-                            @yield('pageSpecificContent')
+                        @yield('pageSpecificContent')
                         @else
-                            {!! $pageSpecificContent ?? '' !!}
+                        {!! $pageSpecificContent ?? '' !!}
                         @endif
                     </div>
                 </div>
@@ -357,4 +360,5 @@
 
     @include('layout.footer')
 </body>
+
 </html>
