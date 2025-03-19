@@ -19,6 +19,7 @@ use App\Http\Controllers\Auth\GoogleAuth;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderProduceController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\SuperAdminController;
 use App\Http\Middleware\PreventBackHistory;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Broadcast;
@@ -218,3 +219,12 @@ Route::middleware(['auth'])->post('/broadcasting/auth', function (Request $reque
     ]);
     return Broadcast::auth($request);
 });
+
+//Super admin Routes
+Route::middleware(['SuperAdminOnly'])->group(function () {
+    Route::get('/super-admin', [SuperAdminController::class, 'index'])->name('superadmin.index');
+    Route::get('/super-admin/users', [SuperAdminController::class, 'userManagement'])->name('superadmin.users');
+    Route::get('/super-admin/production-companies', [SuperAdminController::class, 'productionCompanies'])->name('superadmin.production');
+    Route::get('/super-admin/reports', [SuperAdminController::class, 'reports'])->name('superadmin.reports');
+});
+

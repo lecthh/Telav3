@@ -101,6 +101,20 @@ class CustomerSeeder extends Seeder
                     'phone_number' => '534-254-5628',
                 ],
             ],
+                [
+                    'user_id' => Str::uuid()->toString(),
+                    'name' => 'Super Admin',
+                    'email' => 'joelsebastian.villarojo.21@usjr.edu.ph',
+                    'password' => Hash::make('password123'),
+                    'role_type_id' => 4, //Super Admin
+                    'address' => [
+                        'address' => 'Honey St',
+                        'state' => 'Cebu',
+                        'city' => 'Cebu City',
+                        'zip_code' => '6000',
+                        'phone_number' => '534-254-5628',
+                    ],
+                ],
         ];
 
         foreach ($customers as $customer) {
