@@ -116,6 +116,9 @@ Route::prefix('partner')->name('partner.')->middleware('DesignerOnly')->group(fu
             Route::get('/basics', [DesignerProfileController::class, 'basics'])->name('basics');
             Route::post('/update', [DesignerProfileController::class, 'update'])->name('update');
             Route::get('/reviews', [DesignerProfileController::class, 'reviews'])->name('reviews');
+            Route::get('/notifications', [DesignerOrderController::class, 'notifications'])->name('notifications');
+            Route::post('/notifications/{id}/mark-read', [DesignerOrderController::class, 'markNotificationAsRead'])->name('notifications.mark-read');
+            Route::post('/notifications/mark-all-read', [DesignerOrderController::class, 'markAllNotificationsAsRead'])->name('notifications.mark-all-read');
         });
     });
 });

@@ -340,4 +340,72 @@ class DesignerOrderController extends Controller
         
         return $designer;
     }
+
+    public function notifications()
+    {
+        Log::info('Designer notifications method called', [
+            'session_admin' => session('admin'),
+            'user_id' => auth()->id(),
+            'is_authenticated' => auth()->check()
+        ]);
+        
+        $designer = $this->getOrCreateDesignerSession();
+        
+        if (!$designer) {
+            Log::error('Designer session not found in notifications method');
+            return redirect()->route('login')->with('error', 'Designer session not found');
+        }
+        
+        $userId = $designer->user_id;
+        
+        if (!$userId) {
+            Log::error('No user ID associated with designer', ['designer_id' => $designer->designer_id]);
+            return redirect()->route('designer-dashboard')->with('error', 'User information not found.');
+        }
+        
+        $notifications = \App\Models\Notification::where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+            
+        // Mark notifications as read
+        \App\Models\Notification::where('user_id', $userId)
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+        
+        return view('partner.designer.profile.notifications', compact('notifications', 'designer'));
+    }
+
+    public function markNotificationAsRead($id)
+    {
+        try {
+            $notification = \App\Models\Notification::findOrFail($id);
+            $notification->is_read = true;
+            $notification->save();
+            
+            return redirect()->back()->with('success', 'Notification marked as read');
+        } catch (\Exception $e) {
+            Log::error('Mark notification read error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred');
+        }
+    }
+
+    public function markAllNotificationsAsRead()
+    {
+        try {
+            $designer = $this->getOrCreateDesignerSession();
+            
+            if (!$designer) {
+                return redirect()->back()->with('error', 'Designer session not found');
+            }
+            
+            \App\Models\Notification::where('user_id', $designer->user_id)
+                ->where('is_read', false)
+                ->update(['is_read' => true]);
+                
+            return redirect()->back()->with('success', 'All notifications marked as read');
+        } catch (\Exception $e) {
+            Log::error('Mark all notifications read error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred');
+        }
+    }
 }
