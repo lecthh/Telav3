@@ -8,30 +8,16 @@ use Illuminate\Support\Facades\Log;
 
 class PrinterDashboardController extends Controller
 {
-    public function index()
+    /**
+     * Show the reviews for the production company.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function reviews()
     {
-        // Get production company ID
         $productionCompany = session('admin');
         $productionCompanyId = null;
         
-        // Log the admin session content for debugging
-        Log::info('Dashboard session admin data', [
-            'admin_session' => $productionCompany,
-            'type' => gettype($productionCompany),
-            'auth_id' => auth()->id(),
-            'user_role' => auth()->user()->role_type_id ?? 'none'
-        ]);
-        
-        // If session admin is missing, try to recover it from the database
-        if (empty($productionCompany) && auth()->check() && auth()->user()->role_type_id == 2) {
-            $productionCompany = \App\Models\ProductionCompany::where('user_id', auth()->id())->first();
-            if ($productionCompany) {
-                session(['admin' => $productionCompany]);
-                Log::info('Recovered missing admin session data', ['company_id' => $productionCompany->id]);
-            }
-        }
-        
-        // Handle different possible data structures
         if (is_object($productionCompany) && isset($productionCompany->id)) {
             $productionCompanyId = $productionCompany->id;
         } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
@@ -41,7 +27,63 @@ class PrinterDashboardController extends Controller
             $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
         }
         
-        // Get counts for each order status
+        $company = \App\Models\ProductionCompany::with(['reviews' => function($query) {
+            $query->where('review_type', 'company')  // Only get company reviews
+                  ->with('user')
+                  ->orderBy('created_at', 'desc');
+        }])->findOrFail($productionCompanyId);
+        
+        $companyReviews = $company->reviews()->where('review_type', 'company')->get();
+        
+        $avgRating = $companyReviews->avg('rating') ?: 0;
+        $reviewCount = $companyReviews->count();
+        
+        $ratingDistribution = [
+            5 => $company->reviews()->where('review_type', 'company')->where('rating', 5)->count(),
+            4 => $company->reviews()->where('review_type', 'company')->where('rating', 4)->count(),
+            3 => $company->reviews()->where('review_type', 'company')->where('rating', 3)->count(),
+            2 => $company->reviews()->where('review_type', 'company')->where('rating', 2)->count(),
+            1 => $company->reviews()->where('review_type', 'company')->where('rating', 1)->count(),
+        ];
+        
+        return view('partner.printer.profile.reviews', compact(
+            'company', 
+            'avgRating', 
+            'reviewCount', 
+            'ratingDistribution'
+        ));
+    }
+
+
+    public function index()
+    {
+        $productionCompany = session('admin');
+        $productionCompanyId = null;
+        
+        Log::info('Dashboard session admin data', [
+            'admin_session' => $productionCompany,
+            'type' => gettype($productionCompany),
+            'auth_id' => auth()->id(),
+            'user_role' => auth()->user()->role_type_id ?? 'none'
+        ]);
+        
+        if (empty($productionCompany) && auth()->check() && auth()->user()->role_type_id == 2) {
+            $productionCompany = \App\Models\ProductionCompany::where('user_id', auth()->id())->first();
+            if ($productionCompany) {
+                session(['admin' => $productionCompany]);
+                Log::info('Recovered missing admin session data', ['company_id' => $productionCompany->id]);
+            }
+        }
+        
+        if (is_object($productionCompany) && isset($productionCompany->id)) {
+            $productionCompanyId = $productionCompany->id;
+        } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
+            $productionCompanyId = $productionCompany['App\\Models\\ProductionCompany']['id'];
+        } elseif (is_object($productionCompany) && property_exists($productionCompany, 'App\\Models\\ProductionCompany')) {
+            $pcData = $productionCompany->{'App\\Models\\ProductionCompany'};
+            $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
+        }
+        
         $pendingCount = Order::where('status_id', 1)
             ->where('production_company_id', $productionCompanyId)
             ->count();
@@ -66,17 +108,16 @@ class PrinterDashboardController extends Controller
             ->where('production_company_id', $productionCompanyId)
             ->count();
             
-        // Calculate total earnings from completed orders
+        // Calculate total earnings
         $completedOrders = Order::where('status_id', 7)
             ->where('production_company_id', $productionCompanyId)
             ->get();
             
         $totalEarnings = $completedOrders->sum('final_price');
         
-        // Format for display with comma thousands separator
         $formattedTotalEarnings = number_format($totalEarnings, 2);
         
-        // Get monthly completed orders for the chart (last 6 months)
+        // Get monthly completed orders lst 6 months
         $monthlyOrders = [];
         $monthlyLabels = [];
         
@@ -86,7 +127,7 @@ class PrinterDashboardController extends Controller
             $endOfMonth = $month->copy()->endOfMonth();
             
             $count = Order::where('production_company_id', $productionCompanyId)
-                ->where('status_id', 7) // Completed orders
+                ->where('status_id', 7) 
                 ->whereBetween('updated_at', [$startOfMonth, $endOfMonth])
                 ->count();
                 
@@ -94,7 +135,6 @@ class PrinterDashboardController extends Controller
             $monthlyLabels[] = $month->format('M');
         }
         
-        // Convert to JSON for JavaScript
         $monthlyOrdersJSON = json_encode($monthlyOrders);
         $monthlyLabelsJSON = json_encode($monthlyLabels);
         

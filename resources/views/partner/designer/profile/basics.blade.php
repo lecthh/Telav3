@@ -1,18 +1,13 @@
 <html>
 <body class="min-h-screen flex flex-col bg-gray-50">
-    <!-- Top Header Bar -->
     <div class="flex p-1.5 bg-cGreen font-gilroy font-bold text-white text-sm justify-center">
         Designer Hub
     </div>
     
-    <!-- Main Content Area -->
     <div class="flex flex-1">
-        <!-- Sidebar (included through layout) -->
         @include('layout.designer')
         
-        <!-- Main Content -->
         <div class="flex flex-col flex-1 p-8 bg-[#F9F9F9] overflow-y-auto">
-            <!-- Page Header with Success Message -->
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
                 <h2 class="font-gilroy font-bold text-3xl text-black mb-4 sm:mb-0">Designer Profile</h2>
                 @if(session('success'))
@@ -22,7 +17,6 @@
                 @endif
             </div>
 
-            <!-- Profile Card -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-100 mb-8">
                 <div class="p-6">
                     <form action="{{ route('partner.designer.profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-8">
@@ -58,7 +52,7 @@
                                     <p class="text-xs text-gray-500">Email address cannot be changed</p>
                                 </div>
                                 
-                                <div class="flex flex-col gap-y-2">
+                                <!-- <div class="flex flex-col gap-y-2">
                                     <label for="phone" class="font-gilroy font-semibold text-gray-700">Contact Number</label>
                                     <input 
                                         type="tel" 
@@ -70,7 +64,7 @@
                                     @error('phone')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
-                                </div>
+                                </div> -->
                             </div>
                             
                             <div class="flex flex-col gap-y-2">
@@ -108,7 +102,6 @@
                                 </div>
                             </div>
                             @else
-                            <!-- Freelancer or non-affiliated designer - let them choose status -->
                             <div class="flex flex-col gap-y-2">
                                 <label for="is_freelancer" class="font-gilroy font-semibold text-gray-700">Designer Status</label>
                                 <select 
@@ -124,7 +117,6 @@
                                 @enderror
                             </div>
 
-                            <!-- Company Section - conditionally displayed -->
                             <div class="mt-5" id="company-section" style="{{ old('is_freelancer', $designer->is_freelancer) == 0 ? '' : 'display: none;' }}">
                                 <div class="flex flex-col gap-y-2">
                                     <label for="production_company_id" class="font-gilroy font-semibold text-gray-700">Production Company</label>
@@ -227,7 +219,6 @@
                             </div>
                         </div>
 
-                        <!-- Submit Button -->
                         <div class="pt-4 border-t border-gray-100 flex justify-end">
                             <button 
                                 type="submit" 
@@ -242,11 +233,9 @@
         </div>
     </div>
     
-    <!-- Footer - moved outside of the content area -->
     @include('layout.footer')
 
     <script>
-        // Only add event listeners if the elements exist (for non-company-affiliated designers)
         const freelancerSelect = document.getElementById('is_freelancer');
         if (freelancerSelect) {
             freelancerSelect.addEventListener('change', function() {

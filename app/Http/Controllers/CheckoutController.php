@@ -29,7 +29,7 @@ class CheckoutController extends Controller
         $user = Auth::user();
         $contactInformation = $user->addressInformation;
 
-        \Log::info('Cart items in checkout:', ['items' => $cartItems->toArray()]);
+        Log::info('Cart items in checkout:', ['items' => $cartItems->toArray()]);
         return view('cart.checkout', compact('cartItems', 'user'));
     }
 
@@ -106,9 +106,18 @@ class CheckoutController extends Controller
 
                     $cartItem->delete();
 
+                    // Notification for customer
                     Notification::create([
                         'user_id'  => $user->user_id,
                         'message'  => 'Your order has been placed successfully.',
+                        'is_read'  => false,
+                        'order_id' => $order->order_id,
+                    ]);
+                    
+                    // Notification for production company/printer
+                    Notification::create([
+                        'user_id'  => $cartItem->productionCompany->user_id,
+                        'message'  => 'New order received: #' . $order->order_id,
                         'is_read'  => false,
                         'order_id' => $order->order_id,
                     ]);

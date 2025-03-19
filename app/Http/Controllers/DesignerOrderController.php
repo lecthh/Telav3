@@ -18,10 +18,8 @@ class DesignerOrderController extends Controller
     public function dashboard()
     {
         try {
-            // Get the designer data from session or create it if needed
             $designer = $this->getOrCreateDesignerSession();
             
-            // If still no designer data after recovery attempts, redirect to login
             if (!$designer) {
                 Log::error('Designer session not found and could not be recovered');
                 return redirect()->route('login')->with('error', 'Designer session not found');
@@ -32,18 +30,15 @@ class DesignerOrderController extends Controller
                 'user_id' => auth()->id()
             ]);
     
-            // Active orders (still in progress)
             $assignedOrdersCount = Order::where('assigned_designer_id', $designer->designer_id)
                 ->where('status_id', '>=', 2)
                 ->where('status_id', '!=', 7)
                 ->count();
     
-            // Completed orders
             $completedOrdersCount = Order::where('assigned_designer_id', $designer->designer_id)
                 ->where('status_id', 7)
                 ->count();
                 
-            // Get most recent assigned orders for quick access
             $recentOrders = Order::where('assigned_designer_id', $designer->designer_id)
                 ->where('status_id', '>=', 2)
                 ->where('status_id', '!=', 7)
@@ -51,10 +46,9 @@ class DesignerOrderController extends Controller
                 ->take(3)
                 ->get();
                 
-            // Total orders handled
             $totalOrdersHandled = $assignedOrdersCount + $completedOrdersCount;
             
-            // Get monthly assigned and completed orders for the chart (last 6 months)
+            //monthly assigned and completed orders for last 6 months
             $monthlyAssigned = [];
             $monthlyCompleted = [];
             $monthlyLabels = [];
@@ -79,7 +73,6 @@ class DesignerOrderController extends Controller
                 $monthlyLabels[] = $month->format('M');
             }
             
-            // Convert to JSON for JavaScript
             $monthlyAssignedJSON = json_encode($monthlyAssigned);
             $monthlyCompletedJSON = json_encode($monthlyCompleted);
             $monthlyLabelsJSON = json_encode($monthlyLabels);
@@ -125,7 +118,6 @@ class DesignerOrderController extends Controller
     {
         $designer = $this->getOrCreateDesignerSession();
         
-        // If still no designer data, redirect to login
         if (!$designer) {
             Log::error('Designer session not found in index method');
             return redirect()->route('login')->with('error', 'Designer session not found');
@@ -134,7 +126,7 @@ class DesignerOrderController extends Controller
         $assignedOrders = Order::where('assigned_designer_id', $designer->designer_id)
             ->where('status_id', '>=', 2)
             ->where('status_id', '!=', 7)
-            ->orderBy('created_at', 'desc') // Order by newest first
+            ->orderBy('created_at', 'desc')
             ->get();
 
         return view('partner.designer.orders', compact('assignedOrders'));
@@ -178,6 +170,7 @@ class DesignerOrderController extends Controller
 
             $user_id = $order->user->user_id;
 
+            // Notification for customer to finalize order
             Notification::create([
                 'user_id' => $user_id,
                 'message' => 'Finalize Order',
@@ -185,9 +178,18 @@ class DesignerOrderController extends Controller
                 'order_id' => $order->order_id,
             ]);
 
+            // Second notification for customer about confirmation link
             Notification::create([
                 'user_id' => $user_id,
                 'message' => 'A confirmation link has been sent to your email. Please confirm your order.',
+                'is_read' => false,
+                'order_id' => $order->order_id,
+            ]);
+            
+            // Notification for production company/printer that design is completed
+            Notification::create([
+                'user_id' => $order->productionCompany->user_id,
+                'message' => 'Design completed for order #' . $order->order_id,
                 'is_read' => false,
                 'order_id' => $order->order_id,
             ]);
@@ -240,12 +242,10 @@ class DesignerOrderController extends Controller
                 }
             }
 
-            // Save the token to the order
             $name = $user->name;
             $order->update(['token' => $token]);
             $order->save();
 
-            // Log for debugging
             Log::info('Sending confirmation email', [
                 'order_id' => $order->order_id,
                 'user_email' => $user->email,

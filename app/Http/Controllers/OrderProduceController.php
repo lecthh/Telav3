@@ -15,11 +15,9 @@ class OrderProduceController extends Controller {
     //PENDING
     public function pending()
     {
-        // Get production company ID
         $productionCompany = session('admin');
         $productionCompanyId = null;
         
-        // Handle the nested object structure
         if (is_object($productionCompany) && isset($productionCompany->id)) {
             $productionCompanyId = $productionCompany->id;
         } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
@@ -29,7 +27,6 @@ class OrderProduceController extends Controller {
             $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
         }
         
-        // Filter by production company ID and order by created_at descending (newest first)
         $pendingOrders = Order::where('status_id', '1')
             ->where('production_company_id', $productionCompanyId)
             ->orderBy('created_at', 'desc')
@@ -53,7 +50,6 @@ class OrderProduceController extends Controller {
     //DESIGN IN PROGRESS
     public function designInProgress()
     {
-        // Get production company ID
         $productionCompany = session('admin');
         
         Log::info('Design In Progress - Session Admin Data', [
@@ -62,17 +58,14 @@ class OrderProduceController extends Controller {
             'auth_check' => auth()->check()
         ]);
         
-        // Get all status 2 orders first
         $allInProgressOrders = Order::where('status_id', '2')->get();
         Log::info('All design in progress orders', [
             'count' => $allInProgressOrders->count(),
             'orders' => $allInProgressOrders->toArray()
         ]);
         
-        // The issue is we need to filter by production company
         $productionCompanyId = null;
         
-        // Handle the nested object structure
         if (is_object($productionCompany) && isset($productionCompany->id)) {
             $productionCompanyId = $productionCompany->id;
         } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
@@ -86,7 +79,6 @@ class OrderProduceController extends Controller {
             'id' => $productionCompanyId
         ]);
         
-        // Filter by production company ID and order by created_at descending (newest first)
         $orders = Order::where('status_id', '2')
             ->where('production_company_id', $productionCompanyId)
             ->orderBy('created_at', 'desc')
@@ -109,11 +101,9 @@ class OrderProduceController extends Controller {
     //FINALIZE ORDER
     public function finalize()
     {
-        // Get production company ID
         $productionCompany = session('admin');
         $productionCompanyId = null;
         
-        // Handle the nested object structure
         if (is_object($productionCompany) && isset($productionCompany->id)) {
             $productionCompanyId = $productionCompany->id;
         } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
@@ -123,7 +113,6 @@ class OrderProduceController extends Controller {
             $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
         }
         
-        // Filter by production company ID and order by created_at descending (newest first)
         $finalizeOrders = Order::where('status_id', '3')
             ->where('production_company_id', $productionCompanyId)
             ->orderBy('created_at', 'desc')
@@ -134,7 +123,6 @@ class OrderProduceController extends Controller {
             'production_company_id' => $productionCompanyId
         ]);
         
-        // The template expects variable name 'orders'
         $orders = $finalizeOrders;
         
         return view('partner.printer.finalize.orders-finalize', compact('orders'));
@@ -183,11 +171,9 @@ class OrderProduceController extends Controller {
     //AWAITING ORDER
     public function awaitingPrinting()
     {
-        // Get production company ID
         $productionCompany = session('admin');
         $productionCompanyId = null;
         
-        // Handle the nested object structure
         if (is_object($productionCompany) && isset($productionCompany->id)) {
             $productionCompanyId = $productionCompany->id;
         } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
@@ -197,7 +183,6 @@ class OrderProduceController extends Controller {
             $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
         }
         
-        // Filter by production company ID and order by created_at descending (newest first)
         $awaitingPrinting = Order::where('status_id', '4')
             ->where('production_company_id', $productionCompanyId)
             ->orderBy('created_at', 'desc')
@@ -208,7 +193,6 @@ class OrderProduceController extends Controller {
             'production_company_id' => $productionCompanyId
         ]);
         
-        // Template expects 'orders' variable
         $orders = $awaitingPrinting;
         
         return view('partner.printer.awaiting.orders-awaiting', compact('orders'));
@@ -254,11 +238,9 @@ class OrderProduceController extends Controller {
     //PRINTING IN PROGRESS
     public function printingInProgress()
     {
-        // Get production company ID
         $productionCompany = session('admin');
         $productionCompanyId = null;
         
-        // Handle the nested object structure
         if (is_object($productionCompany) && isset($productionCompany->id)) {
             $productionCompanyId = $productionCompany->id;
         } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
@@ -268,7 +250,6 @@ class OrderProduceController extends Controller {
             $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
         }
         
-        // Filter by production company ID and order by created_at descending (newest first)
         $printingInProgress = Order::where('status_id', '5')
             ->where('production_company_id', $productionCompanyId)
             ->orderBy('created_at', 'desc')
@@ -279,7 +260,6 @@ class OrderProduceController extends Controller {
             'production_company_id' => $productionCompanyId
         ]);
         
-        // Template expects 'orders' variable
         $orders = $printingInProgress;
         
         return view('partner.printer.printing.orders-printing', compact('orders'));
@@ -316,11 +296,9 @@ class OrderProduceController extends Controller {
     //READY
     public function ready()
     {
-        // Get production company ID
         $productionCompany = session('admin');
         $productionCompanyId = null;
         
-        // Handle the nested object structure
         if (is_object($productionCompany) && isset($productionCompany->id)) {
             $productionCompanyId = $productionCompany->id;
         } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
@@ -330,7 +308,6 @@ class OrderProduceController extends Controller {
             $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
         }
         
-        // Filter by production company ID and order by created_at descending (newest first)
         $readyOrders = Order::where('status_id', '6')
             ->where('production_company_id', $productionCompanyId)
             ->orderBy('created_at', 'desc')
@@ -341,7 +318,6 @@ class OrderProduceController extends Controller {
             'production_company_id' => $productionCompanyId
         ]);
         
-        // Template expects 'orders' variable
         $orders = $readyOrders;
         
         return view('partner.printer.ready.orders-ready', compact('orders'));
@@ -399,11 +375,9 @@ class OrderProduceController extends Controller {
 
     public function completed()
     {
-        // Get production company ID
         $productionCompany = session('admin');
         $productionCompanyId = null;
         
-        // Handle the nested object structure
         if (is_object($productionCompany) && isset($productionCompany->id)) {
             $productionCompanyId = $productionCompany->id;
         } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
@@ -413,7 +387,6 @@ class OrderProduceController extends Controller {
             $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
         }
         
-        // Filter by production company ID and order by created_at descending (newest first)
         $completedOrders = Order::where('status_id', '7')
             ->where('production_company_id', $productionCompanyId)
             ->orderBy('created_at', 'desc')
@@ -424,7 +397,6 @@ class OrderProduceController extends Controller {
             'production_company_id' => $productionCompanyId
         ]);
         
-        // Template expects 'orders' variable
         $orders = $completedOrders;
         
         return view('partner.printer.complete.orders-complete', compact('orders'));

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Designer;
 use App\Models\ProductionCompany;
 use App\Models\User;
+use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -28,21 +29,16 @@ class DesignerProfileController extends Controller
         $user = Auth::user();
         $designer = Designer::where('user_id', $user->user_id)->firstOrFail();
 
-        // Different validation rules based on designer status
         if ($designer->production_company_id || $request->is_freelancer == 0) {
-            // Company-affiliated designers only need basic info
             $request->validate([
                 'name' => 'required|string|max:255',
-                'phone' => 'nullable|string|max:20',
                 'designer_description' => 'nullable|string|max:1000',
                 'is_freelancer' => 'required|boolean',
                 'production_company_id' => 'nullable|exists:production_companies,id',
             ]);
         } else {
-            // Freelancers need service info as well
             $request->validate([
                 'name' => 'required|string|max:255',
-                'phone' => 'nullable|string|max:20',
                 'designer_description' => 'nullable|string|max:1000',
                 'talent_fee' => 'required|numeric|min:0',
                 'max_free_revisions' => 'required|integer|min:0',
@@ -52,14 +48,10 @@ class DesignerProfileController extends Controller
             ]);
         }
 
-        // We removed the profile picture upload functionality
 
-        // Update user information
         $user->name = $request->name;
-        $user->phone = $request->phone;
         $user->save();
 
-        // Update designer information
         $designer->designer_description = $request->designer_description;
         $designer->talent_fee = $request->talent_fee;
         $designer->max_free_revisions = $request->max_free_revisions;
@@ -67,8 +59,6 @@ class DesignerProfileController extends Controller
         $designer->is_freelancer = $request->is_freelancer;
         $designer->is_available = $request->has('is_available');
 
-        // Only update production_company_id if designer doesn't already have one
-        // Once assigned to a company, this can only be changed by an admin
         if (!$designer->production_company_id && !$designer->is_freelancer) {
             $designer->production_company_id = $request->production_company_id;
         }
@@ -77,5 +67,48 @@ class DesignerProfileController extends Controller
 
         $this->toast('Profile updated successfully!', 'success');
         return redirect()->route('partner.designer.profile.basics');
+    }
+
+    public function reviews()
+    {
+        $user = Auth::user();
+        $designer = Designer::where('user_id', $user->user_id)->firstOrFail();
+        
+        $designerReviews = Review::where('designer_id', $designer->designer_id)
+                               ->where('review_type', 'designer')
+                               ->get();
+        
+        $avgRating = $designerReviews->avg('rating') ?: 0;
+        $reviewCount = $designerReviews->count();
+        
+        $ratingDistribution = [
+            5 => Review::where('designer_id', $designer->designer_id)
+                      ->where('review_type', 'designer')
+                      ->where('rating', 5)
+                      ->count(),
+            4 => Review::where('designer_id', $designer->designer_id)
+                      ->where('review_type', 'designer')
+                      ->where('rating', 4)
+                      ->count(),
+            3 => Review::where('designer_id', $designer->designer_id)
+                      ->where('review_type', 'designer')
+                      ->where('rating', 3)
+                      ->count(),
+            2 => Review::where('designer_id', $designer->designer_id)
+                      ->where('review_type', 'designer')
+                      ->where('rating', 2)
+                      ->count(),
+            1 => Review::where('designer_id', $designer->designer_id)
+                      ->where('review_type', 'designer')
+                      ->where('rating', 1)
+                      ->count(),
+        ];
+        
+        return view('partner.designer.profile.reviews', compact(
+            'designer', 
+            'avgRating', 
+            'reviewCount', 
+            'ratingDistribution'
+        ));
     }
 }
