@@ -59,6 +59,9 @@ Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->g
         Route::get('/profile/reviews', [PrinterDashboardController::class, 'reviews'])->name('profile.reviews');
         Route::post('/profile/update', [EditProducerAccountController::class, 'update'])->name('profile.update');
         Route::post('/profile/pricing/update', [EditProducerAccountController::class, 'updatePricing'])->name('profile.pricing.update');
+        Route::get('/profile/notifications', [PrinterDashboardController::class, 'notifications'])->name('profile.notifications');
+        Route::post('/profile/notifications/{id}/mark-read', [PrinterDashboardController::class, 'markNotificationAsRead'])->name('profile.notifications.mark-read');
+        Route::post('/profile/notifications/mark-all-read', [PrinterDashboardController::class, 'markAllNotificationsAsRead'])->name('profile.notifications.mark-all-read');
 
         // Order Management
         Route::get('/orders', [OrderProduceController::class, 'pending'])->name('orders');
