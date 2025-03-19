@@ -49,8 +49,10 @@ class ProductionCompany extends Model
      */
     public function reviews()
     {
-        return $this->hasMany(Review::class, 'production_company_id');
+        return $this->hasMany(Review::class, 'production_company_id')
+                    ->where('review_type', 'company');
     }
+    
     
     /**
      * Update the average rating based on all visible reviews.

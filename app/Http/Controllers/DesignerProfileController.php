@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Designer;
 use App\Models\ProductionCompany;
 use App\Models\User;
+use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -36,7 +37,6 @@ class DesignerProfileController extends Controller
                 'production_company_id' => 'nullable|exists:production_companies,id',
             ]);
         } else {
-            // Freelancers need service info as well
             $request->validate([
                 'name' => 'required|string|max:255',
                 'designer_description' => 'nullable|string|max:1000',
@@ -74,15 +74,34 @@ class DesignerProfileController extends Controller
         $user = Auth::user();
         $designer = Designer::where('user_id', $user->user_id)->firstOrFail();
         
-        $avgRating = $designer->average_rating ?? 0;
-        $reviewCount = $designer->review_count ?? 0;
+        $designerReviews = Review::where('designer_id', $designer->designer_id)
+                               ->where('review_type', 'designer')
+                               ->get();
+        
+        $avgRating = $designerReviews->avg('rating') ?: 0;
+        $reviewCount = $designerReviews->count();
         
         $ratingDistribution = [
-            5 => $designer->reviews()->where('rating', 5)->count(),
-            4 => $designer->reviews()->where('rating', 4)->count(),
-            3 => $designer->reviews()->where('rating', 3)->count(),
-            2 => $designer->reviews()->where('rating', 2)->count(),
-            1 => $designer->reviews()->where('rating', 1)->count(),
+            5 => Review::where('designer_id', $designer->designer_id)
+                      ->where('review_type', 'designer')
+                      ->where('rating', 5)
+                      ->count(),
+            4 => Review::where('designer_id', $designer->designer_id)
+                      ->where('review_type', 'designer')
+                      ->where('rating', 4)
+                      ->count(),
+            3 => Review::where('designer_id', $designer->designer_id)
+                      ->where('review_type', 'designer')
+                      ->where('rating', 3)
+                      ->count(),
+            2 => Review::where('designer_id', $designer->designer_id)
+                      ->where('review_type', 'designer')
+                      ->where('rating', 2)
+                      ->count(),
+            1 => Review::where('designer_id', $designer->designer_id)
+                      ->where('review_type', 'designer')
+                      ->where('rating', 1)
+                      ->count(),
         ];
         
         return view('partner.designer.profile.reviews', compact(

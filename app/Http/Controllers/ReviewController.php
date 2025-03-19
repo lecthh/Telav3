@@ -54,6 +54,7 @@ class ReviewController extends Controller
         
         $existingCompanyReview = Review::where('order_id', $order->order_id)
             ->where('production_company_id', $productionCompany->id)
+            ->where('review_type', 'company')
             ->first();
         
         if (!$existingCompanyReview) {
@@ -80,13 +81,13 @@ class ReviewController extends Controller
         if ($request->has('designer_rating') && $request->has('designer_comment') && $order->assigned_designer_id) {
             $existingDesignerReview = Review::where('order_id', $order->order_id)
                 ->where('designer_id', $order->assigned_designer_id)
+                ->where('review_type', 'designer')
                 ->first();
                 
             if (!$existingDesignerReview) {
                 $designerReview = Review::create([
                     'order_id' => $order->order_id,
                     'user_id' => Auth::id(),
-                    'production_company_id' => $productionCompany->id,
                     'designer_id' => $order->assigned_designer_id,
                     'rating' => $request->designer_rating,
                     'comment' => $request->designer_comment,

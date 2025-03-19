@@ -27,10 +27,16 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         $reviews = Review::where('user_id', $user->user_id)
-                    ->with(['order', 'productionCompany'])
+                    ->with([
+                        'order', 
+                        'productionCompany',
+                        'designer',
+                        'designer.user',
+                        'designer.productionCompany'
+                    ])
                     ->orderBy('created_at', 'desc')
                     ->get();
         
         return view('customer.profile.profile-reviews', compact('reviews'));
     }
-}   
+}

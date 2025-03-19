@@ -86,6 +86,7 @@
                         @if($company->reviews->count() > 0)
                         <div class="divide-y divide-gray-100">
                             @foreach($company->reviews as $review)
+                            @if($review->review_type == 'company')
                             <div class="p-6">
                                 <div class="flex items-start justify-between mb-4">
                                     <div class="flex items-start">
@@ -127,6 +128,7 @@
                                     <p class="text-gray-700">{{ $review->comment }}</p>
                                 </div>
                             </div>
+                            @endif
                             @endforeach
                         </div>
                         @else

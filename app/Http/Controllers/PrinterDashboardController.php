@@ -28,18 +28,22 @@ class PrinterDashboardController extends Controller
         }
         
         $company = \App\Models\ProductionCompany::with(['reviews' => function($query) {
-            $query->with('user')->orderBy('created_at', 'desc');
+            $query->where('review_type', 'company')  // Only get company reviews
+                  ->with('user')
+                  ->orderBy('created_at', 'desc');
         }])->findOrFail($productionCompanyId);
         
-        $avgRating = $company->avg_rating;
-        $reviewCount = $company->review_count;
+        $companyReviews = $company->reviews()->where('review_type', 'company')->get();
+        
+        $avgRating = $companyReviews->avg('rating') ?: 0;
+        $reviewCount = $companyReviews->count();
         
         $ratingDistribution = [
-            5 => $company->reviews()->where('rating', 5)->count(),
-            4 => $company->reviews()->where('rating', 4)->count(),
-            3 => $company->reviews()->where('rating', 3)->count(),
-            2 => $company->reviews()->where('rating', 2)->count(),
-            1 => $company->reviews()->where('rating', 1)->count(),
+            5 => $company->reviews()->where('review_type', 'company')->where('rating', 5)->count(),
+            4 => $company->reviews()->where('review_type', 'company')->where('rating', 4)->count(),
+            3 => $company->reviews()->where('review_type', 'company')->where('rating', 3)->count(),
+            2 => $company->reviews()->where('review_type', 'company')->where('rating', 2)->count(),
+            1 => $company->reviews()->where('review_type', 'company')->where('rating', 1)->count(),
         ];
         
         return view('partner.printer.profile.reviews', compact(
@@ -49,6 +53,7 @@ class PrinterDashboardController extends Controller
             'ratingDistribution'
         ));
     }
+
 
     public function index()
     {

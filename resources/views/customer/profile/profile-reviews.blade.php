@@ -40,7 +40,26 @@
                                     <div class="flex justify-between items-start">
                                         <div class="flex-grow">
                                             <div class="flex items-center space-x-4">
-                                                <h3 class="font-gilroy font-bold text-xl text-gray-900">{{ $review->productionCompany->company_name }}</h3>
+                                                @if($review->review_type == 'designer' && $review->designer)
+                                                    <h3 class="font-gilroy font-bold text-xl text-gray-900">{{ $review->designer->user->name }}</h3>
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                        Designer
+                                                    </span>
+                                                    @if($review->designer->is_freelancer)
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                                            Freelancer
+                                                        </span>
+                                                    @elseif($review->designer->production_company)
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                                            {{ $review->designer->production_company->company_name }}
+                                                        </span>
+                                                    @endif
+                                                @elseif($review->review_type == 'company' && $review->productionCompany)
+                                                    <h3 class="font-gilroy font-bold text-xl text-gray-900">{{ $review->productionCompany->company_name }}</h3>
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                        Production Company
+                                                    </span>
+                                                @endif
                                                 <div class="flex items-center space-x-1">
                                                     @for($i = 1; $i <= 5; $i++)
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 {{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-300' }}" viewBox="0 0 20 20" fill="currentColor">
@@ -50,6 +69,11 @@
                                                 </div>
                                             </div>
                                             <p class="text-gray-500 text-sm mt-1">Order #{{ substr($review->order_id, -6) }}</p>
+                                            @if($review->review_type == 'designer')
+                                                <p class="text-gray-500 text-sm mt-1">Designer Review</p>
+                                            @elseif($review->review_type == 'company')
+                                                <p class="text-gray-500 text-sm mt-1">Production Company Review</p>
+                                            @endif
                                         </div>
                                         <span class="text-gray-500 text-sm">{{ $review->created_at->format('F d, Y') }}</span>
                                     </div>
