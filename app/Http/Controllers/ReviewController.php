@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Notification;
 use App\Models\Order;
 use App\Models\ProductionCompany;
+use App\Models\Designer;
 use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +23,6 @@ class ReviewController extends Controller
      */
     public function showReviewForm($orderId)
     {
-        // For now, this is a placeholder since reviews aren't fully implemented
         $order = Order::where('order_id', $orderId)
             ->where('user_id', Auth::id())
             ->firstOrFail();
@@ -31,55 +31,83 @@ class ReviewController extends Controller
     }
 
     /**
-     * Store a new review for a production company.
+     * Store reviews for both production company and designer.
      *
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function storeReview(Request $request)
     {
-        // Validate the request
         $request->validate([
             'order_id' => 'required|exists:orders,order_id',
-            'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'required|string|min:10|max:500',
+            'company_rating' => 'required|integer|min:1|max:5',
+            'company_comment' => 'required|string|min:10|max:500',
+            'designer_rating' => 'nullable|integer|min:1|max:5',
+            'designer_comment' => 'nullable|string|min:10|max:500',
         ]);
         
-        // Get the order and verify it belongs to the current user
         $order = Order::where('order_id', $request->order_id)
             ->where('user_id', Auth::id())
             ->firstOrFail();
             
         $productionCompany = $order->productionCompany;
         
-        // Check if a review already exists for this order
-        $existingReview = Review::where('order_id', $order->order_id)->first();
+        $existingCompanyReview = Review::where('order_id', $order->order_id)
+            ->where('production_company_id', $productionCompany->id)
+            ->first();
         
-        if ($existingReview) {
-            $this->toast('You have already submitted a review for this order.', 'error');
-            return redirect()->route('customer.profile.orders');
+        if (!$existingCompanyReview) {
+            $companyReview = Review::create([
+                'order_id' => $order->order_id,
+                'user_id' => Auth::id(),
+                'production_company_id' => $productionCompany->id,
+                'rating' => $request->company_rating,
+                'comment' => $request->company_comment,
+                'is_visible' => true,
+                'review_type' => 'company',
+            ]);
+            
+            $productionCompany->updateAverageRating();
+            
+            Notification::create([
+                'user_id' => $productionCompany->user_id,
+                'message' => 'New review received for order #' . $order->order_id,
+                'is_read' => false,
+                'order_id' => $order->order_id,
+            ]);
         }
         
-        // Create the review
-        $review = Review::create([
-            'order_id' => $order->order_id,
-            'user_id' => Auth::id(),
-            'production_company_id' => $productionCompany->id,
-            'rating' => $request->rating,
-            'comment' => $request->comment,
-            'is_visible' => true,
-        ]);
-        
-        // Update the production company's average rating
-        $productionCompany->updateAverageRating();
-        
-        // Create notification for the production company about the new review
-        Notification::create([
-            'user_id' => $productionCompany->user_id,
-            'message' => 'New review received for order #' . $order->order_id,
-            'is_read' => false,
-            'order_id' => $order->order_id,
-        ]);
+        if ($request->has('designer_rating') && $request->has('designer_comment') && $order->assigned_designer_id) {
+            $existingDesignerReview = Review::where('order_id', $order->order_id)
+                ->where('designer_id', $order->assigned_designer_id)
+                ->first();
+                
+            if (!$existingDesignerReview) {
+                $designerReview = Review::create([
+                    'order_id' => $order->order_id,
+                    'user_id' => Auth::id(),
+                    'production_company_id' => $productionCompany->id,
+                    'designer_id' => $order->assigned_designer_id,
+                    'rating' => $request->designer_rating,
+                    'comment' => $request->designer_comment,
+                    'is_visible' => true,
+                    'review_type' => 'designer',
+                ]);
+                
+                if ($order->designer && method_exists($order->designer, 'updateAverageRating')) {
+                    $order->designer->updateAverageRating();
+                }
+                
+                if ($order->designer && $order->designer->user) {
+                    Notification::create([
+                        'user_id' => $order->designer->user->user_id,
+                        'message' => 'New review received for order #' . $order->order_id,
+                        'is_read' => false,
+                        'order_id' => $order->order_id,
+                    ]);
+                }
+            }
+        }
         
         $this->toast('Thank you for your review!', 'success');
         return redirect()->route('customer.profile.orders');

@@ -112,6 +112,7 @@ Route::prefix('partner')->name('partner.')->middleware('DesignerOnly')->group(fu
         Route::prefix('profile')->name('profile.')->group(function () {
             Route::get('/basics', [DesignerProfileController::class, 'basics'])->name('basics');
             Route::post('/update', [DesignerProfileController::class, 'update'])->name('update');
+            Route::get('/reviews', [DesignerProfileController::class, 'reviews'])->name('reviews');
         });
     });
 });

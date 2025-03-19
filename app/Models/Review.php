@@ -13,6 +13,7 @@ class Review extends Model
         'order_id',
         'user_id',
         'production_company_id',
+        'designer_id',
         'rating',
         'comment',
         'is_visible'
@@ -40,5 +41,10 @@ class Review extends Model
     public function productionCompany()
     {
         return $this->belongsTo(ProductionCompany::class, 'production_company_id');
+    }
+
+    public function designer()
+    {
+        return $this->belongsTo(Designer::class, 'designer_id', 'designer_id');
     }
 }

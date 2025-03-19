@@ -29,10 +29,8 @@ class DesignerProfileController extends Controller
         $designer = Designer::where('user_id', $user->user_id)->firstOrFail();
 
         if ($designer->production_company_id || $request->is_freelancer == 0) {
-            // Company-affiliated designers only need basic info
             $request->validate([
                 'name' => 'required|string|max:255',
-                'phone' => 'nullable|string|max:20',
                 'designer_description' => 'nullable|string|max:1000',
                 'is_freelancer' => 'required|boolean',
                 'production_company_id' => 'nullable|exists:production_companies,id',
@@ -41,7 +39,6 @@ class DesignerProfileController extends Controller
             // Freelancers need service info as well
             $request->validate([
                 'name' => 'required|string|max:255',
-                'phone' => 'nullable|string|max:20',
                 'designer_description' => 'nullable|string|max:1000',
                 'talent_fee' => 'required|numeric|min:0',
                 'max_free_revisions' => 'required|integer|min:0',
@@ -52,12 +49,9 @@ class DesignerProfileController extends Controller
         }
 
 
-        // Update user information
         $user->name = $request->name;
-        $user->phone = $request->phone;
         $user->save();
 
-        // Update designer information
         $designer->designer_description = $request->designer_description;
         $designer->talent_fee = $request->talent_fee;
         $designer->max_free_revisions = $request->max_free_revisions;
@@ -73,5 +67,29 @@ class DesignerProfileController extends Controller
 
         $this->toast('Profile updated successfully!', 'success');
         return redirect()->route('partner.designer.profile.basics');
+    }
+
+    public function reviews()
+    {
+        $user = Auth::user();
+        $designer = Designer::where('user_id', $user->user_id)->firstOrFail();
+        
+        $avgRating = $designer->average_rating ?? 0;
+        $reviewCount = $designer->review_count ?? 0;
+        
+        $ratingDistribution = [
+            5 => $designer->reviews()->where('rating', 5)->count(),
+            4 => $designer->reviews()->where('rating', 4)->count(),
+            3 => $designer->reviews()->where('rating', 3)->count(),
+            2 => $designer->reviews()->where('rating', 2)->count(),
+            1 => $designer->reviews()->where('rating', 1)->count(),
+        ];
+        
+        return view('partner.designer.profile.reviews', compact(
+            'designer', 
+            'avgRating', 
+            'reviewCount', 
+            'ratingDistribution'
+        ));
     }
 }

@@ -40,4 +40,21 @@ class Designer extends Model
     {
         return $this->hasMany(Order::class, 'designer_id', 'designer_id');
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'designer_id', 'designer_id');
+    }
+
+    public function updateAverageRating()
+    {
+        $avgRating = $this->reviews()->where('is_visible', true)->avg('rating') ?? 0;
+        $reviewCount = $this->reviews()->where('is_visible', true)->count();
+        
+        $this->average_rating = round($avgRating, 1);
+        $this->review_count = $reviewCount;
+        $this->save();
+        
+        return $this->average_rating;
+    }
 }
