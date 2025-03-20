@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Designer;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\ProductionCompany;
@@ -15,17 +16,22 @@ class SuperAdminController extends Controller
 
         return view('superadmin.index', compact('userCount', 'productionCompanyCount'));
     }
-
     public function userManagement()
     {
-        $users = User::all();
-        return view('superadmin.users', compact('users'));
+        $customerModel = User::class;
+        return view('superadmin.users', compact('customerModel'));
     }
+
 
     public function productionCompanies()
     {
         $companies = ProductionCompany::all();
         return view('superadmin.production_companies', compact('companies'));
     }
-}
 
+    public function designerManagement()
+    {
+        $designers = Designer::all();
+        return view('superadmin.production_companies', compact('designers'));
+    }
+}

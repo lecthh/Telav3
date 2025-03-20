@@ -47,6 +47,8 @@ class BusinessAuthController extends Controller
             'password'      => Hash::make($request->password),
             'passwordToken' => null
         ]);
+
+        Auth::login($user);
     
         // Use switch-case to handle redirection for Designer and Production Company only
         switch ($user->role_type_id) {

@@ -111,7 +111,7 @@ Route::prefix('partner')->name('partner.')->middleware('DesignerOnly')->group(fu
         Route::get('/completed', [DesignerOrderController::class, 'complete'])->name('complete');
         Route::get('/complete-x/{order_id}', [DesignerOrderController::class, 'completeOrder'])->name('complete-x');
         Route::post('/cancel-design-assignment/{order_id}', [DesignerOrderController::class, 'cancelDesignAssignment'])->name('cancel-design-assignment');
-        
+
         // Designer Profile Routes
         Route::prefix('profile')->name('profile.')->group(function () {
             Route::get('/basics', [DesignerProfileController::class, 'basics'])->name('basics');
@@ -156,7 +156,7 @@ Route::middleware(['CustomerOnly'])->group(function () {
     Route::get('/profile-orders', [ProfileController::class, 'profileOrders'])->name('customer.profile.orders');
     Route::get('/profile-reviews', [ProfileController::class, 'profileReviews'])->name('customer.profile.reviews');
     Route::get('/confirmation', [ConfirmationMessageController::class, 'confirmation'])->name('customer.confirmation');
-    
+
     // Review routes
     Route::get('/review/{order_id}', [ReviewController::class, 'showReviewForm'])->name('customer.review.form');
     Route::post('/review', [ReviewController::class, 'storeReview'])->name('customer.review.store');
@@ -223,6 +223,6 @@ Route::middleware(['SuperAdminOnly'])->group(function () {
     Route::get('/super-admin', [SuperAdminController::class, 'index'])->name('superadmin.index');
     Route::get('/super-admin/users', [SuperAdminController::class, 'userManagement'])->name('superadmin.users');
     Route::get('/super-admin/production-companies', [SuperAdminController::class, 'productionCompanies'])->name('superadmin.production');
+    Route::get('/super-admin/designer-companies', [SuperAdminController::class, 'designerCompanies'])->name('superadmin.designer');
     Route::get('/super-admin/reports', [SuperAdminController::class, 'reports'])->name('superadmin.reports');
 });
-

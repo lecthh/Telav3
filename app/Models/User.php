@@ -54,4 +54,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Message::class, 'to_id', 'user_id');
     }
+
+    public function scopeCustomer($query)
+    {
+        return $query->where('role_type_id', 1);
+    }
 }
