@@ -176,8 +176,6 @@ Route::post('/set-password/store', [BusinessAuthController::class, 'storePasswor
 Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetPasswordForm'])->name('password.reset');
 Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.update');
 
-Route::get('/login', [BusinessAuthController::class, 'login'])->name('login');
-Route::post('/login/user', [BusinessAuthController::class, 'loginPost'])->name('login.post');
 Route::get('/logout', [BusinessAuthController::class, 'logout'])->name('logout')->middleware(PreventBackHistory::class);
 
 // Bulk order confirmation routes

@@ -21,20 +21,12 @@
                 <section class="mb-8">
                     <div class="flex flex-col space-y-2 mb-8">
                         <h1 class="font-gilroy font-bold text-3xl md:text-4xl text-gray-900">
-                            Hello, {{ $productionCompany->company_name }}
                         </h1>
                         <p class="text-gray-600 text-base">
                             Here's an overview of your production activities today.
                         </p>
                     </div>
 
-                    <div class="grid grid-cols-3 md:grid-cols-5 gap-4 mb-8">
-                        @livewire('dashboard-card', ['svg' => 'svgs.shipping-box', 'heading' => 'Pending Requests', 'value' => $pendingCount, 'route' => 'partner.printer.orders'])
-                        @livewire('dashboard-card', ['svg' => 'svgs.print-palette', 'heading' => 'Design in Progress', 'value' => $designInProgressCount, 'route' => 'partner.printer.design-in-progress'])
-                        @livewire('dashboard-card', ['svg' => 'svgs.print-palette', 'heading' => 'Finalize Order', 'value' => $finalizeOrderCount, 'route' => 'partner.printer.finalize-order'])
-                        @livewire('dashboard-card', ['svg' => 'svgs.square-clock', 'heading' => 'Awaiting Printing', 'value' => $awaitingPrintingCount, 'route' => 'partner.printer.awaiting-printing'])
-                        @livewire('dashboard-card', ['svg' => 'svgs.shredder-device', 'heading' => 'Printing Progress', 'value' => $printingInProgressCount, 'route' => 'partner.printer.printing-in-progress'])
-                    </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <a href="{{ route('partner.printer.ready') }}" class="bg-white shadow-md rounded-lg p-6 border border-gray-200 hover:shadow-lg transition-shadow duration-300">
@@ -45,7 +37,7 @@
                                     </svg>
                                     <h2 class="text-lg font-semibold text-gray-800">Ready for Collection</h2>
                                 </div>
-                                <span class="text-2xl font-bold text-cPrimary">{{ $readyForCollectionCount }}</span>
+                                <span class="text-2xl font-bold text-cPrimary">span</span>
                             </div>
                             <p class="text-gray-500 text-sm">Orders are prepared and waiting for pickup or delivery.</p>
                         </a>
@@ -58,27 +50,9 @@
                                     </svg>
                                     <h2 class="text-lg font-semibold text-gray-800">Total Earnings</h2>
                                 </div>
-                                <span class="text-2xl font-bold text-cPrimary">₱{{ $formattedTotalEarnings }}</span>
+                                <span class="text-2xl font-bold text-cPrimary">span</span>
                             </div>
                             <p class="text-gray-500 text-sm">Total earnings from all completed orders.</p>
-                        </div>
-                    </div>
-
-                    <div class="mt-8">
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">Production Statistics</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200">
-                                <h4 class="text-gray-700 font-semibold mb-4">Orders by Status</h4>
-                                <div class="h-64">
-                                    <canvas id="orderStatusChart"></canvas>
-                                </div>
-                            </div>
-                            <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200">
-                                <h4 class="text-gray-700 font-semibold mb-4">Monthly Production Volume</h4>
-                                <div class="h-64">
-                                    <canvas id="monthlyProductionChart"></canvas>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </section>
