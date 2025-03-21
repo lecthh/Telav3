@@ -2,14 +2,15 @@
 
 namespace App\Livewire;
 
-use Illuminate\Container\Attributes\Log;
-use Illuminate\Support\Facades\Log as FacadesLog;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class BaseTable extends Component
 {
-    public $model; // The model class name
+    use WithPagination;
+
+    public $model;
     public $columns = [];
     public $actions = [];
     public $search = '';
@@ -17,15 +18,9 @@ class BaseTable extends Component
     public $sortField;
     public $sortDirection = 'asc';
     public $primaryKey;
+    public $constantFilter = [];
 
-    /**
-     * Mount the component.
-     *
-     * @param  string  $model      The model class name (e.g. App\Models\User)
-     * @param  array   $columns    Array of columns.
-     * @param  array   $actions    Array of actions.
-     * @param  string  $primaryKey The primary key field (default "id").
-     */
+
     public function mount($model, $columns = [], $actions = [], $primaryKey = 'id')
     {
         $this->model = $model;
@@ -45,22 +40,22 @@ class BaseTable extends Component
         }
     }
 
-    public function updatingSearch()
+    public function updatedSearch()
     {
         $this->resetPage();
     }
 
+
     public function render()
     {
+        sleep(1);
         // Rebuild the query from the model
         $query = (new $this->model)->newQuery();
 
-        // If your model has a local scope named "customer", you can apply it:
         if (method_exists($this->model, 'customer')) {
             $query = $query->customer();
         }
 
-        // Apply search filtering across the columns.
         if ($this->search) {
             $query->where(function ($q) {
                 foreach ($this->columns as $column) {
@@ -72,7 +67,13 @@ class BaseTable extends Component
             });
         }
 
-        // Apply additional filters if provided.
+        if (!empty($this->constantFilter)) {
+            foreach ($this->constantFilter as $field => $value) {
+                $query->where($field, $value);
+            }
+        }
+
+
         if (!empty($this->filter)) {
             foreach ($this->filter as $field => $value) {
                 if ($value) {
@@ -81,7 +82,6 @@ class BaseTable extends Component
             }
         }
 
-        // Order and paginate: this returns a paginator instance.
         $items = $query->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
 

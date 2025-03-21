@@ -21,6 +21,8 @@ use App\Http\Controllers\OrderProduceController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Middleware\PreventBackHistory;
+use App\Models\Designer;
+use App\Models\ProductionCompany;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Auth;
@@ -29,10 +31,40 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
 require base_path('routes/channels.php');
-
 Route::get('/', function () {
+    if (Auth::check()) {
+        $user = Auth::user();
+        switch ($user->role) {
+            case 2:
+                $admin = ProductionCompany::where('user_id', $user->user_id)->first();
+                session(['admin' => $admin]);
+                Log::info('Production company login - redirecting to printer dashboard', [
+                    'user_id'  => $user->user_id,
+                    'admin_id' => $admin ? $admin->id : null
+                ]);
+                return redirect()->route('printer-dashboard')->with('success', 'Logged in successfully');
+
+            case 3:
+                $admin = Designer::where('user_id', $user->user_id)->first();
+                session(['admin' => $admin]);
+                Log::info('Designer login - redirecting to designer dashboard', [
+                    'user_id'     => $user->user_id,
+                    'designer_id' => $admin ? $admin->designer_id : null
+                ]);
+                return redirect('/designer-dashboard')->with('success', 'Logged in successfully');
+
+            case 4:
+                return redirect()->route('superadmin.index')->with('success', 'Logged in successfully');
+
+            case 1:
+            default:
+                // Customers or any other role fall back to the welcome page
+                break;
+        }
+    }
     return view('welcome');
 })->name('home');
+
 
 Route::get('/production-services', [App\Http\Controllers\ProductionCompanyController::class, 'index'])->name('production.services');
 Route::get('/production-company/{id}', [App\Http\Controllers\ProductionCompanyController::class, 'show'])->name('production.company.show');

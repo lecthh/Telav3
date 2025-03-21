@@ -3,13 +3,13 @@
     <div class="mb-4 flex justify-between items-center">
         <input
             type="text"
-            wire:model.debounce.300ms="search"
+            wire:model.live="search"
             placeholder="Search..."
             class="border rounded p-2">
     </div>
 
     <!-- Table -->
-    <table class="min-w-full divide-y divide-gray-200">
+    <table wire:loading.class="opacity-40" class="min-w-full divide-y divide-gray-200">
         <thead>
             <tr>
                 @foreach($columns as $column)
