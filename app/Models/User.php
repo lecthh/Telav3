@@ -25,7 +25,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'role_type_id',
         'passwordToken',
         'avatar',
-
     ];
 
     public function roleType()
@@ -55,8 +54,9 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Message::class, 'to_id', 'user_id');
     }
 
-    public function scopeCustomer($query)
+
+    public function getRoleNameAttribute()
     {
-        return $query->where('role_type_id', 1);
+        return $this->roleType ? $this->roleType->role_name : null;
     }
 }

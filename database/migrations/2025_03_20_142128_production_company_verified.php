@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::table('production_companies', function (Blueprint $table) {
             $table->boolean('is_verified')->default(false);
         });
+        Schema::table('designers', function (Blueprint $table) {
+            $table->boolean('is_verified')->default(false);
+        });
     }
 
     /**
@@ -22,6 +25,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('production_companies', function (Blueprint $table) {
+            $table->dropColumn('is_verified');
+        });
+        Schema::table('designers', function (Blueprint $table) {
             $table->dropColumn('is_verified');
         });
     }
