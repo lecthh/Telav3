@@ -34,7 +34,7 @@ require base_path('routes/channels.php');
 Route::get('/', function () {
     if (Auth::check()) {
         $user = Auth::user();
-        switch ($user->role) {
+        switch ($user->role_type_id) {
             case 2:
                 $admin = ProductionCompany::where('user_id', $user->user_id)->first();
                 session(['admin' => $admin]);
@@ -54,6 +54,9 @@ Route::get('/', function () {
                 return redirect('/designer-dashboard')->with('success', 'Logged in successfully');
 
             case 4:
+                Log::info('Super admin login - redirecting to super admin dashboard', [
+                    'user_id' => $user->user_id
+                ]);
                 return redirect()->route('superadmin.index')->with('success', 'Logged in successfully');
 
             case 1:

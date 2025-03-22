@@ -25,6 +25,11 @@ class BaseTable extends Component
     public $searchableRelations = [];
     public $perPage = 10;
     public $page = 1;
+    public $selectedItems = [];
+    public $selectedItem;
+    public $showDetailsModal = false;
+    public $showDeleteModal = false;
+    public $showEditModal = false;
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -84,6 +89,12 @@ class BaseTable extends Component
     public function getPage()
     {
         return $this->paginators['page'] ?? 1;
+    }
+
+    public function openDetails($id)
+    {
+        $this->selectedItem = $this->model::find($id);
+        $this->showDetailsModal = true;
     }
 
     protected function getPaginationItems()

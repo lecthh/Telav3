@@ -1,17 +1,34 @@
 <div>
     <!-- Search and Filter Controls -->
     <div class="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center bg-white p-4 rounded-lg shadow-sm gap-4">
-        <div class="relative">
-            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                </svg>
+        <div class="flex items-center gap-4">
+            <div class="relative w-full sm:w-64">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <input
+                    type="text"
+                    wire:model.live="search"
+                    placeholder="Search..."
+                    class="pl-10 pr-4 py-2 border border-gray-300 rounded-md block w-full sm:text-sm">
             </div>
-            <input
-                type="text"
-                wire:model.live="search"
-                placeholder="Search..."
-                class="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm">
+
+            <!-- Bulk Actions - Only visible when items are selected -->
+            <div x-cloak class="flex items-center gap-2">
+                <select
+                    class="border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm">
+                    <option value="">Bulk Actions</option>
+                    <option value="delete">Delete Selected</option>
+                    <option value="export">Expo rt Selected</option>
+                </select>
+                <button
+                    class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs rounded-md font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                    Apply
+                </button>
+                <span class="text-sm text-gray-600"></span>
+            </div>
         </div>
 
         <div class="flex items-center space-x-4">
@@ -20,7 +37,7 @@
                 <select
                     id="perPage"
                     wire:model.live="perPage"
-                    class="border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm">
+                    class="border-gray-300 pr-4 py-2 border text-center rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm">
                     <option value="10">10</option>
                     <option value="20">20</option>
                     <option value="30">30</option>
@@ -28,16 +45,62 @@
                 </select>
                 <span class="text-sm text-gray-600">entries</span>
             </div>
-
         </div>
     </div>
 
     <!-- Table -->
-    <div class="overflow-hidden shadow-sm rounded-lg bg-white">
+    <div
+        x-data="{
+            selectedItems: [],
+            selectAll: false,
+            
+            toggleSelectAll() {
+                if (this.selectAll) {
+                    this.selectedItems = this.getItemIds();
+                } else {
+                    this.selectedItems = [];
+                }
+            },
+            
+            isSelected(id) {
+                return this.selectedItems.includes(id);
+            },
+            
+            toggleSelection(id) {
+                if (this.isSelected(id)) {
+                    this.selectedItems = this.selectedItems.filter(item => item !== id);
+                    this.selectAll = false;
+                } else {
+                    this.selectedItems.push(id);
+                    if (this.selectedItems.length === this.getItemIds().length) {
+                        this.selectAll = true;
+                    }
+                }
+            },
+            
+            getItemIds() {
+                return @js($items->pluck($primaryKey)->toArray());
+            },
+            
+            
+            openDetailModal(id) {
+                $wire.openDetailModal(id);
+            }
+        }"
+        class="overflow-hidden shadow-sm rounded-lg bg-white">
         <div class="overflow-x-auto">
             <table wire:loading.class="opacity-40" class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
+                        <!-- Select All Checkbox -->
+                        <th class="px-6 py-4 w-10">
+                            <input
+                                type="checkbox"
+                                x-model="selectAll"
+                                @change="toggleSelectAll()"
+                                class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                        </th>
+
                         @foreach($columns as $column)
                         @php
                         // Support both string and array column definitions
@@ -64,7 +127,6 @@
                                     <svg width="8" height="10" viewBox="0 0 8 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M1.5 6.5L4 9L6.5 6.5M1.5 3.5L4 1L6.5 3.5" stroke="#A4A7AE" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
-
                                     @endif
                                 </span>
                             </div>
@@ -80,7 +142,18 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($items as $item)
-                    <tr class="hover:bg-gray-50 transition-colors">
+                    <tr
+                        class="hover:bg-gray-50 transition-colors cursor-pointer"
+                        @click.stop="$wire.openDetails('{{ $item->{$primaryKey} }}')">
+                        <!-- Row Selection Checkbox -->
+                        <td class="px-6 py-4 whitespace-nowrap" @click.stop>
+                            <input
+                                type="checkbox"
+                                :checked="isSelected('{{ $item->{$primaryKey} }}')"
+                                @click.stop="openDetails('{{ $item->{$primaryKey} }}')"
+                                class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                        </td>
+
                         @foreach($columns as $column)
                         @php
                         $field = is_array($column) ? ($column['field'] ?? null) : $column;
@@ -91,11 +164,11 @@
                         @endforeach
 
                         @if(count($actions) > 0)
-                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm" @click.stop>
                             <div class="flex space-x-2">
                                 @foreach($actions as $action)
                                 <button
-                                    wire:click="{{ $action['method'] }}({{ $item->id ?? $item->{$primaryKey} }})"
+                                    wire:click="{{$action['method'] }}({{ $item->{$primaryKey} }})"
                                     class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs rounded-md font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
                                     {{ $action['label'] }}
                                 </button>
@@ -106,7 +179,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="{{ count($columns) + (count($actions) > 0 ? 1 : 0) }}" class="px-6 py-10 text-center text-sm text-gray-500">
+                        <td colspan="{{ count($columns) + (count($actions) > 0 ? 2 : 1) }}" class="px-6 py-10 text-center text-sm text-gray-500">
                             No records found
                         </td>
                     </tr>
@@ -200,4 +273,46 @@
         @endif
     </div>
 
-</div>
+    @if($selectedItem && $showDetailsModal)
+    <x-view-details-modal wire:model="showDetailsModal" title="Item Details">
+        <div class="bg-white p-6 rounded-lg space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <h3 class="text-sm font-medium text-gray-500">User ID</h3>
+                    <p class="text-base font-semibold">{{ $selectedItem->user_id }}</p>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="text-sm font-medium text-gray-500">Name</h3>
+                    <p class="text-base font-semibold">{{ $selectedItem->name }}</p>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="text-sm font-medium text-gray-500">Email</h3>
+                    <p class="text-base font-semibold">{{ $selectedItem->email }}</p>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="text-sm font-medium text-gray-500">Email Verified At</h3>
+                    <p class="text-base font-semibold">
+                        @if($selectedItem->email_verified_at)
+                        {{ $selectedItem->email_verified_at->format('M d, Y') }}
+                        @else
+                        <span class="text-amber-500">Not verified</span>
+                        @endif
+                    </p>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="text-sm font-medium text-gray-500">Created At</h3>
+                    <p class="text-base font-semibold">{{ $selectedItem->created_at->format('M d, Y') }}</p>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="text-sm font-medium text-gray-500">Updated At</h3>
+                    <p class="text-base font-semibold">{{ $selectedItem->updated_at->format('M d, Y') }}</p>
+                </div>
+            </div>
+        </div>
+    </x-view-details-modal>
+    @endif
