@@ -1,3 +1,4 @@
+<html>
 <body class="bg-gray-50 flex flex-col min-h-screen">
 
     <div class="flex flex-grow">
@@ -30,9 +31,13 @@
             'column' => 'role_name'
             ]
             ],
-            'perPage' => 10
+            'perPage' => 10,
+            'onRowClick' => 'showUserDetails',
             ])
         </main>
     </div>
+    
+    @livewire('user-details-modal')
     @include('layout.footer')
 </body>
+</html>

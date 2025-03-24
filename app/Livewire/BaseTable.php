@@ -30,6 +30,7 @@ class BaseTable extends Component
     public $showDetailsModal = false;
     public $showDeleteModal = false;
     public $showEditModal = false;
+    public $onRowClick;
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -38,7 +39,7 @@ class BaseTable extends Component
         'perPage' => ['except' => 10],
     ];
 
-    public function mount($model, $columns = [], $actions = [], $primaryKey = 'id', $sortableRelations = [], $searchableRelations = [], $perPage = 10)
+    public function mount($model, $columns = [], $actions = [], $primaryKey = 'id', $sortableRelations = [], $searchableRelations = [], $perPage = 10, $onRowClick)
     {
         $this->model = $model;
         $this->columns = $columns;
@@ -48,6 +49,7 @@ class BaseTable extends Component
         $this->sortableRelations = $sortableRelations;
         $this->searchableRelations = $searchableRelations;
         $this->perPage = $perPage;
+        $this->onRowClick = $onRowClick;
     }
 
     public function sortBy($field)
@@ -93,8 +95,7 @@ class BaseTable extends Component
 
     public function openDetails($id)
     {
-        $this->selectedItem = $this->model::find($id);
-        $this->showDetailsModal = true;
+        $this->dispatch($this->onRowClick, $id);
     }
 
     protected function getPaginationItems()
