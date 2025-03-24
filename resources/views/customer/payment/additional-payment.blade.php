@@ -134,14 +134,7 @@
 
                     <div class="flex justify-center mb-6">
                         <div class="w-40 h-40 bg-gray-100 border border-gray-200 flex items-center justify-center rounded-lg">
-                            <!-- This is a placeholder for QR code. In real implementation, you would generate an actual QR code -->
-                            <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                <rect x="7" y="7" width="3" height="3"></rect>
-                                <rect x="14" y="7" width="3" height="3"></rect>
-                                <rect x="7" y="14" width="3" height="3"></rect>
-                                <rect x="14" y="14" width="3" height="3"></rect>
-                            </svg>
+                            @include('svgs.qr')
                         </div>
                     </div>
 
@@ -198,7 +191,7 @@
 
                     <div class="mb-6">
                         <label for="payment_proof" class="block text-sm font-medium text-gray-700 mb-2">Upload Proof of Payment</label>
-                        <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                        <div id="drop-area" class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                             <div class="space-y-1 text-center">
                                 <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
                                     <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4h-12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -213,10 +206,20 @@
                                 <p class="text-xs text-gray-500">PNG, JPG, GIF up to 2MB</p>
                             </div>
                         </div>
+
                         <div id="preview-container" class="mt-3 hidden">
-                            <p class="text-sm font-medium text-gray-700 mb-2">Preview:</p>
-                            <img id="preview-image" src="#" alt="Preview" class="max-h-40 rounded border border-gray-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <p class="text-sm font-medium text-gray-700">Payment Proof Preview:</p>
+                                <button type="button" id="remove-image" class="text-sm text-red-600 hover:text-red-800">
+                                    Remove
+                                </button>
+                            </div>
+                            <div class="relative">
+                                <img id="preview-image" src="#" alt="Payment proof preview" class="max-h-60 rounded border border-gray-200">
+                                <p id="image-name" class="mt-1 text-xs text-gray-500"></p>
+                            </div>
                         </div>
+
                         @error('payment_proof')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -287,26 +290,6 @@
                 });
             };
 
-            // Payment method selection
-            const paymentMethods = document.querySelectorAll('input[name="payment_method"]');
-
-            paymentMethods.forEach(method => {
-                method.addEventListener('change', function() {
-                    // Remove active class from all containers
-                    document.querySelectorAll('input[name="payment_method"]').forEach(input => {
-                        input.closest('div').classList.remove('border-cPrimary', 'bg-cPrimary/5');
-                    });
-
-                    // Add active class to selected container
-                    if (this.checked) {
-                        this.closest('div').classList.add('border-cPrimary', 'bg-cPrimary/5');
-                    }
-                });
-            });
-
-            // Initialize the first payment method as active
-            document.querySelector('input[name="payment_method"]:checked').closest('div').classList.add('border-cPrimary', 'bg-cPrimary/5');
-
             // Image preview functionality
             const input = document.getElementById('payment_proof');
             const dropArea = document.getElementById('drop-area');
@@ -315,127 +298,132 @@
             const imageName = document.getElementById('image-name');
             const removeButton = document.getElementById('remove-image');
 
-            // Prevent default drag behaviors
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                dropArea.addEventListener(eventName, preventDefaults, false);
-                document.body.addEventListener(eventName, preventDefaults, false);
-            });
+            // Only set up these listeners if elements exist
+            if (input && dropArea && previewContainer && previewImage) {
+                // Prevent default drag behaviors
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    dropArea.addEventListener(eventName, preventDefaults, false);
+                    document.body.addEventListener(eventName, preventDefaults, false);
+                });
 
-            // Highlight drop area when item is dragged over it
-            ['dragenter', 'dragover'].forEach(eventName => {
-                dropArea.addEventListener(eventName, highlight, false);
-            });
+                // Highlight drop area when item is dragged over it
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    dropArea.addEventListener(eventName, highlight, false);
+                });
 
-            ['dragleave', 'drop'].forEach(eventName => {
-                dropArea.addEventListener(eventName, unhighlight, false);
-            });
+                ['dragleave', 'drop'].forEach(eventName => {
+                    dropArea.addEventListener(eventName, unhighlight, false);
+                });
 
-            // Handle dropped files
-            dropArea.addEventListener('drop', handleDrop, false);
+                // Handle dropped files
+                dropArea.addEventListener('drop', handleDrop, false);
 
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-
-            function highlight() {
-                dropArea.classList.add('border-cPrimary', 'bg-cPrimary/5');
-            }
-
-            function unhighlight() {
-                dropArea.classList.remove('border-cPrimary', 'bg-cPrimary/5');
-            }
-
-            function handleDrop(e) {
-                const dt = e.dataTransfer;
-                const files = dt.files;
-                handleFiles(files);
-            }
-
-            function handleFiles(files) {
-                if (files.length) {
-                    uploadFile(files[0]);
-                }
-            }
-
-            function uploadFile(file) {
-                // Validate file type
-                if (!file.type.match('image.*')) {
-                    alert('Please upload an image file');
-                    return;
+                function preventDefaults(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
                 }
 
-                // Only handle images
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onloadend = function() {
-                    showPreview(reader.result, file.name);
-                    input.files = new DataTransfer().files;
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(file);
-                    input.files = dataTransfer.files;
-                };
-            }
+                function highlight() {
+                    dropArea.classList.add('border-cPrimary', 'bg-cPrimary/5');
+                }
 
-            function showPreview(src, fileName) {
-                previewImage.src = src;
-                imageName.textContent = fileName;
-                dropArea.classList.add('hidden');
-                previewContainer.classList.remove('hidden');
-            }
+                function unhighlight() {
+                    dropArea.classList.remove('border-cPrimary', 'bg-cPrimary/5');
+                }
 
-            // Handle file selection via input
-            input.addEventListener('change', function() {
-                const file = this.files[0];
+                function handleDrop(e) {
+                    const dt = e.dataTransfer;
+                    const files = dt.files;
+                    handleFiles(files);
+                }
 
-                if (file) {
+                function handleFiles(files) {
+                    if (files.length) {
+                        uploadFile(files[0]);
+                    }
+                }
+
+                function uploadFile(file) {
+                    // Validate file type
+                    if (!file.type.match('image.*')) {
+                        alert('Please upload an image file');
+                        return;
+                    }
+
+                    // Only handle images
                     const reader = new FileReader();
-
-                    reader.onload = function(e) {
-                        showPreview(e.target.result, file.name);
-                    };
-
                     reader.readAsDataURL(file);
-                }
-            });
+                    reader.onloadend = function() {
+                        showPreview(reader.result, file.name);
 
-            // Remove image button functionality
-            removeButton.addEventListener('click', function() {
-                input.value = '';
-                previewContainer.classList.add('hidden');
-                dropArea.classList.remove('hidden');
-
-                // Clear preview
-                setTimeout(() => {
-                    previewImage.src = '';
-                    imageName.textContent = '';
-                }, 300);
-            });
-
-            // Form validation
-            const paymentForm = document.getElementById('payment-form');
-            paymentForm.addEventListener('submit', function(e) {
-                const paymentProof = document.getElementById('payment_proof');
-                const referenceNumber = document.getElementById('reference_number');
-
-                if (paymentProof.files.length === 0) {
-                    e.preventDefault();
-                    alert('Please upload a proof of payment');
-                    return false;
+                        // Clear and set the file in the input
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(file);
+                        input.files = dataTransfer.files;
+                    };
                 }
 
-                if (referenceNumber.value.trim() === '') {
-                    e.preventDefault();
-                    alert('Please enter a reference number');
-                    referenceNumber.focus();
-                    return false;
+                function showPreview(src, fileName) {
+                    previewImage.src = src;
+                    if (imageName) {
+                        imageName.textContent = fileName;
+                    }
+                    dropArea.classList.add('hidden');
+                    previewContainer.classList.remove('hidden');
                 }
 
-                // Add loading state to button
-                const submitButton = document.getElementById('confirm-button');
-                submitButton.disabled = true;
-                submitButton.innerHTML = '<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Processing...';
-            });
+                // Handle file selection via input
+                input.addEventListener('change', function() {
+                    const file = this.files[0];
+
+                    if (file) {
+                        const reader = new FileReader();
+
+                        reader.onload = function(e) {
+                            showPreview(e.target.result, file.name);
+                        };
+
+                        reader.readAsDataURL(file);
+                    }
+                });
+
+                // Remove image button functionality
+                if (removeButton) {
+                    removeButton.addEventListener('click', function() {
+                        input.value = '';
+                        previewContainer.classList.add('hidden');
+                        dropArea.classList.remove('hidden');
+
+                        // Clear preview
+                        setTimeout(() => {
+                            previewImage.src = '';
+                            if (imageName) {
+                                imageName.textContent = '';
+                            }
+                        }, 300);
+                    });
+                }
+            }
+
+            // Handle the confirmation button
+            const confirmButton = document.getElementById('confirm-button');
+            const form = confirmButton ? confirmButton.closest('form') : null;
+
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    if (input && input.files.length === 0) {
+                        e.preventDefault();
+                        alert('Please upload a proof of payment');
+                        return false;
+                    }
+
+                    // Add loading state to button
+                    if (confirmButton) {
+                        confirmButton.disabled = true;
+                        confirmButton.innerHTML = '<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Processing...';
+                    }
+                });
+            }
         });
     </script>
 </body>

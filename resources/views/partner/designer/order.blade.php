@@ -53,6 +53,12 @@
                             <div class="px-6 py-4 border-b border-gray-100">
                                 <h2 class="font-gilroy font-bold text-lg text-gray-900">Order Information</h2>
                             </div>
+                            <x-popover>
+                                <x-slot name="trigger">
+                                    <x-start-chat :user="$order->user" />
+                                </x-slot>
+                                Start chatting with {{$order->user->name}}
+                            </x-popover>
                             
                             <!-- Order Info List -->
                             <div class="divide-y divide-gray-100">
