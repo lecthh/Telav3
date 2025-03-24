@@ -90,7 +90,7 @@
         class="overflow-hidden shadow-sm rounded-lg bg-white">
         <div class="overflow-x-auto">
             <table wire:loading.class="opacity-40" class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+                <thead class="bg-gray-100">
                     <tr>
                         <!-- Select All Checkbox -->
                         <th class="px-6 py-4 w-10">
