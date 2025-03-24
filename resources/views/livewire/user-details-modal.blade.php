@@ -1,4 +1,3 @@
-<!-- resources/views/livewire/user-details-modal.blade.php -->
 <div>
     @if($selectedItem && $showModal)
     <x-view-details-modal wire:model="showModal" title="User Details">
