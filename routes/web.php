@@ -218,3 +218,11 @@ Route::middleware(['auth'])->post('/broadcasting/auth', function (Request $reque
     ]);
     return Broadcast::auth($request);
 });
+
+Route::get('/order/additional-payment/{order_id}', [App\Http\Controllers\AdditionalPaymentController::class, 'showPaymentDetails'])
+    ->name('order.additional-payment')
+    ->middleware('CustomerOnly');
+    
+Route::post('/order/process-additional-payment/{order_id}', [App\Http\Controllers\AdditionalPaymentController::class, 'processPayment'])
+    ->name('order.process-additional-payment')
+    ->middleware('CustomerOnly');

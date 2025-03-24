@@ -350,6 +350,66 @@
                 return true;
             });
         });
+
+        function collectFormData() {
+            const rows = document.querySelectorAll('#rowsTable tr');
+            const formData = [];
+
+            rows.forEach((row, index) => {
+                const nameInput = row.querySelector('input[name^="rows["][name$="][name]"]');
+                const sizeSelect = row.querySelector('select[name^="rows["][name$="][size]"]');
+                const remarksInput = row.querySelector('input[name^="rows["][name$="][remarks]"]');
+
+                // For jersey forms, get additional fields
+                const jerseyNoInput = row.querySelector('input[name^="rows["][name$="][jerseyNo]"]');
+                const topSizeSelect = row.querySelector('select[name^="rows["][name$="][topSize]"]');
+                const shortSizeSelect = row.querySelector('select[name^="rows["][name$="][shortSize]"]');
+                const hasPocketCheckbox = row.querySelector('input[name^="rows["][name$="][hasPocket]"][type="checkbox"]');
+
+                // Only include row if name and size are filled
+                if (nameInput && nameInput.value && sizeSelect && sizeSelect.value) {
+                    const rowData = {
+                        name: nameInput.value,
+                        size: sizeSelect.value,
+                        remarks: remarksInput ? remarksInput.value : ''
+                    };
+
+                    // Add jersey specific fields if they exist
+                    if (jerseyNoInput) rowData.jerseyNo = jerseyNoInput.value;
+                    if (topSizeSelect) rowData.topSize = topSizeSelect.value;
+                    if (shortSizeSelect) rowData.shortSize = shortSizeSelect.value;
+                    if (hasPocketCheckbox) rowData.hasPocket = hasPocketCheckbox.checked;
+
+                    formData.push(rowData);
+                }
+            });
+
+            return formData;
+        }
+
+        document.getElementById('pay-additional-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // Get the current href
+            const baseHref = this.getAttribute('href').split('?')[0];
+            const urlParams = new URLSearchParams(this.getAttribute('href').split('?')[1]);
+
+            // Collect form data
+            const formData = collectFormData();
+
+            // Only proceed if we have valid data
+            if (formData.length === 0) {
+                alert('Please fill in at least one customization entry before proceeding to payment.');
+                return;
+            }
+
+            // Add the form data to the URL
+            urlParams.set('size_data', JSON.stringify(formData));
+
+            // Set the new href and navigate
+            const newHref = baseHref + '?' + urlParams.toString();
+            window.location.href = newHref;
+        });
     </script>
 </body>
 </html>

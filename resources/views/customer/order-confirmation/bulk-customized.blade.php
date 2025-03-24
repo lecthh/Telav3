@@ -13,7 +13,7 @@
 
 <body class="bg-gray-50 flex flex-col min-h-screen">
     @include('layout.nav')
-    
+
     <main class="flex-grow py-10 px-4 sm:px-6 lg:px-8">
         <div class="max-w-4xl mx-auto">
             <div class="mb-8">
@@ -24,7 +24,7 @@
                     </svg>
                     <span>Order Confirmation</span>
                 </div>
-                
+
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
                     <div class="flex items-center gap-4 mb-4">
                         <div class="w-12 h-12 rounded-full bg-cPrimary/10 flex items-center justify-center text-cPrimary">
@@ -39,7 +39,7 @@
                             <p class="text-gray-500">Order No. <span class="font-medium text-gray-700">{{ $order->order_id }}</span></p>
                         </div>
                     </div>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                         <div class="p-3 bg-gray-50 rounded-lg">
                             <p class="text-gray-500 mb-1">Customer</p>
@@ -60,7 +60,7 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <h2 class="font-gilroy font-bold text-xl mb-2">Personalized Customization Details</h2>
                 <p class="text-gray-600 mb-6">Please specify the details for each apparel to be printed. You must provide at least 10 customization entries.</p>
-                
+
                 <form action="{{ route('confirm-bulk-custom-post') }}" method="POST" id="customizationForm">
                     @csrf
                     <input type="hidden" name="order_id" value="{{ $order->order_id }}">
@@ -71,14 +71,14 @@
                         <div class="flex items-start">
                             <div class="flex-shrink-0">
                                 <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
                                 </svg>
                             </div>
                             <div class="ml-3">
                                 <h3 class="text-sm font-medium text-red-800">Please correct the following errors:</h3>
                                 <ul class="mt-1 text-sm text-red-700 list-disc list-inside">
                                     @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
+                                    <li>{{ $error }}</li>
                                     @endforeach
                                 </ul>
                             </div>
@@ -102,16 +102,16 @@
                                 <tr class="{{ $index % 2 === 0 ? 'bg-white' : 'bg-gray-50' }}">
                                     <td class="px-4 py-4 text-sm font-medium text-gray-900 align-top">{{ $index + 1 }}</td>
                                     <td class="px-4 py-4 text-sm text-gray-500">
-                                        <input type="text" name="rows[{{ $index }}][name]" 
-                                            class="w-full p-2 border border-gray-300 rounded-md focus:ring-cPrimary focus:border-cPrimary focus:outline-none" 
-                                            placeholder="Customer name" 
+                                        <input type="text" name="rows[{{ $index }}][name]"
+                                            class="w-full p-2 border border-gray-300 rounded-md focus:ring-cPrimary focus:border-cPrimary focus:outline-none"
+                                            placeholder="Customer name"
                                             value="{{ old('rows.'.$index.'.name') }}">
                                         @error("rows.$index.name")
-                                            <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
+                                        <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
                                         @enderror
                                     </td>
                                     <td class="px-4 py-4 text-sm text-gray-500">
-                                        <select name="rows[{{ $index }}][size]" 
+                                        <select name="rows[{{ $index }}][size]"
                                             class="w-full p-2 border border-gray-300 rounded-md focus:ring-cPrimary focus:border-cPrimary focus:outline-none">
                                             <option value="">Select Size</option>
                                             @foreach($sizes as $size)
@@ -121,16 +121,16 @@
                                             @endforeach
                                         </select>
                                         @error("rows.$index.size")
-                                            <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
+                                        <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
                                         @enderror
                                     </td>
                                     <td class="px-4 py-4 text-sm text-gray-500">
-                                        <input type="text" name="rows[{{ $index }}][remarks]" 
-                                            class="w-full p-2 border border-gray-300 rounded-md focus:ring-cPrimary focus:border-cPrimary focus:outline-none" 
-                                            placeholder="Optional notes" 
+                                        <input type="text" name="rows[{{ $index }}][remarks]"
+                                            class="w-full p-2 border border-gray-300 rounded-md focus:ring-cPrimary focus:border-cPrimary focus:outline-none"
+                                            placeholder="Optional notes"
                                             value="{{ old('rows.'.$index.'.remarks') }}">
                                         @error("rows.$index.remarks")
-                                            <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
+                                        <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
                                         @enderror
                                     </td>
                                     <td class="px-4 py-4 text-sm text-gray-500">
@@ -185,7 +185,7 @@
             </div>
         </div>
     </main>
-    
+
     @include('layout.footer')
 
     <script>
@@ -194,7 +194,7 @@
             const rowCount = rowsTable.rows.length;
             const sizesOptions = `@foreach($sizes as $size)<option value="{{ $size->sizes_ID }}">{{ $size->name }}</option>@endforeach`;
             const isOdd = rowCount % 2;
-            
+
             const newRow = `
                 <tr class="${isOdd ? 'bg-gray-50' : 'bg-white'}">
                     <td class="px-4 py-4 text-sm font-medium text-gray-900 align-top">${rowCount + 1}</td>
@@ -221,7 +221,7 @@
                         </button>
                     </td>
                 </tr>`;
-                
+
             rowsTable.insertAdjacentHTML('beforeend', newRow);
             updateEntryCount();
         }
@@ -247,15 +247,15 @@
                 }
             });
         }
-        
+
         function updateEntryCount() {
             const totalEntriesElement = document.getElementById('total-entries');
             const entryCounterElement = document.getElementById('entry-counter');
             const rows = document.querySelectorAll('#rowsTable tr');
             const count = rows.length;
-            
+
             totalEntriesElement.textContent = count;
-            
+
             if (count >= 10) {
                 entryCounterElement.classList.remove('text-red-500');
                 entryCounterElement.classList.add('text-green-600');
@@ -264,10 +264,71 @@
                 entryCounterElement.classList.add('text-red-500');
             }
         }
-        
+
         document.addEventListener('DOMContentLoaded', function() {
             updateEntryCount();
         });
+
+        function collectFormData() {
+            const rows = document.querySelectorAll('#rowsTable tr');
+            const formData = [];
+
+            rows.forEach((row, index) => {
+                const nameInput = row.querySelector('input[name^="rows["][name$="][name]"]');
+                const sizeSelect = row.querySelector('select[name^="rows["][name$="][size]"]');
+                const remarksInput = row.querySelector('input[name^="rows["][name$="][remarks]"]');
+
+                // For jersey forms, get additional fields
+                const jerseyNoInput = row.querySelector('input[name^="rows["][name$="][jerseyNo]"]');
+                const topSizeSelect = row.querySelector('select[name^="rows["][name$="][topSize]"]');
+                const shortSizeSelect = row.querySelector('select[name^="rows["][name$="][shortSize]"]');
+                const hasPocketCheckbox = row.querySelector('input[name^="rows["][name$="][hasPocket]"][type="checkbox"]');
+
+                // Only include row if name and size are filled
+                if (nameInput && nameInput.value && sizeSelect && sizeSelect.value) {
+                    const rowData = {
+                        name: nameInput.value,
+                        size: sizeSelect.value,
+                        remarks: remarksInput ? remarksInput.value : ''
+                    };
+
+                    // Add jersey specific fields if they exist
+                    if (jerseyNoInput) rowData.jerseyNo = jerseyNoInput.value;
+                    if (topSizeSelect) rowData.topSize = topSizeSelect.value;
+                    if (shortSizeSelect) rowData.shortSize = shortSizeSelect.value;
+                    if (hasPocketCheckbox) rowData.hasPocket = hasPocketCheckbox.checked;
+
+                    formData.push(rowData);
+                }
+            });
+
+            return formData;
+        }
+
+        document.getElementById('pay-additional-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // Get the current href
+            const baseHref = this.getAttribute('href').split('?')[0];
+            const urlParams = new URLSearchParams(this.getAttribute('href').split('?')[1]);
+
+            // Collect form data
+            const formData = collectFormData();
+
+            // Only proceed if we have valid data
+            if (formData.length === 0) {
+                alert('Please fill in at least one customization entry before proceeding to payment.');
+                return;
+            }
+
+            // Add the form data to the URL
+            urlParams.set('size_data', JSON.stringify(formData));
+
+            // Set the new href and navigate
+            const newHref = baseHref + '?' + urlParams.toString();
+            window.location.href = newHref;
+        });
     </script>
 </body>
+
 </html>
