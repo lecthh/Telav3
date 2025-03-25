@@ -33,12 +33,14 @@
             'perPage' => 10,
             'onRowClick' => 'showUserDetails',
             'onEdit' => 'editUser',
+            'nameColumn' => 'name',
             ])
         </main>
     </div>
     
     @livewire('user-details-modal')
     @livewire('edit-user-details-modal')
+    @livewire('delete-confirmation-modal')
     @include('layout.footer')
 </body>
 </html>

@@ -1,6 +1,6 @@
 <div>
     @if($selectedItem && $showEditModal)
-        <x-view-details-modal wire:model="showEditModal" title="Edit User Details">
+        <x-view-details-modal title="Edit User Details" wire:model="showEditModal">
             <form wire:submit.prevent="updateUser">
                 <div class="bg-white p-6 rounded-lg space-y-4">
                     <!-- Avatar Image Preview -->

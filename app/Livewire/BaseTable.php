@@ -31,6 +31,12 @@ class BaseTable extends Component
     public $showDeleteModal = false;
     public $showEditModal = false;
     public $onRowClick;
+    public $onEdit;
+    public $nameColumn;
+
+    protected $listeners = [
+        'refreshUsersTable' => '$refresh'
+    ];
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -96,6 +102,15 @@ class BaseTable extends Component
     public function openDetails($id)
     {
         $this->dispatch($this->onRowClick, $id);
+    }
+
+    public function openEditModal($id){
+        Log::info($this->onEdit);
+        $this->dispatch($this->onEdit, $id);
+    }
+
+    public function openDeleteModal($id){
+        $this->dispatch('deleteEntity',$this->model, $id, $this->nameColumn);
     }
 
     protected function getPaginationItems()

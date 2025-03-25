@@ -16,18 +16,10 @@
             </div>
 
             <!-- Bulk Actions - Only visible when items are selected -->
-            <div x-cloak class="flex items-center gap-2">
-                <select
-                    class="border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm">
-                    <option value="">Bulk Actions</option>
-                    <option value="delete">Delete Selected</option>
-                    <option value="export">Expo rt Selected</option>
-                </select>
-                <button
-                    class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs rounded-md font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
-                    Apply
-                </button>
-                <span class="text-sm text-gray-600"></span>
+            <div class="flex items-center gap-2">
+                <div class="p-4 text-sm text-gray-600" 
+                    x-text="`Selected ${selectedItems.length} out of ${getItemIds().length} items`">
+                </div>
             </div>
         </div>
 
@@ -132,12 +124,9 @@
                             </div>
                         </th>
                         @endforeach
-
-                        @if(count($actions) > 0)
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        <th class="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                             Actions
                         </th>
-                        @endif
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -163,19 +152,26 @@
                         </td>
                         @endforeach
 
-                        @if(count($actions) > 0)
-                        <td class="px-6 py-4 whitespace-nowrap text-sm" @click.stop>
-                            <div class="flex space-x-2">
-                                @foreach($actions as $action)
-                                <button
-                                    wire:click="{{$action['method'] }}({{ $item->{$primaryKey} }})"
-                                    class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs rounded-md font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
-                                    {{ $action['label'] }}
-                                </button>
-                                @endforeach
-                            </div>
-                        </td>
-                        @endif
+                        <td class="px-6 py-4 whitespace-nowrap r" @click.stop>
+    <div class="flex justify-center space-x-2">
+        <button
+        wire:click="openEditModal('{{ $item->{$primaryKey} }}')"
+
+            class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs rounded-md font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <path d="M18 10L14 6M2.49997 21.5L5.88434 21.124C6.29783 21.078 6.50457 21.055 6.69782 20.9925C6.86926 20.937 7.03242 20.8586 7.18286 20.7594C7.35242 20.6475 7.49951 20.5005 7.7937 20.2063L21 7C22.1046 5.89543 22.1046 4.10457 21 3C19.8954 1.89543 18.1046 1.89543 17 3L3.7937 16.2063C3.49952 16.5005 3.35242 16.6475 3.24061 16.8171C3.1414 16.9676 3.06298 17.1307 3.00748 17.3022C2.94493 17.4954 2.92195 17.7021 2.87601 18.1156L2.49997 21.5Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <button
+       wire:click="openDeleteModal('{{ $item->{$primaryKey} }}')"
+            class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs rounded-md font-medium text-red-600 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+<path d="M9 3H15M3 6H21M19 6L18.2987 16.5193C18.1935 18.0975 18.1409 18.8867 17.8 19.485C17.4999 20.0118 17.0472 20.4353 16.5017 20.6997C15.882 21 15.0911 21 13.5093 21H10.4907C8.90891 21 8.11803 21 7.49834 20.6997C6.95276 20.4353 6.50009 20.0118 6.19998 19.485C5.85911 18.8867 5.8065 18.0975 5.70129 16.5193L5 6M10 10.5V15.5M14 10.5V15.5" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+        </button>
+    </div>
+</td>
+
                     </tr>
                     @empty
                     <tr>
@@ -272,47 +268,3 @@
         </div>
         @endif
     </div>
-
-    @if($selectedItem && $showDetailsModal)
-    <x-view-details-modal wire:model="showDetailsModal" title="Item Details">
-        <div class="bg-white p-6 rounded-lg space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="space-y-2">
-                    <h3 class="text-sm font-medium text-gray-500">User ID</h3>
-                    <p class="text-base font-semibold">{{ $selectedItem->user_id }}</p>
-                </div>
-
-                <div class="space-y-2">
-                    <h3 class="text-sm font-medium text-gray-500">Name</h3>
-                    <p class="text-base font-semibold">{{ $selectedItem->name }}</p>
-                </div>
-
-                <div class="space-y-2">
-                    <h3 class="text-sm font-medium text-gray-500">Email</h3>
-                    <p class="text-base font-semibold">{{ $selectedItem->email }}</p>
-                </div>
-
-                <div class="space-y-2">
-                    <h3 class="text-sm font-medium text-gray-500">Email Verified At</h3>
-                    <p class="text-base font-semibold">
-                        @if($selectedItem->email_verified_at)
-                        {{ $selectedItem->email_verified_at->format('M d, Y') }}
-                        @else
-                        <span class="text-amber-500">Not verified</span>
-                        @endif
-                    </p>
-                </div>
-
-                <div class="space-y-2">
-                    <h3 class="text-sm font-medium text-gray-500">Created At</h3>
-                    <p class="text-base font-semibold">{{ $selectedItem->created_at->format('M d, Y') }}</p>
-                </div>
-
-                <div class="space-y-2">
-                    <h3 class="text-sm font-medium text-gray-500">Updated At</h3>
-                    <p class="text-base font-semibold">{{ $selectedItem->updated_at->format('M d, Y') }}</p>
-                </div>
-            </div>
-        </div>
-    </x-view-details-modal>
-    @endif
