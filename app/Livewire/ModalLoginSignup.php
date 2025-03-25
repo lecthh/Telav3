@@ -24,7 +24,6 @@ class ModalLoginSignup extends ModalComponent
         return 'lg';
     }
 
-
     public function mount()
     {
         Session::put('url.intended', URL::previous());
