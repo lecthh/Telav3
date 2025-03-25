@@ -242,6 +242,59 @@
                         </div>
                         <div id="entry-counter" class="font-medium text-lg">Total Entries: <span id="total-entries">{{ count($rows) }}</span></div>
                     </div>
+                    
+                    <!-- Hidden inputs for additional payment -->
+                    <input type="hidden" name="new_total_price" id="new-total-price-input" value="0">
+                    <input type="hidden" name="new_quantity" id="new-quantity-input" value="0">
+                    <input type="hidden" name="additional_payment" id="additional-payment-input" value="0">
+                    
+                    <!-- Alert message for additional payment -->
+                    <div id="additional-payment-alert" class="hidden mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-yellow-800">Additional payment required</h3>
+                                <p class="mt-1 text-sm text-yellow-700">You have added more jerseys than the original order. You must pay the additional downpayment before confirming.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional payment summary section -->
+                    <div id="additional-payment-section" class="hidden mb-6 bg-white border border-gray-200 rounded-lg p-4">
+                        <h3 class="font-medium text-lg mb-3">Order Summary</h3>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Original Quantity:</span>
+                                <span class="font-medium">{{ $order->quantity }} jersey(s)</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">New Quantity:</span>
+                                <span id="summary-quantity" class="font-medium">0 jerseys</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Total Price:</span>
+                                <span id="summary-total-price" class="font-medium">₱0.00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Original Downpayment:</span>
+                                <span class="font-medium">₱{{ number_format($order->downpayment_amount, 2) }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Additional Payment:</span>
+                                <span id="additional-payment" class="font-medium text-cPrimary">₱0.00</span>
+                            </div>
+                            <div class="border-t border-gray-200 pt-2 mt-2">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Balance Due:</span>
+                                    <span id="summary-balance" class="font-medium">₱0.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="mb-6">
                         <button type="button" onclick="addRow()" class="inline-flex items-center px-4 py-2 border border-cPrimary rounded-md shadow-sm text-sm font-medium text-cPrimary bg-white hover:bg-cPrimary/5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
@@ -259,6 +312,16 @@
                             </svg>
                             Back to Home
                         </a>
+                        
+                        <!-- Additional payment button (hidden by default) -->
+                        <a id="pay-additional-btn" href="#" class="hidden inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            Pay Additional Amount
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                        
+                        <!-- Regular confirm button -->
                         <button type="submit" id="confirm-button" class="inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-cPrimary hover:bg-cPrimary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
                             Confirm Order
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
@@ -371,12 +434,107 @@
             
             totalEntriesElement.textContent = count;
             
+            // Get references to UI elements
+            const additionalPaymentSection = document.getElementById('additional-payment-section');
+            const additionalPaymentAlert = document.getElementById('additional-payment-alert');
+            const payAdditionalBtn = document.getElementById('pay-additional-btn');
+            const confirmButton = document.getElementById('confirm-button');
+            
+            // Get original quantity value from the server-side data
+            const originalQuantity = {{ $order->quantity }};
+            
             if (count >= 10) {
                 entryCounterElement.classList.remove('text-red-500');
                 entryCounterElement.classList.add('text-green-600');
+                
+                // Check if quantity has increased compared to original order
+                if (count > originalQuantity) {
+                    // Show additional payment UI
+                    additionalPaymentSection.classList.remove('hidden');
+                    additionalPaymentAlert.classList.remove('hidden');
+                    payAdditionalBtn.classList.remove('hidden');
+                    
+                    // Disable regular confirm button
+                    confirmButton.disabled = true;
+                    confirmButton.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-400');
+                    confirmButton.classList.remove('bg-cPrimary', 'hover:bg-cPrimary/90');
+                    
+                    // Calculate additional payment info
+                    updateOrderSummary(count);
+                } else {
+                    // Hide additional payment UI
+                    additionalPaymentSection.classList.add('hidden');
+                    additionalPaymentAlert.classList.add('hidden');
+                    payAdditionalBtn.classList.add('hidden');
+                    
+                    // Enable regular confirm button
+                    confirmButton.disabled = false;
+                    confirmButton.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-gray-400');
+                    confirmButton.classList.add('bg-cPrimary', 'hover:bg-cPrimary/90');
+                }
             } else {
                 entryCounterElement.classList.remove('text-green-600');
                 entryCounterElement.classList.add('text-red-500');
+                
+                // Disable confirm button if count is invalid
+                confirmButton.disabled = true;
+                confirmButton.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-400');
+                confirmButton.classList.remove('bg-cPrimary', 'hover:bg-cPrimary/90');
+                
+                // Hide additional payment UI
+                additionalPaymentSection.classList.add('hidden');
+                additionalPaymentAlert.classList.add('hidden');
+                payAdditionalBtn.classList.add('hidden');
+            }
+        }
+        
+        function updateOrderSummary(totalQuantity) {
+            // Get original values from server-side data
+            const originalQuantity = {{ $order->quantity }};
+            const unitPrice = {{ $order->final_price / $order->quantity }};
+            const originalDownpayment = {{ $order->downpayment_amount }};
+            
+            // Calculate new values
+            const totalPrice = unitPrice * totalQuantity;
+            const additionalQuantity = Math.max(0, totalQuantity - originalQuantity);
+            const additionalPaymentAmount = (additionalQuantity * unitPrice) / 2; // 50% down payment for additional items
+            const balanceDue = totalPrice - originalDownpayment - additionalPaymentAmount;
+            
+            // Update display
+            document.getElementById('summary-quantity').textContent = totalQuantity + ' jersey' + (totalQuantity !== 1 ? 's' : '');
+            document.getElementById('summary-total-price').textContent = '₱' + totalPrice.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            document.getElementById('summary-balance').textContent = '₱' + Math.max(0, balanceDue).toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            
+            if (additionalPaymentAmount > 0) {
+                document.getElementById('additional-payment').textContent = '₱' + additionalPaymentAmount.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+            
+            // Update hidden inputs for form submission
+            document.getElementById('new-total-price-input').value = totalPrice.toFixed(2);
+            document.getElementById('new-quantity-input').value = totalQuantity;
+            document.getElementById('additional-payment-input').value = additionalPaymentAmount.toFixed(2);
+            
+            // Update Pay Additional button link with order ID, amount, and size data
+            const payAdditionalBtn = document.getElementById('pay-additional-btn');
+            if (payAdditionalBtn) {
+                // Collect form data for customizations
+                const formData = collectFormData();
+                
+                // Encode the form data as JSON and add to the URL
+                const formDataParam = encodeURIComponent(JSON.stringify(formData));
+                payAdditionalBtn.href = "{{ route('order.additional-payment', ['order_id' => $order->order_id]) }}?amount=" +
+                    additionalPaymentAmount.toFixed(2) +
+                    "&quantity=" + additionalQuantity +
+                    "&size_data=" + formDataParam;
             }
         }
         
@@ -394,6 +552,20 @@
                 }
                 return true;
             });
+            
+            // Add event listener for the pay additional button
+            const payAdditionalBtn = document.getElementById('pay-additional-btn');
+            if (payAdditionalBtn) {
+                payAdditionalBtn.addEventListener('click', function(e) {
+                    // Form validation before proceeding to payment
+                    const formData = collectFormData();
+                    if (formData.length < 10) {
+                        e.preventDefault();
+                        alert('You must have at least 10 valid jersey entries before proceeding to payment.');
+                        return;
+                    }
+                });
+            }
         });
 
         function collectFormData() {

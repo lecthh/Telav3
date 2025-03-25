@@ -190,6 +190,7 @@
                             <div class="flex justify-between items-center text-sm">
                                 <span class="text-gray-600">Unit Price:</span>
                                 <span id="summary-unit-price" class="font-medium">₱{{ number_format($order->final_price / $order->quantity, 2) }}</span>
+                                <input type="hidden" id="unit-price" value="{{ $order->final_price / $order->quantity }}">
                             </div>
                             <div class="flex justify-between items-center text-sm">
                                 <span class="text-gray-600">Original Downpayment (Paid):</span>
@@ -264,6 +265,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Get references to all DOM elements we need to work with
             const sizeInputs = document.querySelectorAll('input[type="number"]');
             const totalQuantityDisplay = document.getElementById('total-quantity');
             const confirmButton = document.getElementById('confirm-button');
@@ -272,12 +274,30 @@
             const additionalPaymentAlert = document.getElementById('additional-payment-alert');
             const quantityCounter = document.getElementById('quantity-counter');
             const originalQuantity = parseInt(document.getElementById('original-quantity-value').value);
+            
+            // Debug log to make sure we found all elements
+            console.log('Found elements:', {
+                sizeInputs: sizeInputs.length,
+                totalQuantityDisplay: !!totalQuantityDisplay,
+                confirmButton: !!confirmButton,
+                payAdditionalBtn: !!payAdditionalBtn,
+                additionalPaymentSection: !!additionalPaymentSection,
+                additionalPaymentAlert: !!additionalPaymentAlert,
+                quantityCounter: !!quantityCounter,
+                originalQuantity: originalQuantity
+            });
 
             function updateTotalQuantity() {
+                console.log('updateTotalQuantity called');
                 let total = 0;
                 let sizeData = {};
+                let hasQuantity = false;
 
-                sizeInputs.forEach(input => {
+                // Get fresh references to all input elements
+                const allSizeInputs = document.querySelectorAll('input[type="number"]');
+                console.log('Number of size inputs found:', allSizeInputs.length);
+
+                allSizeInputs.forEach(input => {
                     const quantity = parseInt(input.value) || 0;
                     total += quantity;
 
@@ -285,9 +305,12 @@
                     const sizeId = input.id.replace('size-', '');
                     if (quantity > 0) {
                         sizeData[sizeId] = quantity;
+                        hasQuantity = true;
+                        console.log('Size', sizeId, 'has quantity', quantity);
                     }
                 });
 
+                console.log('Total quantity calculated:', total);
                 totalQuantityDisplay.textContent = total;
 
                 // Update the order summary
@@ -315,16 +338,43 @@
                         additionalPaymentAlert.classList.add('hidden');
                         payAdditionalBtn.classList.add('hidden');
 
-                        // Enable regular confirm button
+                        // Enable regular confirm button if at least one size has quantity
+                        if (hasQuantity) {
+                            confirmButton.disabled = false;
+                            confirmButton.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-gray-400');
+                            confirmButton.classList.add('bg-cPrimary', 'hover:bg-cPrimary/90');
+                        } else {
+                            confirmButton.disabled = true;
+                            confirmButton.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-400');
+                            confirmButton.classList.remove('bg-cPrimary', 'hover:bg-cPrimary/90');
+                        }
+                    }
+                } else if (total > 0) {
+                    // If total is between 1-9, show warning but still allow submission
+                    quantityCounter.classList.remove('text-green-600');
+                    quantityCounter.classList.add('text-yellow-500');
+                    
+                    // Enable regular confirm button if at least one size has quantity
+                    if (hasQuantity) {
                         confirmButton.disabled = false;
                         confirmButton.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-gray-400');
                         confirmButton.classList.add('bg-cPrimary', 'hover:bg-cPrimary/90');
+                    } else {
+                        confirmButton.disabled = true;
+                        confirmButton.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-400');
+                        confirmButton.classList.remove('bg-cPrimary', 'hover:bg-cPrimary/90');
                     }
+                    
+                    // Hide additional payment UI
+                    additionalPaymentSection.classList.add('hidden');
+                    additionalPaymentAlert.classList.add('hidden');
+                    payAdditionalBtn.classList.add('hidden');
                 } else {
-                    quantityCounter.classList.remove('text-green-600');
+                    // If total is 0, show error
+                    quantityCounter.classList.remove('text-green-600', 'text-yellow-500');
                     quantityCounter.classList.add('text-red-500');
 
-                    // Disable confirm button if quantity is below minimum
+                    // Disable confirm button if quantity is 0
                     confirmButton.disabled = true;
                     confirmButton.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-400');
                     confirmButton.classList.remove('bg-cPrimary', 'hover:bg-cPrimary/90');
@@ -337,12 +387,31 @@
             }
 
             function updateOrderSummary(totalQuantity, sizeData) {
+                // Get values from hidden fields
                 const unitPrice = parseFloat(document.getElementById('unit-price').value);
                 const originalDownpayment = parseFloat(document.getElementById('original-downpayment').value);
+                
+                // Debug log the input values
+                console.log('Price calculation inputs:', {
+                    unitPrice: unitPrice,
+                    originalDownpayment: originalDownpayment,
+                    totalQuantity: totalQuantity,
+                    originalQuantity: originalQuantity
+                });
+                
+                // Calculate new values
                 const totalPrice = unitPrice * totalQuantity;
                 const additionalQuantity = Math.max(0, totalQuantity - originalQuantity);
                 const additionalPaymentAmount = (additionalQuantity * unitPrice) / 2; // 50% down payment for additional items
                 const balanceDue = totalPrice - originalDownpayment - additionalPaymentAmount;
+                
+                // Debug log the calculated values
+                console.log('Price calculation results:', {
+                    totalPrice: totalPrice,
+                    additionalQuantity: additionalQuantity,
+                    additionalPaymentAmount: additionalPaymentAmount,
+                    balanceDue: balanceDue
+                });
 
                 document.getElementById('summary-quantity').textContent = totalQuantity + ' item' + (totalQuantity !== 1 ? 's' : '');
                 document.getElementById('summary-total-price').textContent = '₱' + totalPrice.toLocaleString('en-US', {
@@ -379,6 +448,24 @@
 
             // Initialize the total quantity calculation
             updateTotalQuantity();
+            
+            // Add event listeners to quantity inputs
+            sizeInputs.forEach(input => {
+                console.log('Adding listeners to input:', input.id);
+                
+                // Remove any existing listeners first to avoid duplicates
+                input.removeEventListener('input', updateTotalQuantity);
+                input.removeEventListener('change', updateTotalQuantity);
+                
+                // Add the listeners
+                input.addEventListener('input', updateTotalQuantity);
+                input.addEventListener('change', updateTotalQuantity);
+                
+                // Add a direct input handler for debugging
+                input.addEventListener('input', function() {
+                    console.log('Input changed:', this.id, 'Value:', this.value);
+                });
+            });
         });
     </script>
 </body>
