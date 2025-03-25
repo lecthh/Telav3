@@ -190,7 +190,7 @@
                             </button>
                             @else
                             <button type="button"
-                                onclick="Livewire.dispatch('openModal', { component: 'modal-login-signup' })"
+                                onclick="Livewire.dispatch('openModal', {component: 'modal-login'})"
                                 class="flex justify-center items-center py-3 px-6 bg-cPrimary hover:bg-purple-700 rounded-xl text-white font-medium transition duration-150 ease-in-out">
                                 Sign in to Continue
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">

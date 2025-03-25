@@ -251,4 +251,86 @@ class PrinterDashboardController extends Controller
             return redirect()->back()->with('error', 'An error occurred');
         }
     }
+    
+    /**
+     * Show transactions history for the production company.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function transactions()
+    {
+        $productionCompany = session('admin');
+        $productionCompanyId = null;
+        
+        if (is_object($productionCompany) && isset($productionCompany->id)) {
+            $productionCompanyId = $productionCompany->id;
+        } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
+            $productionCompanyId = $productionCompany['App\\Models\\ProductionCompany']['id'];
+        } elseif (is_object($productionCompany) && property_exists($productionCompany, 'App\\Models\\ProductionCompany')) {
+            $pcData = $productionCompany->{'App\\Models\\ProductionCompany'};
+            $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
+        }
+        
+        // Get completed orders (status_id = 7) for this production company
+        $completedOrders = Order::with(['user', 'additionalPayments', 'balanceReceipts'])
+            ->where('production_company_id', $productionCompanyId)
+            ->orderBy('updated_at', 'desc')
+            ->get();
+        
+        // Get in-progress orders (status_id 1-6) for this production company
+        $activeOrders = Order::with(['user', 'additionalPayments', 'balanceReceipts'])
+            ->where('production_company_id', $productionCompanyId)
+            ->whereIn('status_id', [1, 2, 3, 4, 5, 6])
+            ->orderBy('updated_at', 'desc')
+            ->get();
+        
+        return view('partner.printer.profile.transactions', compact(
+            'completedOrders',
+            'activeOrders'
+        ));
+    }
+    
+    /**
+     * Upload a receipt for the balance payment.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $order_id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function uploadBalanceReceipt(Request $request, $order_id)
+    {
+        try {
+            $request->validate([
+                'receipt_image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+                'amount' => 'required|numeric|min:0',
+                'notes' => 'nullable|string|max:500',
+            ]);
+            
+            $order = Order::findOrFail($order_id);
+            
+            // Save the receipt image
+            $receiptPath = $request->file('receipt_image')->store('payment_proofs', 'public');
+            
+            // Create the balance receipt record
+            $balanceReceipt = \App\Models\BalanceReceipt::create([
+                'order_id' => $order->order_id,
+                'amount' => $request->amount,
+                'receipt_image_path' => $receiptPath,
+                'notes' => $request->notes,
+            ]);
+            
+            // Create notification for customer
+            \App\Models\Notification::create([
+                'user_id' => $order->user_id,
+                'message' => 'Payment receipt uploaded for Order #' . $order->order_id,
+                'is_read' => false,
+                'order_id' => $order->order_id,
+            ]);
+            
+            return redirect()->back()->with('success', 'Receipt uploaded successfully');
+        } catch (\Exception $e) {
+            Log::error('Upload Balance Receipt Error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred while uploading the receipt.');
+        }
+    }
 }
