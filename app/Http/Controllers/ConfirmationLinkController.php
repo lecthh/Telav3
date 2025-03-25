@@ -14,11 +14,19 @@ class ConfirmationLinkController extends Controller
     use Toastable;
     public function confirmBulkCustom(Request $request, $token)
     {
-        $order = Order::where('order_id', $request->order_id)
-            ->where('token', $token)
-            ->firstOrFail();
+        // Fetch order by token
+        $order = Order::where('token', $token)->firstOrFail();
 
-        $rows = old('rows', array_fill(0, 10, ['name' => '', 'size' => '', 'remarks' => '']));
+        // Check if there's imported customizations data from Excel
+        $importedCustomizations = session('imported_customizations');
+        
+        if ($importedCustomizations) {
+            // Use imported customization data
+            $rows = $importedCustomizations;
+        } else {
+            // Use default or old input
+            $rows = old('rows', array_fill(0, 10, ['name' => '', 'size' => '', 'remarks' => '']));
+        }
 
         $sizes = Sizes::all();
 
@@ -88,27 +96,37 @@ class ConfirmationLinkController extends Controller
     public function confirmJerseyBulkCustom(Request $request, $token)
     {
         try {
-            $order = Order::where('order_id', $request->order_id)
-                ->where('token', $token)
-                ->first();
+            // Fetch order by token
+            $order = Order::where('token', $token)->first();
 
             if (!$order) {
                 $this->toast('Invalid token or order.', 'error');
                 return redirect()->route('home');
             }
 
-            $rows = old('rows', array_fill(0, 10, [
-                'name' => '',
-                'jerseyNo' => '',
-                'topSize' => '',
-                'shortSize' => '',
-                'hasPocket' => '',
-                'remarks' => ''
-            ]));
+            // Check if there's imported jersey details from Excel
+            $importedJerseys = session('imported_jerseys');
+            
+            if ($importedJerseys) {
+                // Use imported jersey data
+                $rows = $importedJerseys;
+            } else {
+                // Use default or old input
+                $rows = old('rows', array_fill(0, 10, [
+                    'name' => '',
+                    'jerseyNo' => '',
+                    'topSize' => '',
+                    'shortSize' => '',
+                    'hasPocket' => false,
+                    'remarks' => ''
+                ]));
+            }
 
-            return view('customer.order-confirmation.jersey-bulk-customized', compact('order', 'rows'));
+            $sizes = Sizes::all();
+
+            return view('customer.order-confirmation.jersey-bulk-customized', compact('order', 'rows', 'sizes'));
         } catch (\Exception $e) {
-            $this->toast('An error occurred while confirming the jersey customization.', 'error');
+            $this->toast('An error occurred while confirming the jersey customization: ' . $e->getMessage(), 'error');
             return redirect()->route('home');
         }
     }
