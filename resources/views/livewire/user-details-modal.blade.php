@@ -4,7 +4,7 @@
     <div class="bg-white p-6 rounded-lg space-y-4">
         <!-- Avatar Image -->
         <div class="flex justify-center">
-            <img src="{{ $selectedItem->avatar ? $selectedItem->avatar : asset('images/default.png') }}"
+            <img src="{{ $selectedItem->avatar  ? asset('storage/' . $selectedItem->avatar) : asset('images/default.png') }}"
                  alt="User Avatar"
                  class=" w-52 h-52 rounded-full object-cover">
         </div>

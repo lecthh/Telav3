@@ -1,5 +1,5 @@
 @include('head')
-
+@if(Auth::user() && Auth::user()->role_type_id != 4)
 <footer class="flex gap-x-[10px] px-[100px] py-6 bg-cNot-black text-white justify-start">
     <div class="flex flex-col gap-y-[10px] text-sm">
         <h1 class="font-inter font-bold">Site Links</h1>
@@ -11,7 +11,7 @@
         </ul>
     </div>
 </footer>
-
+@endif
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <!-- for Livewire components -->
@@ -55,6 +55,6 @@
 
 @livewireScripts
 @vite(['resources/js/app.js'])
-@if(Auth::user()->role_type_id != 4)
+@if(Auth::user() && Auth::user()->role_type_id != 4)
 @include('chat.chat-widget')
 @endif

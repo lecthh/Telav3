@@ -32,11 +32,13 @@
             ],
             'perPage' => 10,
             'onRowClick' => 'showUserDetails',
+            'onEdit' => 'editUser',
             ])
         </main>
     </div>
     
     @livewire('user-details-modal')
+    @livewire('edit-user-details-modal')
     @include('layout.footer')
 </body>
 </html>
