@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Livewire;
 
 use Illuminate\Support\Facades\Log;
@@ -19,13 +20,13 @@ class DeleteConfirmationModal extends Component
     public function showDeleteModal($modelClass, $id, $displayColumn = 'name')
     {
         $this->selectedItem = $modelClass::find($id);
-        
+
         // Determine the entity type (e.g., "User", "Post") from the model class
         $this->entityType = class_basename($modelClass);
-        
+
         // Retrieve the display name from the specified column
         $this->displayName = $this->selectedItem->$displayColumn ?? '';
- 
+
         $this->showDeleteModal = true;
     }
 
@@ -39,22 +40,17 @@ class DeleteConfirmationModal extends Component
                 return;
             }
 
-            // Perform the deletion
             $this->selectedItem->delete();
-
-            // Log the deletion
             Log::info("Deleted {$this->entityType}: {$this->displayName}");
-
-            // Reset modal state
             $this->showDeleteModal = false;
             $this->selectedItem = null;
 
-            // Dispatch events to update the parent component
             $this->dispatch('item-deleted', $this->entityType);
             $this->dispatch('toast', [
-                'message' => "{$this->entityType} '{$this->displayName}' deleted successfully",
+                'message' => "{$this->displayName} deleted successfully",
                 'type' => 'success'
             ]);
+            $this->dispatch('refreshUsersTable');
         } catch (\Exception $e) {
             // Log the error
             Log::error("Error deleting {$this->entityType}: " . $e->getMessage());
