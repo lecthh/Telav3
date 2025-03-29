@@ -50,7 +50,7 @@ class DeleteConfirmationModal extends Component
                 'message' => "{$this->displayName} deleted successfully",
                 'type' => 'success'
             ]);
-            $this->dispatch('refreshUsersTable');
+            $this->dispatch('refreshTable');
         } catch (\Exception $e) {
             // Log the error
             Log::error("Error deleting {$this->entityType}: " . $e->getMessage());

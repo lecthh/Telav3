@@ -15,13 +15,16 @@
                     class="pl-10 pr-4 py-2 border border-gray-300 rounded-md block w-full sm:text-sm">
             </div>
 
-            <div class="flex items-center gap-2 p-4 "
+            <div class="flex items-center gap-2 p-4"
                 wire:model.live="selectedItems"
                 x-data="{}"
                 x-show="$wire.selectedItems.length > 0">
                 <div class="text-sm text-gray-600">
-                    Selected {{ count($selectedItems) }} out of
+                    Selected {{ $this->getSelectedItemsOnCurrentPageCount() }} out of
                     {{ $this->getCurrentPageItems()->count() }} items on this page
+                    @if($this->getSelectedItemsNotOnCurrentPageCount() > 0)
+                    (+ {{ $this->getSelectedItemsNotOnCurrentPageCount() }} on other pages)
+                    @endif
                 </div>
             </div>
         </div>
@@ -46,7 +49,7 @@
     <!-- Table -->
     <div class="overflow-hidden shadow-sm rounded-lg bg-white">
         <div class="overflow-x-auto">
-            <table wire:loading.class="opacity-40" wire:target="search, perPage, sortField, sortDirection" class="min-w-full divide-y divide-gray-200">
+            <table wire:loading.class="opacity-40" wire:target="search, perPage, sortField, sortDirection, refresh" class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-100">
                     <tr>
                         <!-- Select All Checkbox -->

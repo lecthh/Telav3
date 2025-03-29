@@ -178,6 +178,18 @@ class BaseTable extends Component
         }
     }
 
+    public function getSelectedItemsOnCurrentPageCount()
+    {
+        $currentPageIds = $this->getCurrentPageItems()->pluck($this->primaryKey)->toArray();
+        return count(array_intersect($this->selectedItems, $currentPageIds));
+    }
+
+    public function getSelectedItemsNotOnCurrentPageCount()
+    {
+        $currentPageIds = $this->getCurrentPageItems()->pluck($this->primaryKey)->toArray();
+        return count(array_diff($this->selectedItems, $currentPageIds));
+    }
+
     // Reset selection after item deletion
     public function resetSelection()
     {
@@ -311,7 +323,6 @@ class BaseTable extends Component
         }
     }
 
-    // Override the updatedPage method to handle page changes
     public function updatedPage($page)
     {
         $this->page = $page;
