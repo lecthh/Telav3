@@ -15,10 +15,13 @@
                     class="pl-10 pr-4 py-2 border border-gray-300 rounded-md block w-full sm:text-sm">
             </div>
 
-            <!-- Bulk Actions - Only visible when items are selected -->
-            <div class="flex items-center gap-2">
-                <div class="p-4 text-sm text-gray-600" 
-                    x-text="`Selected ${selectedItems.length} out of ${getItemIds().length} items`">
+            <div class="flex items-center gap-2 p-4 "
+                wire:model.live="selectedItems"
+                x-data="{}"
+                x-show="$wire.selectedItems.length > 0">
+                <div class="text-sm text-gray-600">
+                    Selected {{ count($selectedItems) }} out of
+                    {{ $this->getCurrentPageItems()->count() }} items on this page
                 </div>
             </div>
         </div>
@@ -41,55 +44,17 @@
     </div>
 
     <!-- Table -->
-    <div
-        x-data="{
-            selectedItems: [],
-            selectAll: false,
-            
-            toggleSelectAll() {
-                if (this.selectAll) {
-                    this.selectedItems = this.getItemIds();
-                } else {
-                    this.selectedItems = [];
-                }
-            },
-            
-            isSelected(id) {
-                return this.selectedItems.includes(id);
-            },
-            
-            toggleSelection(id) {
-                if (this.isSelected(id)) {
-                    this.selectedItems = this.selectedItems.filter(item => item !== id);
-                    this.selectAll = false;
-                } else {
-                    this.selectedItems.push(id);
-                    if (this.selectedItems.length === this.getItemIds().length) {
-                        this.selectAll = true;
-                    }
-                }
-            },
-            
-            getItemIds() {
-                return @js($items->pluck($primaryKey)->toArray());
-            },
-            
-            
-            openDetailModal(id) {
-                $wire.openDetailModal(id);
-            }
-        }"
-        class="overflow-hidden shadow-sm rounded-lg bg-white">
+    <div class="overflow-hidden shadow-sm rounded-lg bg-white">
         <div class="overflow-x-auto">
-            <table wire:loading.class="opacity-40" class="min-w-full divide-y divide-gray-200">
+            <table wire:loading.class="opacity-40" wire:target="search, perPage, sortField, sortDirection" class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-100">
                     <tr>
                         <!-- Select All Checkbox -->
                         <th class="px-6 py-4 w-10">
                             <input
                                 type="checkbox"
-                                x-model="selectAll"
-                                @change="toggleSelectAll()"
+                                wire:model="selectAll"
+                                wire:click="toggleSelectAll"
                                 class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                         </th>
 
@@ -138,8 +103,9 @@
                         <td class="px-6 py-4 whitespace-nowrap" @click.stop>
                             <input
                                 type="checkbox"
-                                :checked="isSelected('{{ $item->{$primaryKey} }}')"
-                                @click.stop="openDetails('{{ $item->{$primaryKey} }}')"
+                                wire:model.live="selectedItems"
+                                wire:key="checkbox-{{ $item->{$this->primaryKey} }}"
+                                value="{{ $item->{$this->primaryKey} }}"
                                 class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                         </td>
 
@@ -152,30 +118,28 @@
                         </td>
                         @endforeach
 
-                        <td class="px-6 py-4 whitespace-nowrap r" @click.stop>
-    <div class="flex justify-center space-x-2">
-        <button
-        wire:click="openEditModal('{{ $item->{$primaryKey} }}')"
-
-            class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs rounded-md font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <path d="M18 10L14 6M2.49997 21.5L5.88434 21.124C6.29783 21.078 6.50457 21.055 6.69782 20.9925C6.86926 20.937 7.03242 20.8586 7.18286 20.7594C7.35242 20.6475 7.49951 20.5005 7.7937 20.2063L21 7C22.1046 5.89543 22.1046 4.10457 21 3C19.8954 1.89543 18.1046 1.89543 17 3L3.7937 16.2063C3.49952 16.5005 3.35242 16.6475 3.24061 16.8171C3.1414 16.9676 3.06298 17.1307 3.00748 17.3022C2.94493 17.4954 2.92195 17.7021 2.87601 18.1156L2.49997 21.5Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-        <button
-       wire:click="openDeleteModal('{{ $item->{$primaryKey} }}')"
-            class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs rounded-md font-medium text-red-600 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-<path d="M9 3H15M3 6H21M19 6L18.2987 16.5193C18.1935 18.0975 18.1409 18.8867 17.8 19.485C17.4999 20.0118 17.0472 20.4353 16.5017 20.6997C15.882 21 15.0911 21 13.5093 21H10.4907C8.90891 21 8.11803 21 7.49834 20.6997C6.95276 20.4353 6.50009 20.0118 6.19998 19.485C5.85911 18.8867 5.8065 18.0975 5.70129 16.5193L5 6M10 10.5V15.5M14 10.5V15.5" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-        </button>
-    </div>
-</td>
-
+                        <td class="px-6 py-4 whitespace-nowrap" @click.stop>
+                            <div class="flex justify-center space-x-2">
+                                <button
+                                    wire:click="openEditModal('{{ $item->{$primaryKey} }}')"
+                                    class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs rounded-md font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                        <path d="M18 10L14 6M2.49997 21.5L5.88434 21.124C6.29783 21.078 6.50457 21.055 6.69782 20.9925C6.86926 20.937 7.03242 20.8586 7.18286 20.7594C7.35242 20.6475 7.49951 20.5005 7.7937 20.2063L21 7C22.1046 5.89543 22.1046 4.10457 21 3C19.8954 1.89543 18.1046 1.89543 17 3L3.7937 16.2063C3.49952 16.5005 3.35242 16.6475 3.24061 16.8171C3.1414 16.9676 3.06298 17.1307 3.00748 17.3022C2.94493 17.4954 2.92195 17.7021 2.87601 18.1156L2.49997 21.5Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </button>
+                                <button
+                                    wire:click="openDeleteModal('{{ $item->{$primaryKey} }}')"
+                                    class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs rounded-md font-medium text-red-600 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                        <path d="M9 3H15M3 6H21M19 6L18.2987 16.5193C18.1935 18.0975 18.1409 18.8867 17.8 19.485C17.4999 20.0118 17.0472 20.4353 16.5017 20.6997C15.882 21 15.0911 21 13.5093 21H10.4907C8.90891 21 8.11803 21 7.49834 20.6997C6.95276 20.4353 6.50009 20.0118 6.19998 19.485C5.85911 18.8867 5.8065 18.0975 5.70129 16.5193L5 6M10 10.5V15.5M14 10.5V15.5" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="{{ count($columns) + (count($actions) > 0 ? 2 : 1) }}" class="px-6 py-10 text-center text-sm text-gray-500">
+                        <td colspan="{{ count($columns ?? []) + (count($actions ?? []) > 0 ? 2 : 1) }}" class="px-6 py-10 text-center text-sm text-gray-500">
                             No records found
                         </td>
                     </tr>

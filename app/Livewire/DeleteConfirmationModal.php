@@ -45,7 +45,7 @@ class DeleteConfirmationModal extends Component
             $this->showDeleteModal = false;
             $this->selectedItem = null;
 
-            $this->dispatch('item-deleted', $this->entityType);
+            $this->dispatch('itemDeleted');
             $this->dispatch('toast', [
                 'message' => "{$this->displayName} deleted successfully",
                 'type' => 'success'

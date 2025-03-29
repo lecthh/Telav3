@@ -1,4 +1,5 @@
 <html>
+
 <body class="bg-gray-50 flex flex-col h-full min-h-screen">
     <div class="flex flex-grow">
         @include('layout.superAdmin')
@@ -10,12 +11,8 @@
             ['field' => 'email', 'label' => 'Email'],
             ['field' => 'role_name', 'label' => 'Role'],
             ],
-            'actions' => [
-            ['label' => 'Edit', 'method' => 'editUser'],
-            ['label' => 'Delete', 'method' => 'deleteUser'],
-            ],
             'primaryKey' => 'user_id',
-            'constantFilterNot' => ['role_type_id' => 4],
+            'constantFilterNot' => ['role_type_id' => 4, ],
             'sortableRelations' => [
             'role_name' => [
             'table' => 'role_types',
@@ -37,10 +34,11 @@
             ])
         </main>
     </div>
-    
+
     @livewire('user-details-modal')
     @livewire('edit-user-details-modal')
     @livewire('delete-confirmation-modal')
     @include('layout.footer')
 </body>
+
 </html>

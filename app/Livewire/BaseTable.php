@@ -13,7 +13,6 @@ class BaseTable extends Component
 
     public $model;
     public $columns = [];
-    public $actions = [];
     public $search = '';
     public $filter = [];
     public $sortField;
@@ -33,9 +32,10 @@ class BaseTable extends Component
     public $onRowClick;
     public $onEdit;
     public $nameColumn;
+    public $selectAll = false;
 
     protected $listeners = [
-        'refreshUsersTable' => '$refresh'
+        'refreshTable' => '$refresh'
     ];
 
     protected $queryString = [
@@ -45,17 +45,21 @@ class BaseTable extends Component
         'perPage' => ['except' => 10],
     ];
 
-    public function mount($model, $columns = [], $actions = [], $primaryKey = 'id', $sortableRelations = [], $searchableRelations = [], $perPage = 10, $onRowClick)
+    public function mount($model, $columns = [], $primaryKey = 'id', $sortableRelations = [], $searchableRelations = [], $perPage = 10, $onRowClick)
     {
         $this->model = $model;
         $this->columns = $columns;
-        $this->actions = $actions;
         $this->primaryKey = $primaryKey;
         $this->sortField = $primaryKey;
         $this->sortableRelations = $sortableRelations;
         $this->searchableRelations = $searchableRelations;
         $this->perPage = $perPage;
         $this->onRowClick = $onRowClick;
+    }
+
+    public function getHasSelectedItemsProperty()
+    {
+        return count($this->selectedItems) > 0;
     }
 
     public function sortBy($field)
@@ -74,11 +78,6 @@ class BaseTable extends Component
     }
 
     public function updatedFilter()
-    {
-        $this->resetPage();
-    }
-
-    public function updatedPerPage()
     {
         $this->resetPage();
     }
@@ -104,13 +103,15 @@ class BaseTable extends Component
         $this->dispatch($this->onRowClick, $id);
     }
 
-    public function openEditModal($id){
+    public function openEditModal($id)
+    {
         Log::info($this->onEdit);
         $this->dispatch($this->onEdit, $id);
     }
 
-    public function openDeleteModal($id){
-        $this->dispatch('deleteEntity',$this->model, $id, $this->nameColumn);
+    public function openDeleteModal($id)
+    {
+        $this->dispatch('deleteEntity', $this->model, $id, $this->nameColumn);
     }
 
     protected function getPaginationItems()
@@ -146,7 +147,57 @@ class BaseTable extends Component
         return $query->paginate($this->perPage);
     }
 
-    public function render()
+    public function toggleSelectAll()
+    {
+        if ($this->selectAll) {
+            // Get the current page items and extract their IDs
+            $currentPageItems = $this->getCurrentPageItems();
+            $this->selectedItems = $currentPageItems->pluck($this->primaryKey)->toArray();
+        } else {
+            $this->selectedItems = [];
+        }
+    }
+
+    // Method to toggle selection of a specific item
+    public function toggleSelection($id)
+    {
+        // Convert ID to string to ensure comparison works with UUIDs
+        $id = (string) $id;
+
+        if (in_array($id, $this->selectedItems)) {
+            // Remove the item
+            $this->selectedItems = array_values(array_diff($this->selectedItems, [$id]));
+            $this->selectAll = false;
+        } else {
+            // Add the item
+            $this->selectedItems[] = $id;
+
+            // Check if all items on the current page are now selected
+            $currentPageIds = $this->getCurrentPageItems()->pluck($this->primaryKey)->toArray();
+            $this->selectAll = count(array_intersect($currentPageIds, $this->selectedItems)) === count($currentPageIds);
+        }
+    }
+
+    // Reset selection after item deletion
+    public function resetSelection()
+    {
+        // Get all valid IDs from the query
+        $allValidIds = $this->buildQuery()->pluck($this->primaryKey)->toArray();
+
+        // Keep only valid IDs in the selectedItems array
+        $this->selectedItems = array_values(array_intersect($this->selectedItems, $allValidIds));
+
+        // Update selectAll status for current page
+        $currentPageIds = $this->getCurrentPageItems()->pluck($this->primaryKey)->toArray();
+        if (count($currentPageIds) > 0) {
+            $this->selectAll = count(array_intersect($currentPageIds, $this->selectedItems)) === count($currentPageIds);
+        } else {
+            $this->selectAll = false;
+        }
+    }
+
+    // Method to build the query (extracted from your render method)
+    protected function buildQuery()
     {
         $model = new $this->model;
         $query = $model->newQuery();
@@ -156,13 +207,12 @@ class BaseTable extends Component
             $query->customer();
         }
 
-
+        // Apply constant filters
         if (!empty($this->constantFilter)) {
             foreach ($this->constantFilter as $field => $value) {
                 $query->where($field, $value);
             }
         }
-
 
         if (!empty($this->constantFilterNot)) {
             foreach ($this->constantFilterNot as $field => $value) {
@@ -170,6 +220,7 @@ class BaseTable extends Component
             }
         }
 
+        // Apply search
         if ($this->search) {
             $query->where(function (Builder $q) use ($table) {
                 foreach ($this->columns as $column) {
@@ -190,6 +241,7 @@ class BaseTable extends Component
             });
         }
 
+        // Apply filters
         if (!empty($this->filter)) {
             foreach ($this->filter as $field => $value) {
                 if ($value) {
@@ -205,6 +257,7 @@ class BaseTable extends Component
             }
         }
 
+        // Apply sorting
         if (isset($this->sortableRelations[$this->sortField])) {
             $relation = $this->sortableRelations[$this->sortField];
 
@@ -223,34 +276,99 @@ class BaseTable extends Component
                 $query->whereIn($foreignKey, $subQuery->pluck($relationKey));
             }
         } else {
-            if ($this->isAccessor($this->sortField)) {
-                $items = $query->get();
-                $sortDirection = $this->sortDirection;
-                $sortField = $this->sortField;
-
-                $sorted = $items->sort(function ($a, $b) use ($sortField, $sortDirection) {
-                    if ($sortDirection === 'asc') {
-                        return $a->$sortField <=> $b->$sortField;
-                    } else {
-                        return $b->$sortField <=> $a->$sortField;
-                    }
-                });
-
-                $page = request()->get('page', 1);
-                $items = new \Illuminate\Pagination\LengthAwarePaginator(
-                    $sorted->forPage($page, $this->perPage),
-                    $sorted->count(),
-                    $this->perPage,
-                    $page,
-                    ['path' => request()->url()]
-                );
-            } else {
+            if (!$this->isAccessor($this->sortField)) {
                 $query->orderBy("$table.{$this->sortField}", $this->sortDirection);
-                $items = $query->paginate($this->perPage);
             }
         }
 
-        if (!isset($items)) {
+        return $query;
+    }
+
+    // Helper method to get current page items
+    protected function getCurrentPageItems()
+    {
+        $query = $this->buildQuery();
+
+        // Handle accessor fields (same as in your render method)
+        if ($this->isAccessor($this->sortField)) {
+            $items = $query->get();
+            $sortDirection = $this->sortDirection;
+            $sortField = $this->sortField;
+
+            $sorted = $items->sort(function ($a, $b) use ($sortField, $sortDirection) {
+                if ($sortDirection === 'asc') {
+                    return $a->$sortField <=> $b->$sortField;
+                } else {
+                    return $b->$sortField <=> $a->$sortField;
+                }
+            });
+
+            // Get current page items
+            return $sorted->forPage($this->page, $this->perPage);
+        } else {
+            // Get current page items from paginated result
+            return $query->paginate($this->perPage)->getCollection();
+        }
+    }
+
+    // Override the updatedPage method to handle page changes
+    public function updatedPage($page)
+    {
+        $this->page = $page;
+
+        // Update selectAll status for the new page
+        $currentPageIds = $this->getCurrentPageItems()->pluck($this->primaryKey)->toArray();
+        if (count($currentPageIds) > 0) {
+            $this->selectAll = count(array_intersect($currentPageIds, $this->selectedItems)) === count($currentPageIds);
+        } else {
+            $this->selectAll = false;
+        }
+    }
+
+    // When items per page changes
+    public function updatedPerPage()
+    {
+        // Reset to first page when changing items per page
+        $this->resetPage();
+
+        // Update selectAll status
+        $currentPageIds = $this->getCurrentPageItems()->pluck($this->primaryKey)->toArray();
+        if (count($currentPageIds) > 0) {
+            $this->selectAll = count(array_intersect($currentPageIds, $this->selectedItems)) === count($currentPageIds);
+        } else {
+            $this->selectAll = false;
+        }
+    }
+
+    // Your existing render method would still be used, but we extract the query building
+    // part to the buildQuery method above to avoid code duplication
+    public function render()
+    {
+        $query = $this->buildQuery();
+
+        // The rest of your render method stays the same
+        if ($this->isAccessor($this->sortField)) {
+            $items = $query->get();
+            $sortDirection = $this->sortDirection;
+            $sortField = $this->sortField;
+
+            $sorted = $items->sort(function ($a, $b) use ($sortField, $sortDirection) {
+                if ($sortDirection === 'asc') {
+                    return $a->$sortField <=> $b->$sortField;
+                } else {
+                    return $b->$sortField <=> $a->$sortField;
+                }
+            });
+
+            $page = request()->get('page', 1);
+            $items = new \Illuminate\Pagination\LengthAwarePaginator(
+                $sorted->forPage($page, $this->perPage),
+                $sorted->count(),
+                $this->perPage,
+                $page,
+                ['path' => request()->url()]
+            );
+        } else {
             $items = $query->paginate($this->perPage);
         }
 
