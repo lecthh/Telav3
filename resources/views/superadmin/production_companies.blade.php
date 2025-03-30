@@ -25,7 +25,8 @@
             ])
         </main>
     </div>
-
+    @livewire('production-company-edit-modal')
+    @livewire('production-company-details-modal')
     @livewire('delete-confirmation-modal')
     @include('layout.footer')
 </body>

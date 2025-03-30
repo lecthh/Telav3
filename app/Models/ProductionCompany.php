@@ -16,6 +16,46 @@ class ProductionCompany extends Model
         'apparel_type' => 'array'
     ];
 
+    public function getApparelTypeNames()
+    {
+        $apparelIds = $this->apparel_type;
+
+        if (!is_array($apparelIds)) {
+            $apparelIds = json_decode($apparelIds, true);
+            if (!is_array($apparelIds)) {
+                $apparelIds = [];
+            }
+        }
+
+        if (empty($apparelIds)) {
+            return [];
+        }
+
+        return ApparelType::whereIn('id', $apparelIds)
+            ->pluck('name')
+            ->toArray();
+    }
+
+    public function getProductionTypeNames()
+    {
+        $productionTypeIds = $this->production_type;
+
+        if (!is_array($productionTypeIds)) {
+            $productionTypeIds = json_decode($productionTypeIds, true);
+            if (!is_array($productionTypeIds)) {
+                $productionTypeIds = [];
+            }
+        }
+
+        if (empty($productionTypeIds)) {
+            return [];
+        }
+
+        return ProductionType::whereIn('id', $productionTypeIds)
+            ->pluck('name')
+            ->toArray();
+    }
+
     public function productionType()
     {
         return $this->hasOne(ProductionType::class, 'id', 'production_type');
