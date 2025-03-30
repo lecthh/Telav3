@@ -4,7 +4,7 @@
         <div class="bg-white p-6 rounded-lg space-y-4">
             <!-- Company Logo -->
             <div class="flex justify-center">
-                <img src="{{ $selectedItem->company_logo ? asset($selectedItem->company_logo) : asset('images/default.png') }}"
+                <img src="{{ $selectedItem->company_logo ? asset('storage/' . $selectedItem->company_logo) : asset('images/default.png') }}"
                     alt="Company Logo"
                     class="w-52 h-52 rounded-full object-cover">
             </div>
