@@ -57,6 +57,8 @@ Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->g
 
         Route::get('/profile/pricing', [EditProducerAccountController::class, 'index'])->name('profile.pricing');
         Route::get('/profile/reviews', [PrinterDashboardController::class, 'reviews'])->name('profile.reviews');
+        Route::get('/profile/transactions', [PrinterDashboardController::class, 'transactions'])->name('profile.transactions');
+        Route::post('/profile/upload-receipt/{order_id}', [PrinterDashboardController::class, 'uploadBalanceReceipt'])->name('profile.upload-receipt');
         Route::post('/profile/update', [EditProducerAccountController::class, 'update'])->name('profile.update');
         Route::post('/profile/pricing/update', [EditProducerAccountController::class, 'updatePricing'])->name('profile.pricing.update');
         Route::get('/profile/notifications', [PrinterDashboardController::class, 'notifications'])->name('profile.notifications');
@@ -142,6 +144,9 @@ Route::prefix('customer/place-order')->name('customer.place-order.')->group(func
     Route::post('/review/{apparel}/{productionType}/{company}', [OrderController::class, 'storeReview'])->name('review-post');
 });
 
+// Receipt confirmation route - accessible by both customers and printers when order_id is provided
+Route::get('/order-receipt', [ConfirmationMessageController::class, 'confirmation'])->name('order.receipt');
+
 Route::middleware(['CustomerOnly'])->group(function () {
     Route::get('/cart', [CartController::class, 'showCart'])->name('customer.cart');
     Route::post('/cart', [CartController::class, 'checkout'])->name('customer.cart.post');
@@ -189,6 +194,12 @@ Route::post('/confirm-bulk-custom/post', [ConfirmationLinkController::class, 'co
 Route::get('/confirm-jerseybulk-custom/{token}', [ConfirmationLinkController::class, 'confirmJerseyBulkCustom'])->name('confirm-jerseybulk-custom');
 Route::post('/confirm-jerseybulk-custom/post', [ConfirmationLinkController::class, 'confirmJerseyBulkCustomPost'])->name('confirm-jerseybulk-custom-post');
 
+// Excel import routes
+Route::post('/excel-import/standard-bulk', [App\Http\Controllers\ExcelImportController::class, 'importStandardBulk'])->name('excel.import.standard-bulk');
+Route::post('/excel-import/jersey-bulk', [App\Http\Controllers\ExcelImportController::class, 'importJerseyBulk'])->name('excel.import.jersey-bulk');
+Route::post('/excel-import/bulk-customized', [App\Http\Controllers\ExcelImportController::class, 'importBulkCustomized'])->name('excel.import.bulk-customized');
+Route::get('/excel-template/{type}', [App\Http\Controllers\ExcelImportController::class, 'generateTemplate'])->name('excel.template');
+
 // Single order confirmation routes
 Route::get('/confirm-single/{token}', [ConfirmBulkController::class, 'confirmSingle'])->name('confirm-single');
 Route::post('/confirm-single/post', [ConfirmBulkController::class, 'confirmSinglePost'])->name('confirm-single-post');
@@ -218,3 +229,11 @@ Route::middleware(['auth'])->post('/broadcasting/auth', function (Request $reque
     ]);
     return Broadcast::auth($request);
 });
+
+Route::get('/order/additional-payment/{order_id}', [App\Http\Controllers\AdditionalPaymentController::class, 'showPaymentDetails'])
+    ->name('order.additional-payment')
+    ->middleware('CustomerOnly');
+    
+Route::post('/order/process-additional-payment/{order_id}', [App\Http\Controllers\AdditionalPaymentController::class, 'processPayment'])
+    ->name('order.process-additional-payment')
+    ->middleware('CustomerOnly');

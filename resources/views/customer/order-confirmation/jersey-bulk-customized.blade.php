@@ -58,10 +58,58 @@
 
             <!-- Main Form Section -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div class="mb-6">
+                <div class="mb-4">
                     <h2 class="font-gilroy font-bold text-xl mb-2">Jersey Customization Details</h2>
                     <p class="text-gray-600">Please specify the details for each jersey to be printed. You must provide at least 10 customization entries.</p>
                 </div>
+                
+                <!-- Excel Upload Option -->
+                <div class="mb-6 p-4 bg-purple-50 rounded-lg border border-purple-100">
+                    <h3 class="font-medium text-lg text-purple-900 mb-2">Use Excel Template (Optional)</h3>
+                    <p class="text-purple-800 mb-3">You can use our Excel template to specify your jersey customizations.</p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="{{ route('excel.template', ['type' => 'jersey_bulk']) }}" class="inline-flex items-center px-4 py-2 border border-purple-300 rounded-md text-sm font-medium text-purple-700 bg-white hover:bg-purple-50">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                            Download Template
+                        </a>
+                        
+                        <form action="{{ route('excel.import.jersey-bulk') }}" method="POST" enctype="multipart/form-data" class="flex-1">
+                            @csrf
+                            <input type="hidden" name="order_id" value="{{ $order->order_id }}">
+                            <input type="hidden" name="token" value="{{ $order->token }}">
+                            
+                            <div class="flex flex-col sm:flex-row gap-2">
+                                <div class="flex-1">
+                                    <input type="file" name="excel_file" id="excel_file" class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
+                                </div>
+                                <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                                    Upload Excel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-100">
+                        <p class="text-yellow-800 font-medium mb-1">Excel Import Requirements:</p>
+                        <ul class="list-disc pl-6 text-yellow-700 text-sm space-y-1">
+                            <li><strong>Headers must be:</strong> "name", "jersey_number", "top_size", "short_size", "has_pocket" (optional), "remarks" (optional)</li>
+                            <li><strong>Jersey numbers:</strong> Can be numbers (10) or text ("10")</li>
+                            <li><strong>Top/Short sizes:</strong> Must match one of these: 
+                                @foreach($sizes as $size)
+                                    <span class="font-medium">{{ $size->name }}</span>@if(!$loop->last), @endif
+                                @endforeach
+                            </li>
+                            <li><strong>Has pocket:</strong> Use "yes", "no", 1, 0, or leave blank for no</li>
+                            <li><strong>Required quantity:</strong> Minimum 10 rows of player data</li>
+                        </ul>
+                        <p class="text-yellow-700 text-sm mt-2">⚠️ If you're having problems, please download our template below.</p>
+                    </div>
+                </div>
+                
+                <p class="text-gray-600 mb-4">Or manually enter jersey details below:</p>
                 
                 <form action="{{ route('confirm-jerseybulk-custom-post') }}" method="POST" id="customizationForm">
                     @csrf
@@ -128,12 +176,10 @@
                                         <td class="px-2 py-4 text-sm text-gray-500">
                                             <select name="rows[{{ $index }}][topSize]" 
                                                 class="w-full p-2 border border-gray-300 rounded-md focus:ring-cPrimary focus:border-cPrimary focus:outline-none">
-                                                <option value="2" {{ old('rows.'.$index.'.topSize', $row['topSize']) == 'XS' ? 'selected' : '' }}>XS</option>
-                                                <option value="3" {{ old('rows.'.$index.'.topSize', $row['topSize']) == 'S' ? 'selected' : '' }}>S</option>
-                                                <option value="4" {{ old('rows.'.$index.'.topSize', $row['topSize']) == 'M' ? 'selected' : '' }}>M</option>
-                                                <option value="5" {{ old('rows.'.$index.'.topSize', $row['topSize']) == 'L' ? 'selected' : '' }}>L</option>
-                                                <option value="6" {{ old('rows.'.$index.'.topSize', $row['topSize']) == 'XL' ? 'selected' : '' }}>XL</option>
-                                                <option value="7" {{ old('rows.'.$index.'.topSize', $row['topSize']) == 'XXL' ? 'selected' : '' }}>XXL</option>
+                                                <option value="">Select Size</option>
+                                                @foreach($sizes as $size)
+                                                    <option value="{{ $size->sizes_ID }}" {{ old('rows.'.$index.'.topSize', $row['topSize']) == $size->sizes_ID ? 'selected' : '' }}>{{ $size->name }}</option>
+                                                @endforeach
                                             </select>
                                             @error('rows.'.$index.'.topSize')
                                                 <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
@@ -142,12 +188,10 @@
                                         <td class="px-2 py-4 text-sm text-gray-500">
                                             <select name="rows[{{ $index }}][shortSize]" 
                                                 class="w-full p-2 border border-gray-300 rounded-md focus:ring-cPrimary focus:border-cPrimary focus:outline-none">
-                                                <option value="2" {{ old('rows.'.$index.'.shortSize', $row['shortSize']) == 'XS' ? 'selected' : '' }}>XS</option>
-                                                <option value="3" {{ old('rows.'.$index.'.shortSize', $row['shortSize']) == 'S' ? 'selected' : '' }}>S</option>
-                                                <option value="4" {{ old('rows.'.$index.'.shortSize', $row['shortSize']) == 'M' ? 'selected' : '' }}>M</option>
-                                                <option value="5" {{ old('rows.'.$index.'.shortSize', $row['shortSize']) == 'L' ? 'selected' : '' }}>L</option>
-                                                <option value="6" {{ old('rows.'.$index.'.shortSize', $row['shortSize']) == 'XL' ? 'selected' : '' }}>XL</option>
-                                                <option value="7" {{ old('rows.'.$index.'.shortSize', $row['shortSize']) == 'XXL' ? 'selected' : '' }}>XXL</option>
+                                                <option value="">Select Size</option>
+                                                @foreach($sizes as $size)
+                                                    <option value="{{ $size->sizes_ID }}" {{ old('rows.'.$index.'.shortSize', $row['shortSize']) == $size->sizes_ID ? 'selected' : '' }}>{{ $size->name }}</option>
+                                                @endforeach
                                             </select>
                                             @error('rows.'.$index.'.shortSize')
                                                 <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
@@ -198,6 +242,59 @@
                         </div>
                         <div id="entry-counter" class="font-medium text-lg">Total Entries: <span id="total-entries">{{ count($rows) }}</span></div>
                     </div>
+                    
+                    <!-- Hidden inputs for additional payment -->
+                    <input type="hidden" name="new_total_price" id="new-total-price-input" value="0">
+                    <input type="hidden" name="new_quantity" id="new-quantity-input" value="0">
+                    <input type="hidden" name="additional_payment" id="additional-payment-input" value="0">
+                    
+                    <!-- Alert message for additional payment -->
+                    <div id="additional-payment-alert" class="hidden mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-yellow-800">Additional payment required</h3>
+                                <p class="mt-1 text-sm text-yellow-700">You have added more jerseys than the original order. You must pay the additional downpayment before confirming.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional payment summary section -->
+                    <div id="additional-payment-section" class="hidden mb-6 bg-white border border-gray-200 rounded-lg p-4">
+                        <h3 class="font-medium text-lg mb-3">Order Summary</h3>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Original Quantity:</span>
+                                <span class="font-medium">{{ $order->quantity }} jersey(s)</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">New Quantity:</span>
+                                <span id="summary-quantity" class="font-medium">0 jerseys</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Total Price:</span>
+                                <span id="summary-total-price" class="font-medium">₱0.00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Original Downpayment:</span>
+                                <span class="font-medium">₱{{ number_format($order->downpayment_amount, 2) }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Additional Payment:</span>
+                                <span id="additional-payment" class="font-medium text-cPrimary">₱0.00</span>
+                            </div>
+                            <div class="border-t border-gray-200 pt-2 mt-2">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Balance Due:</span>
+                                    <span id="summary-balance" class="font-medium">₱0.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="mb-6">
                         <button type="button" onclick="addRow()" class="inline-flex items-center px-4 py-2 border border-cPrimary rounded-md shadow-sm text-sm font-medium text-cPrimary bg-white hover:bg-cPrimary/5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
@@ -215,6 +312,16 @@
                             </svg>
                             Back to Home
                         </a>
+                        
+                        <!-- Additional payment button (hidden by default) -->
+                        <a id="pay-additional-btn" href="#" class="hidden inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                            Pay Additional Payment
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                        
+                        <!-- Regular confirm button -->
                         <button type="submit" id="confirm-button" class="inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-cPrimary hover:bg-cPrimary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
                             Confirm Order
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
@@ -237,6 +344,15 @@
             const rowCount = rowsTable.rows.length;
             const isOdd = rowCount % 2;
             
+            // Generate size options dynamically using PHP $sizes collection
+            let topSizeOptions = '';
+            let shortSizeOptions = '';
+            
+            @foreach($sizes as $size)
+                topSizeOptions += `<option value="{{ $size->sizes_ID }}">{{ $size->name }}</option>`;
+                shortSizeOptions += `<option value="{{ $size->sizes_ID }}">{{ $size->name }}</option>`;
+            @endforeach
+            
             const newRow = `
                 <tr class="${isOdd ? 'bg-gray-50' : 'bg-white'}">
                     <td class="px-2 py-4 text-sm font-medium text-gray-900 align-top">${rowCount + 1}</td>
@@ -253,23 +369,15 @@
                     <td class="px-2 py-4 text-sm text-gray-500">
                         <select name="rows[${rowCount}][topSize]" 
                             class="w-full p-2 border border-gray-300 rounded-md focus:ring-cPrimary focus:border-cPrimary focus:outline-none">
-                            <option value="2">XS</option>
-                            <option value="3">S</option>
-                            <option value="4">M</option>
-                            <option value="5">L</option>
-                            <option value="6">XL</option>
-                            <option value="7">XXL</option>
+                            <option value="">Select Size</option>
+                            ${topSizeOptions}
                         </select>
                     </td>
                     <td class="px-2 py-4 text-sm text-gray-500">
                         <select name="rows[${rowCount}][shortSize]" 
                             class="w-full p-2 border border-gray-300 rounded-md focus:ring-cPrimary focus:border-cPrimary focus:outline-none">
-                            <option value="2">XS</option>
-                            <option value="3">S</option>
-                            <option value="4">M</option>
-                            <option value="5">L</option>
-                            <option value="6">XL</option>
-                            <option value="7">XXL</option>
+                            <option value="">Select Size</option>
+                            ${shortSizeOptions}
                         </select>
                     </td>
                     <td class="px-2 py-4 text-sm text-gray-500 text-center">
@@ -326,12 +434,107 @@
             
             totalEntriesElement.textContent = count;
             
+            // Get references to UI elements
+            const additionalPaymentSection = document.getElementById('additional-payment-section');
+            const additionalPaymentAlert = document.getElementById('additional-payment-alert');
+            const payAdditionalBtn = document.getElementById('pay-additional-btn');
+            const confirmButton = document.getElementById('confirm-button');
+            
+            // Get original quantity value from the server-side data
+            const originalQuantity = {{ $order->quantity }};
+            
             if (count >= 10) {
                 entryCounterElement.classList.remove('text-red-500');
                 entryCounterElement.classList.add('text-green-600');
+                
+                // Check if quantity has increased compared to original order
+                if (count > originalQuantity) {
+                    // Show additional payment UI
+                    additionalPaymentSection.classList.remove('hidden');
+                    additionalPaymentAlert.classList.remove('hidden');
+                    payAdditionalBtn.classList.remove('hidden');
+                    
+                    // Disable regular confirm button
+                    confirmButton.disabled = true;
+                    confirmButton.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-400');
+                    confirmButton.classList.remove('bg-cPrimary', 'hover:bg-cPrimary/90');
+                    
+                    // Calculate additional payment info
+                    updateOrderSummary(count);
+                } else {
+                    // Hide additional payment UI
+                    additionalPaymentSection.classList.add('hidden');
+                    additionalPaymentAlert.classList.add('hidden');
+                    payAdditionalBtn.classList.add('hidden');
+                    
+                    // Enable regular confirm button
+                    confirmButton.disabled = false;
+                    confirmButton.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-gray-400');
+                    confirmButton.classList.add('bg-cPrimary', 'hover:bg-cPrimary/90');
+                }
             } else {
                 entryCounterElement.classList.remove('text-green-600');
                 entryCounterElement.classList.add('text-red-500');
+                
+                // Disable confirm button if count is invalid
+                confirmButton.disabled = true;
+                confirmButton.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-400');
+                confirmButton.classList.remove('bg-cPrimary', 'hover:bg-cPrimary/90');
+                
+                // Hide additional payment UI
+                additionalPaymentSection.classList.add('hidden');
+                additionalPaymentAlert.classList.add('hidden');
+                payAdditionalBtn.classList.add('hidden');
+            }
+        }
+        
+        function updateOrderSummary(totalQuantity) {
+            // Get original values from server-side data
+            const originalQuantity = {{ $order->quantity }};
+            const unitPrice = {{ $order->final_price / $order->quantity }};
+            const originalDownpayment = {{ $order->downpayment_amount }};
+            
+            // Calculate new values
+            const totalPrice = unitPrice * totalQuantity;
+            const additionalQuantity = Math.max(0, totalQuantity - originalQuantity);
+            const additionalPaymentAmount = (additionalQuantity * unitPrice) / 2; // 50% down payment for additional items
+            const balanceDue = totalPrice - originalDownpayment - additionalPaymentAmount;
+            
+            // Update display
+            document.getElementById('summary-quantity').textContent = totalQuantity + ' jersey' + (totalQuantity !== 1 ? 's' : '');
+            document.getElementById('summary-total-price').textContent = '₱' + totalPrice.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            document.getElementById('summary-balance').textContent = '₱' + Math.max(0, balanceDue).toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            
+            if (additionalPaymentAmount > 0) {
+                document.getElementById('additional-payment').textContent = '₱' + additionalPaymentAmount.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+            
+            // Update hidden inputs for form submission
+            document.getElementById('new-total-price-input').value = totalPrice.toFixed(2);
+            document.getElementById('new-quantity-input').value = totalQuantity;
+            document.getElementById('additional-payment-input').value = additionalPaymentAmount.toFixed(2);
+            
+            // Update Pay Additional button link with order ID, amount, and size data
+            const payAdditionalBtn = document.getElementById('pay-additional-btn');
+            if (payAdditionalBtn) {
+                // Collect form data for customizations
+                const formData = collectFormData();
+                
+                // Encode the form data as JSON and add to the URL
+                const formDataParam = encodeURIComponent(JSON.stringify(formData));
+                payAdditionalBtn.href = "{{ route('order.additional-payment', ['order_id' => $order->order_id]) }}?amount=" +
+                    additionalPaymentAmount.toFixed(2) +
+                    "&quantity=" + additionalQuantity +
+                    "&size_data=" + formDataParam;
             }
         }
         
@@ -349,7 +552,57 @@
                 }
                 return true;
             });
+            
+            // Add event listener for the pay additional button
+            const payAdditionalBtn = document.getElementById('pay-additional-btn');
+            if (payAdditionalBtn) {
+                payAdditionalBtn.addEventListener('click', function(e) {
+                    // Form validation before proceeding to payment
+                    const formData = collectFormData();
+                    if (formData.length < 10) {
+                        e.preventDefault();
+                        alert('You must have at least 10 valid jersey entries before proceeding to payment.');
+                        return;
+                    }
+                });
+            }
         });
+
+        function collectFormData() {
+            const rows = document.querySelectorAll('#rowsTable tr');
+            const formData = [];
+
+            rows.forEach((row, index) => {
+                const nameInput = row.querySelector('input[name^="rows["][name$="][name]"]');
+                const remarksInput = row.querySelector('input[name^="rows["][name$="][remarks]"]');
+                const jerseyNoInput = row.querySelector('input[name^="rows["][name$="][jerseyNo]"]');
+                const topSizeSelect = row.querySelector('select[name^="rows["][name$="][topSize]"]');
+                const shortSizeSelect = row.querySelector('select[name^="rows["][name$="][shortSize]"]');
+                const hasPocketCheckbox = row.querySelector('input[name^="rows["][name$="][hasPocket]"][type="checkbox"]');
+
+                // Only include row if required fields are filled
+                if (nameInput && nameInput.value && 
+                    jerseyNoInput && jerseyNoInput.value && 
+                    topSizeSelect && topSizeSelect.value &&
+                    shortSizeSelect && shortSizeSelect.value) {
+                    
+                    const rowData = {
+                        name: nameInput.value,
+                        jerseyNo: jerseyNoInput.value,
+                        topSize: topSizeSelect.value,
+                        shortSize: shortSizeSelect.value,
+                        hasPocket: hasPocketCheckbox ? hasPocketCheckbox.checked : false,
+                        remarks: remarksInput ? remarksInput.value : ''
+                    };
+
+                    formData.push(rowData);
+                }
+            });
+
+            return formData;
+        }
+
+        // collectFormData function is used for validation and data collection
     </script>
 </body>
 </html>

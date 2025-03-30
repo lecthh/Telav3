@@ -14,15 +14,23 @@ class ConfirmBulkController extends Controller
     use Toastable;
     public function confirmBulk(Request $request, $token)
     {
-        $order = Order::where('order_id', $request->order_id)
-            ->where('token', $token)
-            ->first();
+        // Fetch order from token
+        $order = Order::where('token', $token)->first();
 
         if (!$order) {
             return redirect()->route('home')->withErrors('Invalid token or order.');
         }
 
         $sizes = Sizes::all();
+        
+        // Check if there are imported sizes from an Excel upload
+        $importedSizes = session('imported_sizes');
+        
+        if ($importedSizes) {
+            // Pre-fill the form with imported sizes
+            return view('customer.order-confirmation.standard-bulk', compact('order', 'sizes'))
+                ->with('prefill_sizes', $importedSizes);
+        }
 
         return view('customer.order-confirmation.standard-bulk', compact('order', 'sizes'));
     }
