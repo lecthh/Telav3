@@ -35,7 +35,7 @@ class BaseTable extends Component
     public $selectAll = false;
 
     protected $listeners = [
-        'refreshTable' => '$refresh'
+        'refreshTable' => 'handleRefreshTable'
     ];
 
     protected $queryString = [
@@ -55,6 +55,12 @@ class BaseTable extends Component
         $this->searchableRelations = $searchableRelations;
         $this->perPage = $perPage;
         $this->onRowClick = $onRowClick;
+    }
+    
+    public function handleRefreshTable()
+    {
+        $this->clearSelectedItems();
+        $this->dispatch('$refresh');
     }
 
     public function getHasSelectedItemsProperty()
@@ -109,9 +115,21 @@ class BaseTable extends Component
         $this->dispatch($this->onEdit, $id);
     }
 
+    public function clearSelectedItems()
+{
+    $this->selectedItems = [];
+    $this->selectAll = false;
+}
+
     public function openDeleteModal($id)
     {
-        $this->dispatch('deleteEntity', $this->model, $id, $this->nameColumn);
+        $this->dispatch('deleteEntity', $this->model, $id, $this->nameColumn, $this->primaryKey);
+    }
+
+    public function bulkDelete()
+    {
+        Log::info($this->primaryKey);
+        $this->dispatch('deleteEntity', $this->model, $this->selectedItems, $this->nameColumn, $this->primaryKey);
     }
 
     protected function getPaginationItems()

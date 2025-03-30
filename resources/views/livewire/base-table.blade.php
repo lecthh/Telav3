@@ -16,17 +16,22 @@
             </div>
 
             <div class="flex items-center gap-2 p-4"
-                wire:model.live="selectedItems"
-                x-data="{}"
-                x-show="$wire.selectedItems.length > 0">
-                <div class="text-sm text-gray-600">
-                    Selected {{ $this->getSelectedItemsOnCurrentPageCount() }} out of
-                    {{ $this->getCurrentPageItems()->count() }} items on this page
-                    @if($this->getSelectedItemsNotOnCurrentPageCount() > 0)
-                    (+ {{ $this->getSelectedItemsNotOnCurrentPageCount() }} on other pages)
-                    @endif
-                </div>
-            </div>
+     wire:model.live="selectedItems"
+     x-data="{}"
+     x-show="$wire.selectedItems.length > 0">
+    <div class="text-sm text-gray-600">
+        Selected {{ $this->getSelectedItemsOnCurrentPageCount() }} out of
+        {{ $this->getCurrentPageItems()->count() }} items on this page
+        @if($this->getSelectedItemsNotOnCurrentPageCount() > 0)
+            (+ {{ $this->getSelectedItemsNotOnCurrentPageCount() }} on other pages)
+        @endif
+    </div>
+    <button wire:click="bulkDelete"
+            class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-2 rounded">
+        Bulk Delete
+    </button>
+</div>
+
         </div>
 
         <div class="flex items-center space-x-4">

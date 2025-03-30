@@ -104,7 +104,7 @@ class CustomerSeeder extends Seeder
                 [
                     'user_id' => Str::uuid()->toString(),
                     'name' => 'Super Admin',
-                    'email' => 'joelsebastian.villarojo.21@usjr.edu.ph',
+                    'email' => 'superadmin@gmail.com',
                     'password' => Hash::make('password123'),
                     'role_type_id' => 4, //Super Admin
                     'address' => [
