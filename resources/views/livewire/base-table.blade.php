@@ -26,10 +26,17 @@
             (+ {{ $this->getSelectedItemsNotOnCurrentPageCount() }} on other pages)
         @endif
     </div>
+    @if($this->bulkAction === 'delete')
     <button wire:click="bulkDelete"
             class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-2 rounded">
         Bulk Delete
     </button>
+    @else 
+    <button wire:click="bulkApprove"
+            class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-2 rounded">
+        Bulk Approve
+    </button>
+    @endif
 </div>
 
         </div>

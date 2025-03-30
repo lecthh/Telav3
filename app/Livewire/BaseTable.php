@@ -33,6 +33,7 @@ class BaseTable extends Component
     public $onEdit;
     public $nameColumn;
     public $selectAll = false;
+    public $bulkAction;
 
     protected $listeners = [
         'refreshTable' => 'handleRefreshTable'
@@ -128,8 +129,12 @@ class BaseTable extends Component
 
     public function bulkDelete()
     {
-        Log::info($this->primaryKey);
         $this->dispatch('deleteEntity', $this->model, $this->selectedItems, $this->nameColumn, $this->primaryKey);
+    }
+
+    public function bulkApprove()
+    {
+        $this->dispatch('approveEntity', $this->model, $this->selectedItems, $this->nameColumn, $this->primaryKey);
     }
 
     protected function getPaginationItems()

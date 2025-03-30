@@ -43,7 +43,7 @@
         <a href="{{ route('superadmin.production') }}" class="flex items-center gap-x-3 px-3 py-2.5 rounded-md {{ request()->routeIs('superadmin.production') ? 'bg-cAccent/20 text-cAccent font-medium' : 'text-gray-700 hover:bg-cAccent/10' }} transition-colors">
           <span>Manage Production Companies</span>
         </a>
-        <a href="" class="flex items-center gap-x-3 px-3 py-2.5 rounded-md {{ request()->routeIs('superadmin.production.approve') ? 'bg-cAccent/20 text-cAccent font-medium' : 'text-gray-700 hover:bg-cAccent/10' }} transition-colors">
+        <a href="{{ route('superadmin.production.approve') }}" class="flex items-center gap-x-3 px-3 py-2.5 rounded-md {{ request()->routeIs('superadmin.production.approve') ? 'bg-cAccent/20 text-cAccent font-medium' : 'text-gray-700 hover:bg-cAccent/10' }} transition-colors">
           <span>Approve Production Companies</span>
         </a>
       </div>

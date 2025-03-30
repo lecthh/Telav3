@@ -58,4 +58,14 @@ class Designer extends Model
         
         return $this->average_rating;
     }
+
+    public function getUserNameAttribute()
+{
+    return $this->user ? $this->user->name : 'N/A';
+}
+
+public function getProductionCompanyNameAttribute()
+{
+    return $this->productionCompany ? $this->productionCompany->company_name : 'N/A';
+}
 }

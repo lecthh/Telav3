@@ -11,22 +11,22 @@
             ['field' => 'company_name', 'label' => 'Company Name'],
             ['field' => 'email', 'label' => 'Email'],
             ['field' => 'phone', 'label' => 'Phone'],
-            ['field' => 'avg_rating', 'label' => 'Average Rating'],
+            ['field' => 'address', 'label' => 'Address'],
             ],
             'primaryKey' => 'id',
-            'constantFilterNot' => ['is_verified' => false, ],
             'sortableRelations' => [],
             'searchableRelations' => [],
+            'constantFilterNot' => ['is_verified' => true, ],
             'perPage' => 10,
             'onRowClick' => 'showCompanyDetails',
             'onEdit' => 'editCompany',
             'nameColumn' => 'company_name',
-            'bulkAction' => 'delete'
+            'bulkAction' => 'approve'
             ])
         </main>
     </div>
 
-    @livewire('delete-confirmation-modal')
+    @livewire('approve-modal')
     @include('layout.footer')
 </body>
 

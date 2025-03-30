@@ -31,6 +31,7 @@
             'onRowClick' => 'showUserDetails',
             'onEdit' => 'editUser',
             'nameColumn' => 'name',
+            'bulkAction' => 'delete'
             ])
         </main>
     </div>
