@@ -29,9 +29,20 @@ class SuperAdminController extends Controller
         return view('superadmin.production_companies', compact('companies'));
     }
 
+    public function approveProductionCompanies()
+    {
+        $companies = ProductionCompany::where('is_verified', false)->get();
+        return view('superadmin.production_companies_approve', compact('companies'));
+    }
+
     public function designerManagement()
     {
         $designers = Designer::all();
-        return view('superadmin.production_companies', compact('designers'));
+        return view('superadmin.designers', compact('designers'));
+    }
+    public function approveDesigners()
+    {
+        $designers = Designer::where('is_verified', false)->get();
+        return view('superadmin.designers_approve', compact('designers'));
     }
 }

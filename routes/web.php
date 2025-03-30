@@ -258,6 +258,8 @@ Route::middleware(['SuperAdminOnly'])->group(function () {
     Route::get('/super-admin', [SuperAdminController::class, 'index'])->name('superadmin.index');
     Route::get('/super-admin/users', [SuperAdminController::class, 'userManagement'])->name('superadmin.users');
     Route::get('/super-admin/production-companies', [SuperAdminController::class, 'productionCompanies'])->name('superadmin.production');
-    Route::get('/super-admin/designer-companies', [SuperAdminController::class, 'designerCompanies'])->name('superadmin.designer');
+    Route::get('/super-admin/production-companies/approve', [SuperAdminController::class, 'approveProductionCompanies'])->name('superadmin.production.approve');
+    Route::get('/super-admin/designer-companies', [SuperAdminController::class, 'designerManagement'])->name('superadmin.designers');
+    Route::get('/super-admin/designer-companies/approve', [SuperAdminController::class, 'approveDesigners'])->name('superadmin.designers.approve');
     Route::get('/super-admin/reports', [SuperAdminController::class, 'reports'])->name('superadmin.reports');
 });

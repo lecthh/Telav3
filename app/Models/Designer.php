@@ -23,6 +23,7 @@ class Designer extends Model
         'order_history',
         'average_rating',
         'review_count',
+        'is_verified'
     ];
     public $incrementing = true;
     protected $keyType = 'int';
