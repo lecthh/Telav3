@@ -57,7 +57,7 @@ Route::get('/', function () {
                 Log::info('Super admin login - redirecting to super admin dashboard', [
                     'user_id' => $user->user_id
                 ]);
-                return redirect()->route('superadmin.index')->with('success', 'Logged in successfully');
+                return redirect()->route('superadmin.users')->with('success', 'Logged in successfully');
 
             case 1:
             default:
@@ -266,7 +266,6 @@ Route::middleware(['auth'])->post('/broadcasting/auth', function (Request $reque
 
 //Super admin Routes
 Route::middleware(['SuperAdminOnly'])->group(function () {
-    Route::get('/super-admin', [SuperAdminController::class, 'index'])->name('superadmin.index');
     Route::get('/super-admin/users', [SuperAdminController::class, 'userManagement'])->name('superadmin.users');
     Route::get('/super-admin/production-companies', [SuperAdminController::class, 'productionCompanies'])->name('superadmin.production');
     Route::get('/super-admin/production-companies/approve', [SuperAdminController::class, 'approveProductionCompanies'])->name('superadmin.production.approve');
@@ -278,7 +277,7 @@ Route::middleware(['SuperAdminOnly'])->group(function () {
 Route::get('/order/additional-payment/{order_id}', [App\Http\Controllers\AdditionalPaymentController::class, 'showPaymentDetails'])
     ->name('order.additional-payment')
     ->middleware('CustomerOnly');
-    
+
 Route::post('/order/process-additional-payment/{order_id}', [App\Http\Controllers\AdditionalPaymentController::class, 'processPayment'])
     ->name('order.process-additional-payment')
     ->middleware('CustomerOnly');
