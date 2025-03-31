@@ -1,5 +1,5 @@
 @include('head')
-@if(Auth::user() && Auth::user()->role_type_id != 4)
+@if(!Auth::check() || Auth::user()->role_type_id != 4)
 <footer class="flex gap-x-[10px] px-[100px] py-6 bg-cNot-black text-white justify-start">
     <div class="flex flex-col gap-y-[10px] text-sm">
         <h1 class="font-inter font-bold">Site Links</h1>
@@ -55,6 +55,4 @@
 
 @livewireScripts
 @vite(['resources/js/app.js'])
-@if(Auth::user() && Auth::user()->role_type_id != 4)
 @include('chat.chat-widget')
-@endif

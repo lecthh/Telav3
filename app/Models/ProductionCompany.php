@@ -108,4 +108,20 @@ class ProductionCompany extends Model
 
         return $this->avg_rating;
     }
+
+    /**
+     * Define the relationship to the business documents.
+     */
+    public function businessDocuments()
+    {
+        return $this->hasMany(BusinessDocument::class, 'production_company_id', 'id');
+    }
+
+    /**
+     * Get the business permits for this production company.
+     */
+    public function getBusinessPermits()
+    {
+        return $this->businessDocuments()->where('name', 'business permit')->get();
+    }
 }

@@ -4,15 +4,19 @@ namespace App\Livewire;
 
 use App\Models\AddressInformation;
 use App\Models\ApparelType;
+use App\Models\BusinessDocument;
 use App\Models\ProductionCompany;
 use App\Models\ProductionCompanyPricing;
 use App\Models\User;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 
 class ProducerRegistration extends Component
 {
+    use WithFileUploads;
+
     public array $production_type;
     public array $apparel_type;
     public string $company_name;
@@ -23,6 +27,29 @@ class ProducerRegistration extends Component
     public string $city;
     public string $zip_code;
     public $apparelTypes;
+
+    // New property to store document entries
+    public $documents = [];
+
+    public function mount()
+    {
+        $this->apparelTypes = ApparelType::all();
+        // Start with one empty document entry
+        $this->documents = [
+            ['name' => '', 'file' => null],
+        ];
+    }
+
+    public function addDocument()
+    {
+        $this->documents[] = ['name' => '', 'file' => null];
+    }
+
+    public function removeDocument($index)
+    {
+        unset($this->documents[$index]);
+        $this->documents = array_values($this->documents);
+    }
 
     public function submit()
     {
@@ -36,9 +63,11 @@ class ProducerRegistration extends Component
             'state' => 'required|string',
             'city' => 'required|string',
             'zip_code' => 'required|string',
+            'documents.*.name' => 'required|string',
+            'documents.*.file' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
-        $address = $validatedData['address'] . ', ' . $validatedData['city'] . ', ' . $validatedData['state'] . ', ' . $validatedData['zip_code'];
+        $fullAddress = $validatedData['address'] . ', ' . $validatedData['city'] . ', ' . $validatedData['state'] . ', ' . $validatedData['zip_code'];
 
         // Create User
         $user = User::create([
@@ -65,7 +94,7 @@ class ProducerRegistration extends Component
             'company_name' => $validatedData['company_name'],
             'email' => $validatedData['email'],
             'phone' => $validatedData['mobile'],
-            'address' => $address,
+            'address' => $fullAddress,
             'avg_rating' => 0,
             'company_logo' => 'imgs/companyLogo/placeholder.jpg',
             'review_count' => 0,
@@ -85,7 +114,18 @@ class ProducerRegistration extends Component
             }
         }
 
-        // Generate Token and Send Email
+        // Process each business document entry
+        foreach ($this->documents as $document) {
+            $documentPath = $document['file']->store('business_documents', 'public');
+
+            BusinessDocument::create([
+                'production_company_id' => $productionCompany->id,
+                'name' => $document['name'],
+                'path' => $documentPath,
+            ]);
+        }
+
+        // Generate token and send email for setting password
         $token = uniqid();
         $url = URL::temporarySignedRoute(
             'set-password',
@@ -93,10 +133,7 @@ class ProducerRegistration extends Component
             ['token' => $token, 'email' => $user->email]
         );
         $name = $user->name;
-
         $user->update(['passwordToken' => $token]);
-        $user->save();
-
         Mail::send('mail.verify', ['url' => $url, 'name' => $name], function ($message) use ($user) {
             $message->to($user->email);
             $message->subject('Set Your Password');
@@ -104,11 +141,6 @@ class ProducerRegistration extends Component
 
         // Redirect to Confirmation Page
         return redirect()->route('partner-confirmation');
-    }
-
-    public function mount()
-    {
-        $this->apparelTypes = ApparelType::all();
     }
 
     public function render()

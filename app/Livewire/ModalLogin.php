@@ -55,71 +55,71 @@ class ModalLogin extends ModalComponent
     }
 
     public function login()
-{
-    try {
-        Log::info('Login function called', [
-            'email'       => $this->email,
-            'password'    => $this->password,
-            'remember_me' => $this->rememberMe,
-        ]);
-
-        $validatedData = $this->validate([
-            'email'    => 'required|email',
-            'password' => 'required',
-        ]);
-
-        // Attempt to log the user in using Livewire properties
-        if (Auth::attempt(
-            ['email' => $validatedData['email'], 'password' => $validatedData['password']],
-            $this->rememberMe
-        )) {
-            $user = Auth::user();
-            Log::info('User logged in successfully', [
-                'email'         => $user->email,
-                'role_type_id'  => $user->role_type_id
+    {
+        try {
+            Log::info('Login function called', [
+                'email'       => $this->email,
+                'password'    => $this->password,
+                'remember_me' => $this->rememberMe,
             ]);
 
-            // Switch based on role_type_id
-            switch ($user->role_type_id) {
-                case 2:
-                    $admin = ProductionCompany::where('user_id', $user->user_id)->first();
-                    session(['admin' => $admin]);
-                    Log::info('Production company login - redirecting to printer dashboard', [
-                        'user_id'  => $user->user_id,
-                        'admin_id' => $admin ? $admin->id : null
-                    ]);
-                    return redirect()->route('printer-dashboard')->with('success', 'Logged in successfully');
+            $validatedData = $this->validate([
+                'email'    => 'required|email',
+                'password' => 'required',
+            ]);
 
-                case 3:
-                    $admin = Designer::where('user_id', $user->user_id)->first();
-                    session(['admin' => $admin]);
-                    Log::info('Designer login - redirecting to designer dashboard', [
-                        'user_id'     => $user->user_id,
-                        'designer_id' => $admin ? $admin->designer_id : null
-                    ]);
-                    return redirect('/designer-dashboard')->with('success', 'Logged in successfully');
+            // Attempt to log the user in using Livewire properties
+            if (Auth::attempt(
+                ['email' => $validatedData['email'], 'password' => $validatedData['password']],
+                $this->rememberMe
+            )) {
+                $user = Auth::user();
+                Log::info('User logged in successfully', [
+                    'email'         => $user->email,
+                    'role_type_id'  => $user->role_type_id
+                ]);
 
-                case 4:
-                    Log::info('Super Admin login - redirecting to super admin dashboard', [
-                        'user_id' => $user->user_id
-                    ]);
-                    return redirect()->route('superadmin.index')->with('success', 'Logged in successfully');
+                // Switch based on role_type_id
+                switch ($user->role_type_id) {
+                    case 2:
+                        $admin = ProductionCompany::where('user_id', $user->user_id)->first();
+                        session(['admin' => $admin]);
+                        Log::info('Production company login - redirecting to printer dashboard', [
+                            'user_id'  => $user->user_id,
+                            'admin_id' => $admin ? $admin->id : null
+                        ]);
+                        return redirect()->route('printer-dashboard')->with('success', 'Logged in successfully');
 
-                default:
-                    return redirect()->to(session('url.intended', '/'));
+                    case 3:
+                        $admin = Designer::where('user_id', $user->user_id)->first();
+                        session(['admin' => $admin]);
+                        Log::info('Designer login - redirecting to designer dashboard', [
+                            'user_id'     => $user->user_id,
+                            'designer_id' => $admin ? $admin->designer_id : null
+                        ]);
+                        return redirect('/designer-dashboard')->with('success', 'Logged in successfully');
+
+                    case 4:
+                        Log::info('Super Admin login - redirecting to super admin dashboard', [
+                            'user_id' => $user->user_id
+                        ]);
+                        return redirect()->route('superadmin.users')->with('success', 'Logged in successfully');
+
+                    default:
+                        return redirect()->to(session('url.intended', '/'));
+                }
+            } else {
+                // If login fails, log the event and set an error for Livewire to display
+                Log::warning('Login failed for email', ['email' => $this->email]);
+                $this->addError('email', 'Invalid email or password');
             }
-        } else {
-            // If login fails, log the event and set an error for Livewire to display
-            Log::warning('Login failed for email', ['email' => $this->email]);
-            $this->addError('email', 'Invalid email or password');
+        } catch (\Exception $e) {
+            Log::error('Error in login function', ['message' => $e->getMessage()]);
+            $this->addError('login_error', 'An error occurred during login. Please try again later.');
         }
-    } catch (\Exception $e) {
-        Log::error('Error in login function', ['message' => $e->getMessage()]);
-        $this->addError('login_error', 'An error occurred during login. Please try again later.');
     }
-}
 
-    
+
 
     public function toggleSignup()
     {
