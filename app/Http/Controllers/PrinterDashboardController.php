@@ -419,10 +419,11 @@ class PrinterDashboardController extends Controller
         $avgRating = $designer->reviews->where('review_type', 'designer')->avg('rating') ?: 0;
         $reviewCount = $designer->reviews->where('review_type', 'designer')->count();
         
-        // Get recent works (images from orders the designer has worked on)
+        // Get recent works (only images uploaded by the designer, not by customers)
         $recentWorks = \App\Models\OrderImages::whereHas('order', function($query) use ($designer_id) {
             $query->where('assigned_designer_id', $designer_id);
         })
+        ->where('status_id', 2) // Status 2 is for designer-uploaded images
         ->orderBy('created_at', 'desc')
         ->take(6)
         ->get();
