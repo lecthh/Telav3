@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Designer;
 
 class PrinterDashboardController extends Controller
 {
@@ -332,5 +334,121 @@ class PrinterDashboardController extends Controller
             Log::error('Upload Balance Receipt Error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'An error occurred while uploading the receipt.');
         }
+    }
+
+    public function designerList()
+    {
+        $productionCompany = session('admin');
+        $productionCompanyId = null;
+        
+        // Extract production company ID using the same pattern as your other methods
+        if (is_object($productionCompany) && isset($productionCompany->id)) {
+            $productionCompanyId = $productionCompany->id;
+        } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
+            $productionCompanyId = $productionCompany['App\\Models\\ProductionCompany']['id'];
+        } elseif (is_object($productionCompany) && property_exists($productionCompany, 'App\\Models\\ProductionCompany')) {
+            $pcData = $productionCompany->{'App\\Models\\ProductionCompany'};
+            $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
+        }
+        
+        // Recover admin session if needed (same as in index method)
+        if (empty($productionCompany) && auth()->check() && auth()->user()->role_type_id == 2) {
+            $productionCompany = \App\Models\ProductionCompany::where('user_id', auth()->id())->first();
+            if ($productionCompany) {
+                session(['admin' => $productionCompany]);
+                $productionCompanyId = $productionCompany->id;
+                Log::info('Recovered missing admin session data', ['company_id' => $productionCompany->id]);
+            }
+        }
+        
+        if (!$productionCompanyId) {
+            return redirect()->route('printer-dashboard')->with('error', 'Session data is missing. Please try again.');
+        }
+        
+        // Query to get all designers
+        $designers = Designer::with(['user', 'reviews'])
+            ->where(function($query) use ($productionCompanyId) {
+                $query->where('is_freelancer', true)
+                      ->orWhere('production_company_id', $productionCompanyId);
+            })
+            ->get();
+        
+        // Calculate average ratings for each designer
+        foreach ($designers as $designer) {
+            $designer->avgRating = $designer->reviews->where('review_type', 'designer')->avg('rating') ?: 0;
+            $designer->reviewCount = $designer->reviews->where('review_type', 'designer')->count();
+        }
+        
+        return view('partner.printer.designers.list', compact('designers', 'productionCompany', 'productionCompanyId'));
+    }
+
+    public function designerDetail($designer_id)
+    {
+        $productionCompany = session('admin');
+        $productionCompanyId = null;
+        
+        // Extract production company ID using the same pattern as your other methods
+        if (is_object($productionCompany) && isset($productionCompany->id)) {
+            $productionCompanyId = $productionCompany->id;
+        } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
+            $productionCompanyId = $productionCompany['App\\Models\\ProductionCompany']['id'];
+        } elseif (is_object($productionCompany) && property_exists($productionCompany, 'App\\Models\\ProductionCompany')) {
+            $pcData = $productionCompany->{'App\\Models\\ProductionCompany'};
+            $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
+        }
+        
+        // Recover admin session if needed
+        if (empty($productionCompany) && auth()->check() && auth()->user()->role_type_id == 2) {
+            $productionCompany = \App\Models\ProductionCompany::where('user_id', auth()->id())->first();
+            if ($productionCompany) {
+                session(['admin' => $productionCompany]);
+                $productionCompanyId = $productionCompany->id;
+                Log::info('Recovered missing admin session data', ['company_id' => $productionCompany->id]);
+            }
+        }
+        
+        if (!$productionCompanyId) {
+            return redirect()->route('printer-dashboard')->with('error', 'Session data is missing. Please try again.');
+        }
+        
+        // Find the designer with related data
+        $designer = Designer::with(['user', 'reviews', 'productionCompany'])
+            ->findOrFail($designer_id);
+        
+        // Get designer average rating and review count
+        $avgRating = $designer->reviews->where('review_type', 'designer')->avg('rating') ?: 0;
+        $reviewCount = $designer->reviews->where('review_type', 'designer')->count();
+        
+        // Get recent works (images from orders the designer has worked on)
+        $recentWorks = \App\Models\OrderImages::whereHas('order', function($query) use ($designer_id) {
+            $query->where('assigned_designer_id', $designer_id);
+        })
+        ->orderBy('created_at', 'desc')
+        ->take(6)
+        ->get();
+        
+        // Get designer's reviews
+        $reviews = \App\Models\Review::where('designer_id', $designer_id)
+            ->where('review_type', 'designer')
+            ->with('user')
+            ->orderBy('created_at', 'desc')
+            ->paginate(5);
+        
+        // Get pending orders that could be assigned to this designer
+        $pendingOrders = \App\Models\Order::where('production_company_id', $productionCompanyId)
+            ->where('status_id', 1) // Pending status
+            ->whereNull('assigned_designer_id')
+            ->get();
+            
+        return view('partner.printer.designers.detail', compact(
+            'designer', 
+            'productionCompany',
+            'productionCompanyId',
+            'avgRating', 
+            'reviewCount', 
+            'recentWorks', 
+            'reviews',
+            'pendingOrders'
+        ));
     }
 }
