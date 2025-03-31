@@ -28,6 +28,7 @@ return new class extends Migration
             $table->rememberToken();
             $table->timestamps();
             $table->string('passwordToken')->nullable();
+            $table->string('avatar')->nullable();
 
             $table->foreign('role_type_id')->references('id')->on('role_types')->onDelete('cascade');
         });

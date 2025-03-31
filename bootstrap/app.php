@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'ProductionAdminOnly' => ProductionAdmin::class,
             'CustomerOnly' => \App\Http\Middleware\Customer::class,
             'DesignerOnly' => \App\Http\Middleware\DesignerOnly::class,
+            'SuperAdminOnly' => \App\Http\Middleware\SuperAdminOnly::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

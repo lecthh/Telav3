@@ -23,6 +23,7 @@ class Designer extends Model
         'order_history',
         'average_rating',
         'review_count',
+        'is_verified'
     ];
     public $incrementing = true;
     protected $keyType = 'int';
@@ -57,4 +58,14 @@ class Designer extends Model
         
         return $this->average_rating;
     }
+
+    public function getUserNameAttribute()
+{
+    return $this->user ? $this->user->name : 'N/A';
+}
+
+public function getProductionCompanyNameAttribute()
+{
+    return $this->productionCompany ? $this->productionCompany->company_name : 'N/A';
+}
 }
