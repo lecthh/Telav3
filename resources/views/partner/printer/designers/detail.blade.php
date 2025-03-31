@@ -179,28 +179,13 @@
                             </div>
                             <div class="p-6">
                                 <div class="mb-6">
-                                    <h3 class="font-medium text-gray-900 mb-3">Assign to Order</h3>
-                                    
-                                    @if($pendingOrders->isEmpty())
-                                        <p class="text-gray-500 text-sm mb-4">No pending orders available to assign.</p>
-                                    @else
-                                        <form action="{{ route('partner.printer.assign-designer', ['designer_id' => $designer->designer_id]) }}" method="POST" class="space-y-4">
-                                            @csrf
-                                            <div>
-                                                <label for="order_id" class="block text-sm font-medium text-gray-700 mb-1">Select Order</label>
-                                                <select id="order_id" name="order_id" class="w-full rounded-md border-gray-300 shadow-sm focus:border-cAccent focus:ring focus:ring-cAccent focus:ring-opacity-50">
-                                                    <option value="">-- Select an order --</option>
-                                                    @foreach($pendingOrders as $order)
-                                                        <option value="{{ $order->order_id }}">Order #{{ $order->order_id }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            
-                                            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-cAccent hover:bg-cAccent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cAccent">
-                                                Assign Designer
-                                            </button>
-                                        </form>
-                                    @endif
+                                    <h3 class="font-medium text-gray-900 mb-3">About Assignments</h3>
+                                    <p class="text-gray-600 text-sm mb-4">
+                                        You can assign this designer to pending orders from the Orders page.
+                                    </p>
+                                    <a href="{{ route('partner.printer.orders') }}" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-cAccent hover:bg-cAccent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cAccent">
+                                        View Pending Orders
+                                    </a>
                                 </div>
                                 
                                 <div class="border-t border-gray-200 pt-6">
