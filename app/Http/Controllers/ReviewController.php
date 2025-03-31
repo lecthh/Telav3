@@ -70,12 +70,15 @@ class ReviewController extends Controller
             
             $productionCompany->updateAverageRating();
             
-            Notification::create([
-                'user_id' => $productionCompany->user_id,
-                'message' => 'New review received for order #' . $order->order_id,
-                'is_read' => false,
-                'order_id' => $order->order_id,
-            ]);
+            // Only send notification to production company, not to customer
+            if ($productionCompany->user_id != Auth::id()) {
+                Notification::create([
+                    'user_id' => $productionCompany->user_id,
+                    'message' => 'New review received for order #' . $order->order_id,
+                    'is_read' => false,
+                    'order_id' => $order->order_id,
+                ]);
+            }
         }
         
         if ($request->has('designer_rating') && $request->has('designer_comment') && $order->assigned_designer_id) {
@@ -100,12 +103,15 @@ class ReviewController extends Controller
                 }
                 
                 if ($order->designer && $order->designer->user) {
-                    Notification::create([
-                        'user_id' => $order->designer->user->user_id,
-                        'message' => 'New review received for order #' . $order->order_id,
-                        'is_read' => false,
-                        'order_id' => $order->order_id,
-                    ]);
+                    // Only send notification if the designer isn't the same as the reviewer
+                    if ($order->designer->user->user_id != Auth::id()) {
+                        Notification::create([
+                            'user_id' => $order->designer->user->user_id,
+                            'message' => 'New review received for order #' . $order->order_id,
+                            'is_read' => false,
+                            'order_id' => $order->order_id,
+                        ]);
+                    }
                 }
             }
         }

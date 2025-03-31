@@ -88,4 +88,14 @@ class Order extends Model
     {
         return $this->hasMany(Notification::class, 'order_id', 'order_id');
     }
+    
+    public function balanceReceipts()
+    {
+        return $this->hasMany(BalanceReceipt::class, 'order_id', 'order_id');
+    }
+    
+    public function additionalPayments()
+    {
+        return $this->hasMany(AdditionalPayment::class, 'order_id', 'order_id');
+    }
 }

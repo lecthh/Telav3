@@ -416,17 +416,30 @@ class OrderProduceController extends Controller {
             ]);
             
             $order = Order::findOrFail($order_id);
+            $designerId = intval($validatedData['selected_designer_id']);
             $order->update([
-                'assigned_designer_id' => intval($validatedData['selected_designer_id']),
+                'assigned_designer_id' => $designerId,
                 'status_id' => 2,
             ]);
 
+            // Notify customer that design is in progress
             Notification::create([
                 'user_id' => $order->user->user_id,
                 'message' => 'Design in Progress',
                 'is_read' => false,
                 'order_id' => $order->order_id,
             ]);
+            
+            // Notify designer about the new job
+            $designer = Designer::with('user')->find($designerId);
+            if ($designer && $designer->user) {
+                Notification::create([
+                    'user_id' => $designer->user->user_id,
+                    'message' => 'New design job assigned to you: Order #' . $order->order_id,
+                    'is_read' => false,
+                    'order_id' => $order->order_id,
+                ]);
+            }
 
             $this->toast('Designer assigned successfully!', 'success');
             return redirect()->route('partner.printer.orders');

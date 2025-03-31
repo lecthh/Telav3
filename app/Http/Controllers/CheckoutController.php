@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\OrderStatus;
 use App\Traits\Toastable;
+use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
@@ -70,10 +71,17 @@ class CheckoutController extends Controller
 
             DB::beginTransaction();
 
+            $createdOrders = [];
+
             foreach ($cartItems as $cartItemId) {
-                $cartItem = CartItem::with(['apparelType', 'productionCompany', 'productionType', 'cartItemImages'])
-                    ->where('cart_item_id', $cartItemId->cart_item_id)
-                    ->first();
+                $cartItem = CartItem::with([
+                    'apparelType', 
+                    'productionCompany', 
+                    'productionType', 
+                    'cartItemImages'
+                ])
+                ->where('cart_item_id', $cartItemId->cart_item_id)
+                ->first();
 
                 if ($cartItem) {
                     $isBulkOrder = ($cartItem->orderType == 'bulk');
@@ -95,6 +103,11 @@ class CheckoutController extends Controller
                         'custom_design_info'    => $cartItem->description,
                         'revision_count'        => 0,
                     ]);
+
+                    $createdOrders[] = [
+                        'order' => $order,
+                        'cartItem' => $cartItem
+                    ];
 
                     foreach ($cartItem->cartItemImages as $image) {
                         OrderImages::create([
@@ -127,6 +140,16 @@ class CheckoutController extends Controller
             session()->forget('selected_cart_items');
 
             DB::commit();
+
+            // Send receipt email for each order
+            foreach ($createdOrders as $orderData) {
+                // Reload the order with all relationships to ensure we have complete data
+                $order = Order::with(['user', 'productionCompany', 'apparelType', 'productionType'])
+                    ->where('order_id', $orderData['order']->order_id)
+                    ->first();
+                    
+                $this->sendOrderReceipt($order ?? $orderData['order'], $orderData['cartItem']);
+            }
 
             $this->toast('Order placed successfully!', 'success');
             return redirect()->route('customer.confirmation');
@@ -169,6 +192,74 @@ class CheckoutController extends Controller
 
             $this->toast('An error occurred while removing the item.', 'error');
             return redirect()->route('customer.cart');
+        }
+    }
+    
+    /**
+     * Send order receipt email to customer
+     * 
+     * @param Order $order
+     * @param CartItem $cartItem
+     * @return void
+     */
+    private function sendOrderReceipt($order, $cartItem)
+    {
+        try {
+            $user = $order->user;
+            $productionCompany = $order->productionCompany;
+            $receiptNumber = 'RCP-' . date('Ymd') . '-' . substr($order->order_id, -8);
+            
+            // Get apparel and production type info, falling back to cart item if relationship not loaded yet
+            $apparelType = 'N/A';
+            if ($order->apparelType) {
+                $apparelType = $order->apparelType->name;
+            } elseif ($cartItem && $cartItem->apparelType) {
+                $apparelType = $cartItem->apparelType->name;
+            }
+            
+            $productionType = 'N/A';
+            if ($order->productionType) {
+                $productionType = $order->productionType->name;
+            } elseif ($cartItem && $cartItem->productionType) {
+                $productionType = $cartItem->productionType->name;
+            }
+            
+            $balanceDue = $order->final_price - $order->downpayment_amount;
+            
+            $receiptData = [
+                'receipt_number' => $receiptNumber,
+                'date' => now()->format('F d, Y'),
+                'customer_name' => $user->name,
+                'customer_email' => $user->email,
+                'order_id' => $order->order_id,
+                'production_company' => $productionCompany->company_name,
+                'apparel_type' => $apparelType,
+                'production_type' => $productionType,
+                'quantity' => $order->quantity,
+                'is_bulk' => $order->is_bulk_order,
+                'is_customized' => $order->is_customized,
+                'downpayment' => $order->downpayment_amount,
+                'total_price' => $order->final_price,
+                'balance_due' => $balanceDue,
+            ];
+            
+            // Send email with receipt
+            Mail::send('customer.payment.checkout-receipt', $receiptData, function ($message) use ($user, $receiptNumber) {
+                $message->to($user->email);
+                $message->subject('Order Receipt #' . $receiptNumber);
+            });
+            
+            Log::info('Order receipt sent to customer', [
+                'order_id' => $order->order_id,
+                'receipt_number' => $receiptNumber,
+                'email' => $user->email
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to send order receipt: ' . $e->getMessage(), [
+                'order_id' => $order->order_id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
         }
     }
 }
