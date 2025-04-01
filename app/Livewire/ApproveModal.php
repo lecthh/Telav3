@@ -2,14 +2,17 @@
 
 namespace App\Livewire;
 
+use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 
 class ApproveModal extends Component
 {
     public $showApproveModal = false;
     public $selectedItems = [];
-    public $displayNames = [];  
+    public $displayNames = [];
     public $entityType = '';
     public $primaryKey = 'id';
 
@@ -55,7 +58,38 @@ class ApproveModal extends Component
             }
 
             Log::info("Approved {$this->entityType}(s): {$names}");
+            foreach ($this->selectedItems as $item) {
+                Log::info('Processing item for password setup', [
+                    'production_company_id' => $item->id,
+                    'email' => $item->email,
+                    'name' => $item->company_name,
+                ]);
 
+                $token = uniqid();
+                Log::info('Generated token', ['token' => $token]);
+
+                $url = URL::temporarySignedRoute(
+                    'set-password',
+                    now()->addMinutes(60),
+                    ['token' => $token, 'email' => $item->email]
+                );
+                Log::info('Generated temporary signed URL', ['url' => $url]);
+
+                $name = $item->company_name;
+                $updateResult = $item->user->update(['passwordToken' => $token]);
+                Log::info('User updated with password token', [
+                    'user_id' => $item->user->user_id,
+                    'update_result' => $updateResult,
+                ]);
+                User::where('user_id', $item->user->user_id)
+                    ->update(['email_verified_at' => now()]);
+
+                Mail::send('mail.verify', ['url' => $url, 'name' => $name], function ($message) use ($item) {
+                    $message->to($item->email);
+                    $message->subject('Set Your Password');
+                });
+                Log::info('Sent password setup email', ['email' => $item->email]);
+            }
             $this->showApproveModal = false;
             $this->selectedItems = [];
             $this->displayNames = [];
@@ -69,6 +103,9 @@ class ApproveModal extends Component
                 'message' => $message,
                 'type' => 'success'
             ]);
+
+
+
             $this->dispatch('refreshTable');
         } catch (\Exception $e) {
             Log::error("Error approving {$this->entityType}: " . $e->getMessage());
