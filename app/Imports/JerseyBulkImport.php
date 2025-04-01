@@ -21,52 +21,101 @@ class JerseyBulkImport extends BaseImport
      */
     public function collection(Collection $rows)
     {
+        \Illuminate\Support\Facades\Log::info("Starting import with " . count($rows) . " rows");
+        
+        // Debug the first row to see headers
+        if (count($rows) > 0) {
+            $firstRow = $rows->first();
+            \Illuminate\Support\Facades\Log::info("First row keys: " . json_encode(array_keys($firstRow->toArray())));
+            \Illuminate\Support\Facades\Log::info("First row data: " . json_encode($firstRow->toArray()));
+        }
+        
+        $rowNum = 0;
         foreach ($rows as $row) {
-            if (!isset($row['name']) || !isset($row['jersey_number']) || 
-                !isset($row['top_size']) || !isset($row['short_size'])) {
+            $rowNum++;
+            
+            // Skip empty rows
+            if (empty($row) || (count(array_filter($row->toArray())) == 0)) {
+                \Illuminate\Support\Facades\Log::info("Skipping empty row {$rowNum}");
                 continue;
             }
             
-            $name = trim($row['name']);
-            // Convert jersey number to string, handling both numeric and string inputs
-            $jerseyNumber = is_numeric($row['jersey_number']) ? (string)$row['jersey_number'] : trim($row['jersey_number']);
-            $topSize = trim(strtoupper($row['top_size']));
-            $shortSize = trim(strtoupper($row['short_size']));
-            $remarks = isset($row['remarks']) ? trim($row['remarks']) : '';
-            $hasPocket = isset($row['has_pocket']) && 
-                         (strtolower($row['has_pocket']) === 'yes' || 
-                          strtolower($row['has_pocket']) === 'true' || 
-                          $row['has_pocket'] === '1' ||
-                          $row['has_pocket'] === 1);
+            // Check for missing required fields and log it
+            $missingFields = [];
+            if (!isset($row['name'])) $missingFields[] = 'name';
+            if (!isset($row['jersey_number'])) $missingFields[] = 'jersey_number';
+            if (!isset($row['top_size'])) $missingFields[] = 'top_size';
+            if (!isset($row['short_size'])) $missingFields[] = 'short_size';
             
-            if (empty($name) || empty($jerseyNumber) || empty($topSize) || empty($shortSize)) {
+            if (!empty($missingFields)) {
+                \Illuminate\Support\Facades\Log::warning("Row {$rowNum} missing fields: " . implode(', ', $missingFields) . ". Available keys: " . implode(', ', array_keys($row->toArray())));
                 continue;
             }
             
-            // Find size IDs
-            $topSizeId = $this->findSizeId($topSize);
-            $shortSizeId = $this->findSizeId($shortSize);
-            
-            // Debug logging to help troubleshoot size mapping issues
-            if (!$topSizeId) {
-                \Illuminate\Support\Facades\Log::warning("Could not find top size ID for: '{$topSize}'");
-            }
-            
-            if (!$shortSizeId) {
-                \Illuminate\Support\Facades\Log::warning("Could not find short size ID for: '{$shortSize}'");
-            }
-            
-            if ($topSizeId && $shortSizeId) {
-                $this->jerseyDetails[] = [
-                    'name' => $name,
-                    'jerseyNo' => $jerseyNumber,
-                    'topSize' => $topSizeId,
-                    'shortSize' => $shortSizeId,
-                    'hasPocket' => $hasPocket,
-                    'remarks' => $remarks
-                ];
+            try {
+                $name = trim((string)$row['name']);
+                
+                // Convert jersey number to string, handling both numeric and string inputs
+                $jerseyNumber = is_numeric($row['jersey_number']) ? (string)$row['jersey_number'] : trim((string)$row['jersey_number']);
+                
+                $topSize = trim(strtoupper((string)$row['top_size']));
+                $shortSize = trim(strtoupper((string)$row['short_size']));
+                $remarks = isset($row['remarks']) ? trim((string)$row['remarks']) : '';
+                
+                // Handle various formats for has_pocket
+                $hasPocketValue = isset($row['has_pocket']) ? $row['has_pocket'] : '';
+                $hasPocket = false;
+                
+                if (is_bool($hasPocketValue)) {
+                    $hasPocket = $hasPocketValue;
+                } elseif (is_string($hasPocketValue) || is_numeric($hasPocketValue)) {
+                    $hasPocketStr = strtolower((string)$hasPocketValue);
+                    $hasPocket = $hasPocketStr === 'yes' || 
+                                 $hasPocketStr === 'true' || 
+                                 $hasPocketStr === '1' || 
+                                 $hasPocketStr === 'y' ||
+                                 $hasPocketValue === 1 ||
+                                 $hasPocketValue === true;
+                }
+                
+                // Skip rows with empty required fields
+                if (empty($name) || empty($jerseyNumber) || empty($topSize) || empty($shortSize)) {
+                    \Illuminate\Support\Facades\Log::info("Row {$rowNum} has empty values: name='{$name}', jersey='{$jerseyNumber}', top='{$topSize}', short='{$shortSize}'");
+                    continue;
+                }
+                
+                // Find size IDs
+                $topSizeId = $this->findSizeId($topSize);
+                $shortSizeId = $this->findSizeId($shortSize);
+                
+                // Debug logging to help troubleshoot size mapping issues
+                if (!$topSizeId) {
+                    \Illuminate\Support\Facades\Log::warning("Row {$rowNum}: Could not find top size ID for: '{$topSize}'");
+                }
+                
+                if (!$shortSizeId) {
+                    \Illuminate\Support\Facades\Log::warning("Row {$rowNum}: Could not find short size ID for: '{$shortSize}'");
+                }
+                
+                if ($topSizeId && $shortSizeId) {
+                    $this->jerseyDetails[] = [
+                        'name' => $name,
+                        'jerseyNo' => $jerseyNumber,
+                        'topSize' => $topSizeId,
+                        'shortSize' => $shortSizeId,
+                        'hasPocket' => $hasPocket,
+                        'remarks' => $remarks
+                    ];
+                    \Illuminate\Support\Facades\Log::info("Row {$rowNum}: Successfully added jersey for '{$name}'");
+                } else {
+                    \Illuminate\Support\Facades\Log::warning("Row {$rowNum}: Could not add jersey for '{$name}' due to invalid sizes");
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Error processing row {$rowNum}: " . $e->getMessage() . "\nRow data: " . json_encode($row->toArray()));
             }
         }
+        
+        \Illuminate\Support\Facades\Log::info("Import completed. Added " . count($this->jerseyDetails) . " jersey details out of " . count($rows) . " rows");
     }
     
     /**

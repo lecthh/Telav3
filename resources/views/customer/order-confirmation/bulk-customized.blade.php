@@ -66,39 +66,86 @@
                     <h3 class="font-medium text-lg text-purple-900 mb-2">Use Excel Template (Optional)</h3>
                     <p class="text-purple-800 mb-3">You can use our Excel template to specify your customizations.</p>
                     
-                    <div class="flex flex-col sm:flex-row gap-4">
+                    <div class="flex flex-col sm:flex-row gap-4 mb-4">
                         <a href="{{ route('excel.template', ['type' => 'bulk_customized']) }}" class="inline-flex items-center px-4 py-2 border border-purple-300 rounded-md text-sm font-medium text-purple-700 bg-white hover:bg-purple-50">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
                             </svg>
-                            Download Template
+                            Download Excel Template
                         </a>
-                        
-                        <form action="{{ route('excel.import.bulk-customized') }}" method="POST" enctype="multipart/form-data" class="flex-1">
-                            @csrf
-                            <input type="hidden" name="order_id" value="{{ $order->order_id }}">
-                            <input type="hidden" name="token" value="{{ $order->token }}">
-                            
-                            <div class="flex flex-col sm:flex-row gap-2">
-                                <div class="flex-1">
-                                    <input type="file" name="excel_file" id="excel_file" class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
-                                </div>
-                                <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
-                                    Upload Excel
-                                </button>
-                            </div>
-                        </form>
                     </div>
                     
-                    <p class="text-purple-600 text-sm mt-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-1" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd" />
-                        </svg>
-                        Excel file must include proper headers: "Name", "Size", and optionally "Remarks".
-                    </p>
+                    @if(session('format_issue'))
+                    <div class="bg-red-50 p-4 rounded-lg border border-red-200 mb-4">
+                        <h4 class="font-medium text-red-700">Excel Format Issue Detected</h4>
+                        <p class="text-red-600 mb-2">We've detected a format issue with your Excel file. For more reliable results, please use one of these options:</p>
+                        <ol class="list-decimal pl-6 text-red-600 space-y-1 mb-3">
+                            <li>Download and use our Excel template</li>
+                            <li>Ensure your Excel file has the exact required headers in row 1</li>
+                            <li>Try entering the data manually below</li>
+                        </ol>
+                        
+                        @if(session('emergency_bypass_url'))
+                        <a href="{{ session('emergency_bypass_url') }}" class="inline-flex items-center px-3 py-1.5 bg-orange-100 border border-orange-300 rounded text-sm font-medium text-orange-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
+                            </svg>
+                            Use Emergency Default Data
+                        </a>
+                        <p class="text-xs text-red-500 mt-2">Note: The emergency option will use default sample data instead of your uploaded file.</p>
+                        @endif
+                    </div>
+                    @endif
+                    
+                    <form action="{{ route('excel.import.bulk-customized') }}" method="POST" enctype="multipart/form-data" class="mb-4">
+                        @csrf
+                        <input type="hidden" name="order_id" value="{{ $order->order_id }}">
+                        <input type="hidden" name="token" value="{{ $order->token }}">
+                        
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <div class="flex-1">
+                                <input type="file" name="excel_file" id="excel_file" accept=".xlsx,.xls,.csv" class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
+                                <p class="text-gray-500 text-xs mt-1">Accepted formats: .xlsx, .xls, .csv</p>
+                            </div>
+                            <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                                Upload File
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-100">
+                        <p class="text-yellow-800 font-medium mb-2">Excel Import Requirements:</p>
+                        <ul class="list-disc pl-6 text-yellow-700 text-sm space-y-1.5">
+                            <li><strong>Headers must be in row 1:</strong> "description" (or "name"), "size", "quantity" (optional), and "remarks" (optional)</li>
+                            <li><strong>Size values:</strong> Must match one of these: 
+                                @foreach($sizes as $size)
+                                    <span class="font-medium">{{ $size->name }}</span>@if(!$loop->last), @endif
+                                @endforeach
+                            </li>
+                            <li><strong>Required quantity:</strong> Minimum 10 rows of customization data</li>
+                        </ul>
+                        
+                        <div class="mt-3 p-2 bg-white rounded border border-yellow-200">
+                            <p class="text-yellow-800 font-medium">Troubleshooting Tips:</p>
+                            <ul class="list-decimal pl-5 text-yellow-700 text-sm mt-1 space-y-1">
+                                <li>If experiencing issues, try using the emergency button when available</li>
+                                <li>Ensure row 1 contains the exact headers listed above</li>
+                                <li>Fill in at least 10 rows with complete data (rows 2-11)</li>
+                                <li>Do not modify the structure or add extra columns</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
                 
                 <p class="text-gray-600 mb-4">Or manually enter customization details below:</p>
+                
+                <!-- Debug info - Remove in production -->
+                @if(env('APP_DEBUG'))
+                <div class="p-2 bg-gray-100 text-xs font-mono mb-4 rounded overflow-auto" style="max-height: 200px;">
+                    <p>Debug: Rows Count: {{ count($rows) }}</p>
+                    <p>Debug: First Row: {{ json_encode($rows[0] ?? []) }}</p>
+                </div>
+                @endif
 
                 <form action="{{ route('confirm-bulk-custom-post') }}" method="POST" id="customizationForm">
                     @csrf
@@ -144,7 +191,7 @@
                                         <input type="text" name="rows[{{ $index }}][name]"
                                             class="w-full p-2 border border-gray-300 rounded-md focus:ring-cPrimary focus:border-cPrimary focus:outline-none"
                                             placeholder="Customer name"
-                                            value="{{ old('rows.'.$index.'.name') }}">
+                                            value="{{ old('rows.'.$index.'.name', $row['name'] ?? '') }}">
                                         @error("rows.$index.name")
                                         <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
                                         @enderror
@@ -167,7 +214,7 @@
                                         <input type="text" name="rows[{{ $index }}][remarks]"
                                             class="w-full p-2 border border-gray-300 rounded-md focus:ring-cPrimary focus:border-cPrimary focus:outline-none"
                                             placeholder="Optional notes"
-                                            value="{{ old('rows.'.$index.'.remarks') }}">
+                                            value="{{ old('rows.'.$index.'.remarks', $row['remarks'] ?? '') }}">
                                         @error("rows.$index.remarks")
                                         <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
                                         @enderror

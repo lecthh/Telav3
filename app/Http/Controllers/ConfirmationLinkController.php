@@ -20,12 +20,29 @@ class ConfirmationLinkController extends Controller
         // Check if there's imported customizations data from Excel
         $importedCustomizations = session('imported_customizations');
         
-        if ($importedCustomizations) {
+        // Log information for debugging
+        \Illuminate\Support\Facades\Log::info('confirmBulkCustom', [
+            'has_imported_data' => !empty($importedCustomizations),
+            'imported_count' => is_array($importedCustomizations) ? count($importedCustomizations) : 0,
+            'sample_data' => !empty($importedCustomizations) ? $importedCustomizations[0] : null
+        ]);
+        
+        if (!empty($importedCustomizations)) {
             // Use imported customization data
             $rows = $importedCustomizations;
+            
+            // Another log to ensure we're setting the rows correctly
+            \Illuminate\Support\Facades\Log::info('Using imported rows', [
+                'count' => count($rows),
+                'first_row' => $rows[0] ?? null
+            ]);
         } else {
             // Use default or old input
             $rows = old('rows', array_fill(0, 10, ['name' => '', 'size' => '', 'remarks' => '']));
+            
+            \Illuminate\Support\Facades\Log::info('Using default rows', [
+                'count' => count($rows)
+            ]);
         }
 
         $sizes = Sizes::all();

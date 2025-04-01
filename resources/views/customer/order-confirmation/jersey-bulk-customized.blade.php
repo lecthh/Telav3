@@ -68,34 +68,69 @@
                     <h3 class="font-medium text-lg text-purple-900 mb-2">Use Excel Template (Optional)</h3>
                     <p class="text-purple-800 mb-3">You can use our Excel template to specify your jersey customizations.</p>
                     
-                    <div class="flex flex-col sm:flex-row gap-4">
+                    <div class="flex flex-col sm:flex-row gap-4 mb-4">
                         <a href="{{ route('excel.template', ['type' => 'jersey_bulk']) }}" class="inline-flex items-center px-4 py-2 border border-purple-300 rounded-md text-sm font-medium text-purple-700 bg-white hover:bg-purple-50">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
                             </svg>
-                            Download Template
+                            Download Excel Template
                         </a>
-                        
-                        <form action="{{ route('excel.import.jersey-bulk') }}" method="POST" enctype="multipart/form-data" class="flex-1">
-                            @csrf
-                            <input type="hidden" name="order_id" value="{{ $order->order_id }}">
-                            <input type="hidden" name="token" value="{{ $order->token }}">
-                            
-                            <div class="flex flex-col sm:flex-row gap-2">
-                                <div class="flex-1">
-                                    <input type="file" name="excel_file" id="excel_file" class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
-                                </div>
-                                <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
-                                    Upload Excel
-                                </button>
-                            </div>
-                        </form>
                     </div>
                     
-                    <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-100">
-                        <p class="text-yellow-800 font-medium mb-1">Excel Import Requirements:</p>
-                        <ul class="list-disc pl-6 text-yellow-700 text-sm space-y-1">
-                            <li><strong>Headers must be:</strong> "name", "jersey_number", "top_size", "short_size", "has_pocket" (optional), "remarks" (optional)</li>
+                    @if(session('format_issue'))
+                    <div class="bg-red-50 p-4 rounded-lg border border-red-200 mb-4">
+                        <h4 class="font-medium text-red-700">Excel Format Issue Detected</h4>
+                        <p class="text-red-600 mb-2">We've detected a format issue with your Excel file. For more reliable results, please use one of these options:</p>
+                        <ol class="list-decimal pl-6 text-red-600 space-y-1 mb-3">
+                            <li>Download and use our CSV template (recommended)</li>
+                            <li>Ensure your Excel file has the exact required headers in row 1</li>
+                            <li>Try saving your Excel file in CSV format</li>
+                        </ol>
+                        
+                        <div class="flex flex-col sm:flex-row gap-3 mt-3">
+                            @if(session('emergency_template'))
+                            <a href="{{ session('emergency_template') }}" class="inline-flex items-center px-3 py-1.5 bg-red-100 border border-red-300 rounded text-sm font-medium text-red-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                                Download Emergency CSV Template
+                            </a>
+                            @endif
+                            
+                            @if(session('emergency_bypass_url'))
+                            <a href="{{ session('emergency_bypass_url') }}" class="inline-flex items-center px-3 py-1.5 bg-orange-100 border border-orange-300 rounded text-sm font-medium text-orange-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
+                                </svg>
+                                Use Emergency Default Data
+                            </a>
+                            @endif
+                        </div>
+                        
+                        <p class="text-xs text-red-500 mt-2">Note: The emergency option will use default sample data instead of your uploaded file.</p>
+                    </div>
+                    @endif
+                    
+                    <form action="{{ route('excel.import.jersey-bulk') }}" method="POST" enctype="multipart/form-data" class="mb-4">
+                        @csrf
+                        <input type="hidden" name="order_id" value="{{ $order->order_id }}">
+                        <input type="hidden" name="token" value="{{ $order->token }}">
+                        
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <div class="flex-1">
+                                <input type="file" name="excel_file" id="excel_file" accept=".xlsx,.xls,.csv" class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
+                                <p class="text-gray-500 text-xs mt-1">Accepted formats: .xlsx, .xls, .csv</p>
+                            </div>
+                            <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                                Upload File
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-100">
+                        <p class="text-yellow-800 font-medium mb-2">Excel/CSV Import Requirements:</p>
+                        <ul class="list-disc pl-6 text-yellow-700 text-sm space-y-1.5">
+                            <li><strong>Headers must be in row 1:</strong> "name", "jersey_number", "top_size", "short_size", "has_pocket" (optional), "remarks" (optional)</li>
                             <li><strong>Jersey numbers:</strong> Can be numbers (10) or text ("10")</li>
                             <li><strong>Top/Short sizes:</strong> Must match one of these: 
                                 @foreach($sizes as $size)
@@ -105,7 +140,16 @@
                             <li><strong>Has pocket:</strong> Use "yes", "no", 1, 0, or leave blank for no</li>
                             <li><strong>Required quantity:</strong> Minimum 10 rows of player data</li>
                         </ul>
-                        <p class="text-yellow-700 text-sm mt-2">⚠️ If you're having problems, please download our template below.</p>
+                        
+                        <div class="mt-3 p-2 bg-white rounded border border-yellow-200">
+                            <p class="text-yellow-800 font-medium">Troubleshooting Tips:</p>
+                            <ul class="list-decimal pl-5 text-yellow-700 text-sm mt-1 space-y-1">
+                                <li>If you experience Excel format issues, try using the CSV template instead</li>
+                                <li>Ensure row 1 contains the exact headers listed above (all lowercase)</li>
+                                <li>Fill in at least 10 rows with complete data (rows 2-11)</li>
+                                <li>Do not modify the structure or add extra columns</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
                 
