@@ -1,4 +1,7 @@
 @include('head')
+<header class="bg-cPrimary text-white py-2 text-center font-gilroy font-bold text-sm">
+    Production Hub
+</header>
 <div class="flex bg-gray-100">
     @include('layout.printer')
     <div class="p-6 w-full">

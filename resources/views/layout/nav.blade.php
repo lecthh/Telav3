@@ -7,10 +7,6 @@
     <div class="flex gap-x-3 md:gap-x-6 items-center">
         <div class="flex gap-x-3 md:gap-x-4">
             @if(Auth::check())
-            <a href="{{ route('customer.messages') }}" class="relative hover:text-cPrimary transition-colors">
-                @include('svgs.inbox-empty')
-                <span id="unread-messages-badge" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
-            </a>
             <div x-data="{ isOpen: false }">
                 <button type="button" class="relative hover:text-cPrimary transition-colors" @click="isOpen = !isOpen">
                     @include('svgs.bell')
