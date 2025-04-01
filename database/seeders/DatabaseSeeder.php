@@ -30,6 +30,9 @@ class DatabaseSeeder extends Seeder
             [
                 'role_name' => 'Designer Admin',
             ],
+            [
+                'role_name' => 'Super Admin',
+            ],
         ]);
         
         DB::table('apparel_types')->insert([

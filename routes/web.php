@@ -19,7 +19,10 @@ use App\Http\Controllers\Auth\GoogleAuth;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderProduceController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\SuperAdminController;
 use App\Http\Middleware\PreventBackHistory;
+use App\Models\Designer;
+use App\Models\ProductionCompany;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Auth;
@@ -28,10 +31,43 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
 require base_path('routes/channels.php');
-
 Route::get('/', function () {
+    if (Auth::check()) {
+        $user = Auth::user();
+        switch ($user->role_type_id) {
+            case 2:
+                $admin = ProductionCompany::where('user_id', $user->user_id)->first();
+                session(['admin' => $admin]);
+                Log::info('Production company login - redirecting to printer dashboard', [
+                    'user_id'  => $user->user_id,
+                    'admin_id' => $admin ? $admin->id : null
+                ]);
+                return redirect()->route('printer-dashboard')->with('success', 'Logged in successfully');
+
+            case 3:
+                $admin = Designer::where('user_id', $user->user_id)->first();
+                session(['admin' => $admin]);
+                Log::info('Designer login - redirecting to designer dashboard', [
+                    'user_id'     => $user->user_id,
+                    'designer_id' => $admin ? $admin->designer_id : null
+                ]);
+                return redirect('/designer-dashboard')->with('success', 'Logged in successfully');
+
+            case 4:
+                Log::info('Super admin login - redirecting to super admin dashboard', [
+                    'user_id' => $user->user_id
+                ]);
+                return redirect()->route('superadmin.users')->with('success', 'Logged in successfully');
+
+            case 1:
+            default:
+                // Customers or any other role fall back to the welcome page
+                break;
+        }
+    }
     return view('welcome');
 })->name('home');
+
 
 Route::get('/production-services', [App\Http\Controllers\ProductionCompanyController::class, 'index'])->name('production.services');
 Route::get('/production-company/{id}', [App\Http\Controllers\ProductionCompanyController::class, 'show'])->name('production.company.show');
@@ -112,7 +148,7 @@ Route::prefix('partner')->name('partner.')->middleware('DesignerOnly')->group(fu
         Route::get('/completed', [DesignerOrderController::class, 'complete'])->name('complete');
         Route::get('/complete-x/{order_id}', [DesignerOrderController::class, 'completeOrder'])->name('complete-x');
         Route::post('/cancel-design-assignment/{order_id}', [DesignerOrderController::class, 'cancelDesignAssignment'])->name('cancel-design-assignment');
-        
+
         // Designer Profile Routes
         Route::prefix('profile')->name('profile.')->group(function () {
             Route::get('/basics', [DesignerProfileController::class, 'basics'])->name('basics');
@@ -160,7 +196,7 @@ Route::middleware(['CustomerOnly'])->group(function () {
     Route::get('/profile-orders', [ProfileController::class, 'profileOrders'])->name('customer.profile.orders');
     Route::get('/profile-reviews', [ProfileController::class, 'profileReviews'])->name('customer.profile.reviews');
     Route::get('/confirmation', [ConfirmationMessageController::class, 'confirmation'])->name('customer.confirmation');
-    
+
     // Review routes
     Route::get('/review/{order_id}', [ReviewController::class, 'showReviewForm'])->name('customer.review.form');
     Route::post('/review', [ReviewController::class, 'storeReview'])->name('customer.review.store');
@@ -180,8 +216,6 @@ Route::post('/set-password/store', [BusinessAuthController::class, 'storePasswor
 Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetPasswordForm'])->name('password.reset');
 Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.update');
 
-Route::get('/login', [BusinessAuthController::class, 'login'])->name('login');
-Route::post('/login/user', [BusinessAuthController::class, 'loginPost'])->name('login.post');
 Route::get('/logout', [BusinessAuthController::class, 'logout'])->name('logout')->middleware(PreventBackHistory::class);
 
 // Bulk order confirmation routes
@@ -230,10 +264,20 @@ Route::middleware(['auth'])->post('/broadcasting/auth', function (Request $reque
     return Broadcast::auth($request);
 });
 
+//Super admin Routes
+Route::middleware(['SuperAdminOnly'])->group(function () {
+    Route::get('/super-admin/users', [SuperAdminController::class, 'userManagement'])->name('superadmin.users');
+    Route::get('/super-admin/production-companies', [SuperAdminController::class, 'productionCompanies'])->name('superadmin.production');
+    Route::get('/super-admin/production-companies/approve', [SuperAdminController::class, 'approveProductionCompanies'])->name('superadmin.production.approve');
+    Route::get('/super-admin/designer-companies', [SuperAdminController::class, 'designerManagement'])->name('superadmin.designers');
+    Route::get('/super-admin/designer-companies/approve', [SuperAdminController::class, 'approveDesigners'])->name('superadmin.designers.approve');
+    Route::get('/super-admin/reports', [SuperAdminController::class, 'reports'])->name('superadmin.reports');
+});
+
 Route::get('/order/additional-payment/{order_id}', [App\Http\Controllers\AdditionalPaymentController::class, 'showPaymentDetails'])
     ->name('order.additional-payment')
     ->middleware('CustomerOnly');
-    
+
 Route::post('/order/process-additional-payment/{order_id}', [App\Http\Controllers\AdditionalPaymentController::class, 'processPayment'])
     ->name('order.process-additional-payment')
     ->middleware('CustomerOnly');
