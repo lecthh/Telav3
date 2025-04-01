@@ -8,6 +8,7 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Traits\Toastable;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class OrderProduceController extends Controller {
     use Toastable;
@@ -351,18 +352,61 @@ class OrderProduceController extends Controller {
     }
 
     //COMPLETE OR CANCEL
-    public function cancelOrder($order_id)
+    public function cancelOrder(Request $request, $order_id)
     {
         try {
+            $request->validate([
+                'cancellation_reason' => 'required|string',
+                'cancellation_note' => 'nullable|string',
+            ]);
+
             $order = Order::findOrFail($order_id);
-            $order->update(['status_id' => 8]);
+            
+            $order->update([
+                'status_id' => 8,
+                'cancellation_reason' => $request->cancellation_reason,
+                'cancellation_note' => $request->cancellation_note,
+            ]);
+
+            $cancellationMessage = 'Your Order Has Been Cancelled';
+            
+            if ($request->cancellation_reason) {
+                $cancellationMessage .= ' - Reason: ' . $request->cancellation_reason;
+                
+                if ($request->cancellation_reason === 'Other' && $request->cancellation_note) {
+                    $cancellationMessage .= ' (' . $request->cancellation_note . ')';
+                }
+            }
 
             Notification::create([
                 'user_id' => $order->user->user_id,
-                'message' => 'Your Order Has Been Cancelled',
+                'message' => $cancellationMessage,
                 'is_read' => false,
                 'order_id' => $order->order_id,
             ]);
+            
+            // Send cancellation email to customer
+            try {
+                $user = $order->user;
+                $orderNumber = substr($order->order_id, -6);
+                $cancellationReason = $request->cancellation_reason;
+                $cancellationNote = $request->cancellation_note;
+                $companyName = $order->productionCompany ? $order->productionCompany->company_name : 'Production Company';
+                
+                Mail::send('mail.orderCancelled', [
+                    'name' => $user->name,
+                    'orderNumber' => $orderNumber,
+                    'reason' => $cancellationReason,
+                    'note' => $cancellationNote,
+                    'companyName' => $companyName
+                ], function ($message) use ($user) {
+                    $message->to($user->email);
+                    $message->subject('Order Cancellation Notice');
+                });
+            } catch (\Exception $emailError) {
+                Log::error('Failed to send cancellation email: ' . $emailError->getMessage());
+                // Continue with the process even if email fails
+            }
 
             $this->toast('Order cancelled successfully!', 'success');
             return redirect()->route('printer-dashboard');

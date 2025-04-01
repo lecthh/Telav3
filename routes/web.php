@@ -148,6 +148,7 @@ Route::prefix('partner')->name('partner.')->middleware('DesignerOnly')->group(fu
         Route::get('/completed', [DesignerOrderController::class, 'complete'])->name('complete');
         Route::get('/complete-x/{order_id}', [DesignerOrderController::class, 'completeOrder'])->name('complete-x');
         Route::post('/cancel-design-assignment/{order_id}', [DesignerOrderController::class, 'cancelDesignAssignment'])->name('cancel-design-assignment');
+        Route::post('/cancel-order/{order_id}', [DesignerOrderController::class, 'cancelOrder'])->name('cancel-order');
 
         // Designer Profile Routes
         Route::prefix('profile')->name('profile.')->group(function () {

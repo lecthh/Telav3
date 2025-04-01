@@ -9,7 +9,11 @@
         href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
         rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/pagedone@1.2.2/src/css/pagedone.css " rel="stylesheet" />
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @vite('resources/css/app.css')
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
 </head>
 
 <body class="flex flex-col h-screen justify-between bg-gray-50">
@@ -145,16 +149,16 @@
                             <div class="bg-cPrimary px-4 py-3 rounded-t-lg">
                                 <h3 class="font-gilroy font-bold text-white text-base">Actions</h3>
                             </div>
-                            <div class="p-4">
-                                <form action="{{ route('partner.printer.cancel-order', ['order_id' => $order->order_id]) }}" method="POST" class="w-full">
-                                    @csrf
-                                    <button type="submit" onclick="return confirm('Are you sure you want to cancel this order?')" class="w-full flex justify-center items-center px-4 py-3 bg-red-500 hover:bg-red-600 rounded-lg text-white font-medium transition duration-150 ease-in-out">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                        Cancel Order
-                                    </button>
-                                </form>
+                            <div class="p-4" x-data="{ showCancelModal: false, otherReason: '' }">
+                                <button type="button" @click="showCancelModal = true" class="w-full flex justify-center items-center px-4 py-3 bg-red-500 hover:bg-red-600 rounded-lg text-white font-medium transition duration-150 ease-in-out">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                    Cancel Order
+                                </button>
+                                
+                                <!-- Cancel Order Modal -->
+                                @include('components.modals.cancel-order-modal', ['action' => route('partner.printer.cancel-order', ['order_id' => $order->order_id])])
                             </div>
                         </div>
                     </div>

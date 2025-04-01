@@ -32,6 +32,8 @@ class Order extends Model
         'revision_count',
         'token',
         'eta',
+        'cancellation_reason',
+        'cancellation_note',
     ];
 
     public function user()
