@@ -30,7 +30,7 @@ class BaseTable extends Component
     public $showDeleteModal = false;
     public $showEditModal = false;
     public $onRowClick;
-    public $onEdit;
+    public $onApprove;
     public $nameColumn;
     public $selectAll = false;
     public $bulkAction;
@@ -57,7 +57,7 @@ class BaseTable extends Component
         $this->perPage = $perPage;
         $this->onRowClick = $onRowClick;
     }
-    
+
     public function handleRefreshTable()
     {
         $this->clearSelectedItems();
@@ -110,17 +110,17 @@ class BaseTable extends Component
         $this->dispatch($this->onRowClick, $id);
     }
 
-    public function openEditModal($id)
+    public function openApproveModal($id)
     {
-        Log::info($this->onEdit);
-        $this->dispatch($this->onEdit, $id);
+        Log::info($this->selectedItem);
+        $this->dispatch($this->onApprove, $this->model, [$id], $this->nameColumn, $this->primaryKey);
     }
 
     public function clearSelectedItems()
-{
-    $this->selectedItems = [];
-    $this->selectAll = false;
-}
+    {
+        $this->selectedItems = [];
+        $this->selectAll = false;
+    }
 
     public function openDeleteModal($id)
     {

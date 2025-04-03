@@ -19,13 +19,12 @@
             'constantFilterNot' => ['is_verified' => true, ],
             'perPage' => 10,
             'onRowClick' => 'showCompanyDetails',
-            'onEdit' => 'editCompany',
+            'onApprove' => 'approveEntity',
             'nameColumn' => 'company_name',
             'bulkAction' => 'approve'
             ])
         </main>
     </div>
-    @livewire('production-company-edit-modal')
     @livewire('production-company-details-modal')
     @livewire('approve-modal')
     @livewire('delete-confirmation-modal')

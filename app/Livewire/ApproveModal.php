@@ -9,7 +9,7 @@ class ApproveModal extends Component
 {
     public $showApproveModal = false;
     public $selectedItems = [];
-    public $displayNames = [];  
+    public $displayNames = [];
     public $entityType = '';
     public $primaryKey = 'id';
 
