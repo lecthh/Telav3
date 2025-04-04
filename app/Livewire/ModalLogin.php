@@ -68,12 +68,28 @@ class ModalLogin extends ModalComponent
                 'password' => 'required',
             ]);
 
-            // Attempt to log the user in using Livewire properties
+            // First check if the user exists and is blocked (before authentication)
+            $user = User::where('email', $validatedData['email'])->first();
+
+            if ($user && $user->status === 'blocked') {
+                Log::warning('Blocked user attempted login', ['email' => $this->email]);
+                return redirect()->route('user.blocked');
+            }
+
+            // Proceed with login attempt if user isn't blocked
             if (Auth::attempt(
                 ['email' => $validatedData['email'], 'password' => $validatedData['password']],
                 $this->rememberMe
             )) {
                 $user = Auth::user();
+
+                // Double-check status after authentication (in case it changed during login)
+                if ($user->status === 'blocked') {
+                    Auth::logout();
+                    Log::warning('Blocked user authenticated but was stopped', ['email' => $this->email]);
+                    return redirect()->route('user.blocked');
+                }
+
                 Log::info('User logged in successfully', [
                     'email'         => $user->email,
                     'role_type_id'  => $user->role_type_id
@@ -89,7 +105,6 @@ class ModalLogin extends ModalComponent
                             'admin_id' => $admin ? $admin->id : null
                         ]);
                         return redirect()->route('printer-dashboard')->with('success', 'Logged in successfully');
-
                     case 3:
                         $admin = Designer::where('user_id', $user->user_id)->first();
                         session(['admin' => $admin]);
@@ -98,13 +113,11 @@ class ModalLogin extends ModalComponent
                             'designer_id' => $admin ? $admin->designer_id : null
                         ]);
                         return redirect('/designer-dashboard')->with('success', 'Logged in successfully');
-
                     case 4:
                         Log::info('Super Admin login - redirecting to super admin dashboard', [
                             'user_id' => $user->user_id
                         ]);
                         return redirect()->route('superadmin.users')->with('success', 'Logged in successfully');
-
                     default:
                         return redirect()->to(session('url.intended', '/'));
                 }

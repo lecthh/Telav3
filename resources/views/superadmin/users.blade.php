@@ -9,7 +9,6 @@
             'columns' => [
             ['field' => 'name', 'label' => 'Name'],
             ['field' => 'email', 'label' => 'Email'],
-            ['field' => 'role_name', 'label' => 'Role'],
             ['field' => 'status', 'label' => 'Status '],
             ],
             'primaryKey' => 'user_id',
