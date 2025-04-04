@@ -9,6 +9,9 @@ class Designer extends Model
 {
     use HasFactory;
 
+    const STATUS_ACTIVE = 'active';
+    const STATUS_BLOCKED = 'blocked';
+
     protected $table = 'designers';
     protected $primaryKey = 'designer_id';
     protected $fillable = [
@@ -23,7 +26,8 @@ class Designer extends Model
         'order_history',
         'average_rating',
         'review_count',
-        'is_verified'
+        'is_verified',
+        'status'
     ];
     public $incrementing = true;
     protected $keyType = 'int';
@@ -51,21 +55,41 @@ class Designer extends Model
     {
         $avgRating = $this->reviews()->where('is_visible', true)->avg('rating') ?? 0;
         $reviewCount = $this->reviews()->where('is_visible', true)->count();
-        
+
         $this->average_rating = round($avgRating, 1);
         $this->review_count = $reviewCount;
         $this->save();
-        
+
         return $this->average_rating;
     }
 
     public function getUserNameAttribute()
-{
-    return $this->user ? $this->user->name : 'N/A';
-}
+    {
+        return $this->user ? $this->user->name : 'N/A';
+    }
 
-public function getProductionCompanyNameAttribute()
-{
-    return $this->productionCompany ? $this->productionCompany->company_name : 'N/A';
-}
+    public function getProductionCompanyNameAttribute()
+    {
+        return $this->productionCompany ? $this->productionCompany->company_name : 'N/A';
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === self::STATUS_ACTIVE;
+    }
+
+    public function isBlocked(): bool
+    {
+        return $this->status === self::STATUS_BLOCKED;
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', self::STATUS_ACTIVE);
+    }
+
+    public function scopeBlocked($query)
+    {
+        return $query->where('status', self::STATUS_BLOCKED);
+    }
 }

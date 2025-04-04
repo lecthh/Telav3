@@ -12,6 +12,7 @@
             ['field' => 'email', 'label' => 'Email'],
             ['field' => 'phone', 'label' => 'Phone'],
             ['field' => 'avg_rating', 'label' => 'Average Rating'],
+            ['field' => 'status', 'label' => 'Status'],
             ],
             'primaryKey' => 'id',
             'constantFilterNot' => ['is_verified' => false, ],
@@ -21,12 +22,14 @@
             'onRowClick' => 'showCompanyDetails',
             'onEdit' => 'editCompany',
             'nameColumn' => 'company_name',
-            'bulkAction' => 'delete'
+            'bulkAction' => 'delete',
+            'onApprove' => 'approveEntity',
+            'type' => 'manage',
             ])
         </main>
     </div>
-    @livewire('production-company-edit-modal')
     @livewire('production-company-details-modal')
+    @livewire('approve-modal')
     @livewire('delete-confirmation-modal')
     @include('layout.footer')
 </body>

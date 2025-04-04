@@ -63,11 +63,6 @@
                         <h3 class="text-sm font-medium text-gray-500">Email</h3>
                         <p class="text-base font-semibold">{{ $selectedItem->email }}</p>
                     </div>
-                    <div class="space-y-2">
-                        <h3 class="text-sm font-medium text-gray-500">User ID</h3>
-                        <p class="text-base font-semibold">{{ $selectedItem->user_id }}</p>
-                    </div>
-
                 </div>
 
                 <!-- Column 3: Business Documents -->

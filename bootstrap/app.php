@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CheckUserStatus;
 use App\Http\Middleware\PreventBackHistory;
 use App\Http\Middleware\ProductionAdmin;
 use Illuminate\Foundation\Application;
@@ -21,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'CustomerOnly' => \App\Http\Middleware\Customer::class,
             'DesignerOnly' => \App\Http\Middleware\DesignerOnly::class,
             'SuperAdminOnly' => \App\Http\Middleware\SuperAdminOnly::class,
+            'CheckUserStatus' => CheckUserStatus::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

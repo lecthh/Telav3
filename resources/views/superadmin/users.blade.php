@@ -9,10 +9,10 @@
             'columns' => [
             ['field' => 'name', 'label' => 'Name'],
             ['field' => 'email', 'label' => 'Email'],
-            ['field' => 'role_name', 'label' => 'Role'],
+            ['field' => 'status', 'label' => 'Status '],
             ],
             'primaryKey' => 'user_id',
-            'constantFilterNot' => ['role_type_id' => 4, ],
+            'constantFilter' => ['role_type_id' => 1, ],
             'sortableRelations' => [
             'role_name' => [
             'table' => 'role_types',
@@ -31,13 +31,13 @@
             'onRowClick' => 'showUserDetails',
             'onEdit' => 'editUser',
             'nameColumn' => 'name',
-            'bulkAction' => 'delete'
+            'bulkAction' => 'delete',
+            'type' => 'manage',
             ])
         </main>
     </div>
 
     @livewire('user-details-modal')
-    @livewire('edit-user-details-modal')
     @livewire('delete-confirmation-modal')
     @include('layout.footer')
 </body>
