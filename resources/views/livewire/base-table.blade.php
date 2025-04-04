@@ -26,22 +26,53 @@
                     (+ {{ $this->getSelectedItemsNotOnCurrentPageCount() }} on other pages)
                     @endif
                 </div>
-                @if($this->bulkAction === 'delete')
-                <button wire:click="bulkDelete"
-                    class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-2 rounded">
-                    Delete
-                </button>
-                @else
-                <button wire:click="bulkApprove"
-                    class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-2 rounded">
-                    Approve
-                </button>
-                @endif
+
             </div>
 
         </div>
 
         <div class="flex items-center space-x-4">
+            <div x-data="{
+    selectedItems: @entangle('selectedItems'),
+    statuses: window.itemStatuses,
+    get bulkActionType() {
+        if (!this.selectedItems.length) return null;
+        // Get statuses for the selected items
+        let selectedStatuses = this.selectedItems.map(id => this.statuses[id]);
+        // If all are active, return 'active'
+        if (selectedStatuses.every(status => status === 'active')) return 'active';
+        // If all are blocked, return 'blocked'
+        if (selectedStatuses.every(status => status === 'blocked')) return 'blocked';
+        // Mixed statuses: no bulk action allowed
+        return null;
+    }
+}">     
+@if($this->type === 'manage')
+                <div x-show="selectedItems.length > 0" class="flex gap-2">
+                    <template x-if="bulkActionType === 'active'">
+                        <button wire:click="bulkDelete" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded flex items-center gap-2 transition duration-200">
+                            Block
+                        </button>
+                    </template>
+                    <template x-if="bulkActionType === 'blocked'">
+                        <button wire:click="bulkApprove" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded flex items-center gap-2 transition duration-200">
+                            Reactivate
+                        </button>
+                    </template>
+                </div>
+                @else
+                <div x-show="selectedItems.length > 0" class="flex gap-2">
+                        <button wire:click="bulkDelete" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded flex items-center gap-2 transition duration-200">
+                            Deny
+                        </button>
+                        <button wire:click="bulkApprove" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded flex items-center gap-2 transition duration-200">
+                            Approve
+                        </button>
+                </div>
+                @endif
+            </div>
+
+
             <div class="flex items-center space-x-2">
                 <label for="perPage" class="text-sm text-gray-600">Show</label>
                 <select
@@ -153,9 +184,10 @@
                                         <button
                                             wire:click="openDeleteModal('{{ $item->{$primaryKey} }}')"
                                             class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs rounded-md font-medium text-red-600 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                                                <path d="M9 3H15M3 6H21M19 6L18.2987 16.5193C18.1935 18.0975 18.1409 18.8867 17.8 19.485C17.4999 20.0118 17.0472 20.4353 16.5017 20.6997C15.882 21 15.0911 21 13.5093 21H10.4907C8.90891 21 8.11803 21 7.49834 20.6997C6.95276 20.4353 6.50009 20.0118 6.19998 19.485C5.85911 18.8867 5.8065 18.0975 5.70129 16.5193L5 6M10 10.5V15.5M14 10.5V15.5" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M15 9L9 15M9 9L15 15M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                             </svg>
+
                                         </button>
                                     </x-slot>
                                     Deny this item
@@ -298,3 +330,8 @@
         </div>
         @endif
     </div>
+</div>
+
+<script>
+    window.itemStatuses = @json($items->pluck('status', $this->primaryKey));
+</script>

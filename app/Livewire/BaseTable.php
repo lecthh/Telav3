@@ -71,6 +71,34 @@ class BaseTable extends Component
         return count($this->selectedItems) > 0;
     }
 
+    public function getBulkActionTypeProperty()
+    {
+        // Assume $this->selectedItems is an array of IDs
+        $selectedItems = $this->model::whereIn($this->primaryKey, $this->selectedItems)->get();
+
+        if ($selectedItems->isEmpty()) {
+            return null;
+        }
+
+        $allActive = $selectedItems->every(function ($item) {
+            return $item->status === 'active';
+        });
+
+        $allBlocked = $selectedItems->every(function ($item) {
+            return $item->status === 'blocked';
+        });
+
+        if ($allActive) {
+            return 'active';
+        } elseif ($allBlocked) {
+            return 'blocked';
+        }
+
+        // If mixed statuses, return null to hide bulk actions
+        return null;
+    }
+
+
     public function sortBy($field)
     {
         if ($this->sortField === $field) {
@@ -131,12 +159,12 @@ class BaseTable extends Component
 
     public function bulkDelete()
     {
-        $this->dispatch('deleteEntity', $this->model, $this->selectedItems, $this->nameColumn, $this->primaryKey);
+        $this->dispatch('deleteEntity', $this->model, $this->selectedItems, $this->type, $this->nameColumn, $this->primaryKey);
     }
 
     public function bulkApprove()
     {
-        $this->dispatch('approveEntity', $this->model, $this->selectedItems, $this->nameColumn, $this->primaryKey);
+        $this->dispatch('approveEntity', $this->model, $this->selectedItems, $this->type, $this->nameColumn, $this->primaryKey);
     }
 
     protected function getPaginationItems()

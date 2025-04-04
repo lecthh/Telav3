@@ -21,12 +21,14 @@
             'onRowClick' => 'showDesignerDetails',
             'onEdit' => 'editCompany',
             'nameColumn' => 'user_name',
-            'bulkAction' => 'approve'
+            'onApprove' => 'approveEntity',
+            'bulkAction' => 'approve',
+            'type' => 'approve'
             ])
 
         </main>
     </div>
-    @livewire('designer-edit-modal')
+    @livewire('approve-modal')
     @livewire('designer-details-modal')
     @livewire('delete-confirmation-modal')
     @livewire('approve-modal')

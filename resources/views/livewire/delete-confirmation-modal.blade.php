@@ -1,9 +1,9 @@
 <div>
     @if($selectedItems && $showDeleteModal)
     <x-view-details-modal
-        :title="$actionType === 'approve' 
-            ? 'Approve Denial for ' . $entityType . ': ' . ($displayNames[0] ?? '')
-            : 'Block ' . $entityType . ': ' . ($displayNames[0] ?? '')"
+        :title="count($selectedItems) > 1
+        ? ($actionType === 'approve' ? 'Approve Denial for Multiple ' . $entityType : 'Block Multiple ' . $entityType)
+        : ($actionType === 'approve' ? 'Approve Denial for ' . $entityType . ': ' . ($displayNames[0] ?? '') : 'Block ' . $entityType . ': ' . ($displayNames[0] ?? ''))"
         wire:model="showDeleteModal">
 
         <div class="bg-white px-6 pt-6 pb-5 sm:p-7">

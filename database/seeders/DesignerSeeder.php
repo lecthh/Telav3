@@ -38,6 +38,7 @@ class DesignerSeeder extends Seeder
                     'order_history' => json_encode(78), // Convert to JSON
                     'average_rating' => 4.8,
                     'review_count' => 65,
+                    'is_verified' => true,
                 ],
             ],
             [
@@ -59,6 +60,7 @@ class DesignerSeeder extends Seeder
                     'order_history' => json_encode(56), // Convert to JSON
                     'average_rating' => 4.7,
                     'review_count' => 48,
+                    'is_verified' => true,
                 ],
             ],
         ];
@@ -95,6 +97,7 @@ class DesignerSeeder extends Seeder
                     'order_history' => json_encode(112), // Convert to JSON
                     'average_rating' => 4.9,
                     'review_count' => 95,
+                    'is_verified' => true,
                 ],
             ],
             [
@@ -116,6 +119,7 @@ class DesignerSeeder extends Seeder
                     'order_history' => json_encode(87), // Convert to JSON
                     'average_rating' => 4.7,
                     'review_count' => 72,
+                    'is_verified' => true,
                 ],
             ],
             
@@ -139,6 +143,7 @@ class DesignerSeeder extends Seeder
                     'order_history' => json_encode(145), // Convert to JSON
                     'average_rating' => 4.8,
                     'review_count' => 132,
+                    'is_verified' => true,
                 ],
             ],
             
@@ -162,6 +167,7 @@ class DesignerSeeder extends Seeder
                     'order_history' => json_encode(203), // Convert to JSON
                     'average_rating' => 4.9,
                     'review_count' => 187,
+                    'is_verified' => true,
                 ],
             ],
             [
@@ -183,6 +189,7 @@ class DesignerSeeder extends Seeder
                     'order_history' => json_encode(176), // Convert to JSON
                     'average_rating' => 4.8,
                     'review_count' => 158,
+                    'is_verified' => true,
                 ],
             ],
         ];

@@ -13,7 +13,7 @@
             ['field' => 'status', 'label' => 'Status '],
             ],
             'primaryKey' => 'user_id',
-            'constantFilterNot' => ['role_type_id' => 4, ],
+            'constantFilter' => ['role_type_id' => 1, ],
             'sortableRelations' => [
             'role_name' => [
             'table' => 'role_types',

@@ -21,12 +21,14 @@
             'onRowClick' => 'showDesignerDetails',
             'onEdit' => 'editDesigner',
             'nameColumn' => 'user_name',
-            'bulkAction' => 'delete'
+            'onApprove' => 'approveEntity',
+            'bulkAction' => 'delete',
+            'type' => 'manage',
             ])
-
         </main>
     </div>
     @livewire('designer-edit-modal')
+    @livewire('approve-modal')
     @livewire('designer-details-modal')
     @livewire('delete-confirmation-modal')
     @include('layout.footer')
