@@ -34,6 +34,7 @@ class BaseTable extends Component
     public $nameColumn;
     public $selectAll = false;
     public $bulkAction;
+    public $type;
 
     protected $listeners = [
         'refreshTable' => 'handleRefreshTable'
@@ -46,7 +47,7 @@ class BaseTable extends Component
         'perPage' => ['except' => 10],
     ];
 
-    public function mount($model, $columns = [], $primaryKey = 'id', $sortableRelations = [], $searchableRelations = [], $perPage = 10, $onRowClick)
+    public function mount($model, $columns = [], $primaryKey = 'id', $sortableRelations = [], $searchableRelations = [], $perPage = 10, $onRowClick, $type)
     {
         $this->model = $model;
         $this->columns = $columns;
@@ -56,6 +57,7 @@ class BaseTable extends Component
         $this->searchableRelations = $searchableRelations;
         $this->perPage = $perPage;
         $this->onRowClick = $onRowClick;
+        $this->type = $type;
     }
 
     public function handleRefreshTable()
@@ -113,7 +115,7 @@ class BaseTable extends Component
     public function openApproveModal($id)
     {
         Log::info($this->selectedItem);
-        $this->dispatch($this->onApprove, $this->model, [$id], $this->nameColumn, $this->primaryKey);
+        $this->dispatch($this->onApprove, $this->model, [$id], $this->type, $this->nameColumn, $this->primaryKey);
     }
 
     public function clearSelectedItems()
@@ -124,7 +126,7 @@ class BaseTable extends Component
 
     public function openDeleteModal($id)
     {
-        $this->dispatch('deleteEntity', $this->model, $id, $this->nameColumn, $this->primaryKey);
+        $this->dispatch('deleteEntity', $this->model, $id, $this->type, $this->nameColumn, $this->primaryKey);
     }
 
     public function bulkDelete()

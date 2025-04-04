@@ -240,6 +240,7 @@ class ModalLogin extends ModalComponent
                 'password' => Hash::make($this->password),
                 'role_type_id' => 1,
                 'email_verified_at' => now(),
+                'status' => 'active',
             ]);
 
             Log::info('User created successfully', ['user_id' => $user->id]);

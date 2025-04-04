@@ -21,7 +21,8 @@
             'onRowClick' => 'showCompanyDetails',
             'onApprove' => 'approveEntity',
             'nameColumn' => 'company_name',
-            'bulkAction' => 'approve'
+            'bulkAction' => 'approve',
+            'type' => 'approve',
             ])
         </main>
     </div>

@@ -9,12 +9,35 @@ class ProductionCompany extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['company_name', 'company_logo', 'production_type', 'address', 'phone', 'avg_rating', 'review_count', 'apparel_type', 'email', 'user_id', 'is_verified'];
+    const STATUS_ACTIVE = 'active';
+    const STATUS_BLOCKED = 'blocked';
+
+    protected $fillable = ['company_name', 'company_logo', 'production_type', 'address', 'phone', 'avg_rating', 'review_count', 'apparel_type', 'email', 'user_id', 'is_verified', 'status'];
 
     protected $casts = [
         'production_type' => 'array',
         'apparel_type' => 'array'
     ];
+
+    public function isActive(): bool
+    {
+        return $this->status === self::STATUS_ACTIVE;
+    }
+
+    public function isBlocked(): bool
+    {
+        return $this->status === self::STATUS_BLOCKED;
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', self::STATUS_ACTIVE);
+    }
+
+    public function scopeBlocked($query)
+    {
+        return $query->where('status', self::STATUS_BLOCKED);
+    }
 
     public function getApparelTypeNames()
     {
