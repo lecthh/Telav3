@@ -46,8 +46,8 @@
         // Mixed statuses: no bulk action allowed
         return null;
     }
-}">     
-@if($this->type === 'manage')
+}">
+                @if($this->type === 'manage')
                 <div x-show="selectedItems.length > 0" class="flex gap-2">
                     <template x-if="bulkActionType === 'active'">
                         <button wire:click="bulkDelete" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded flex items-center gap-2 transition duration-200">
@@ -62,12 +62,12 @@
                 </div>
                 @else
                 <div x-show="selectedItems.length > 0" class="flex gap-2">
-                        <button wire:click="bulkDelete" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded flex items-center gap-2 transition duration-200">
-                            Deny
-                        </button>
-                        <button wire:click="bulkApprove" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded flex items-center gap-2 transition duration-200">
-                            Approve
-                        </button>
+                    <button wire:click="bulkDelete" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded flex items-center gap-2 transition duration-200">
+                        Deny
+                    </button>
+                    <button wire:click="bulkApprove" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded flex items-center gap-2 transition duration-200">
+                        Approve
+                    </button>
                 </div>
                 @endif
             </div>
@@ -135,9 +135,11 @@
                             </div>
                         </th>
                         @endforeach
+                        @if($this->showActions)
                         <th class="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                             Actions
                         </th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -163,7 +165,7 @@
                             {{ data_get($item, $field) }}
                         </td>
                         @endforeach
-
+                        @if($this->showActions)
                         <td class="px-6 py-4 whitespace-nowrap" wire:key="item-{{ $item->{$primaryKey} }}-{{ $item->status }}" @click.stop>
                             <div class="flex justify-center space-x-2">
                                 @if($this->type === 'approve')
@@ -234,6 +236,7 @@
                                 </x-popover>
                             </div>
                         </td>
+                        @endif
                     </tr>
                     @empty
                     <tr>

@@ -35,6 +35,7 @@ class BaseTable extends Component
     public $selectAll = false;
     public $bulkAction;
     public $type;
+    public $showActions;
 
     protected $listeners = [
         'refreshTable' => 'handleRefreshTable'
@@ -47,7 +48,7 @@ class BaseTable extends Component
         'perPage' => ['except' => 10],
     ];
 
-    public function mount($model, $columns = [], $primaryKey = 'id', $sortableRelations = [], $searchableRelations = [], $perPage = 10, $onRowClick, $type)
+    public function mount($model, $columns = [], $primaryKey = 'id', $sortableRelations = [], $searchableRelations = [], $perPage = 10, $onRowClick, $type, $showActions = true)
     {
         $this->model = $model;
         $this->columns = $columns;
@@ -58,6 +59,7 @@ class BaseTable extends Component
         $this->perPage = $perPage;
         $this->onRowClick = $onRowClick;
         $this->type = $type;
+        $this->showActions = $showActions;
     }
 
     public function handleRefreshTable()
@@ -285,12 +287,25 @@ class BaseTable extends Component
             }
         }
 
+        // Automatically eager load relations referenced in columns (e.g., "productionCompany.company_name")
+        $relationsToEagerLoad = [];
+        foreach ($this->columns as $column) {
+            $field = is_array($column) ? ($column['field'] ?? null) : $column;
+            if ($field && str_contains($field, '.')) {
+                $relationName = explode('.', $field)[0];
+                $relationsToEagerLoad[] = $relationName;
+            }
+        }
+        $relationsToEagerLoad = array_unique($relationsToEagerLoad);
+        if (!empty($relationsToEagerLoad)) {
+            $query->with($relationsToEagerLoad);
+        }
+
         // Apply search
         if ($this->search) {
             $query->where(function (Builder $q) use ($table) {
                 foreach ($this->columns as $column) {
                     $field = is_array($column) ? ($column['field'] ?? null) : $column;
-
                     if ($field && !str_contains($field, '.') && !$this->isAccessor($field)) {
                         $q->orWhere("$table.$field", 'like', '%' . $this->search . '%');
                     }
@@ -323,7 +338,29 @@ class BaseTable extends Component
         }
 
         // Apply sorting
-        if (isset($this->sortableRelations[$this->sortField])) {
+        if (strpos($this->sortField, '.') !== false) {
+            // Assume sortField is in the format "relation.column"
+            list($relationName, $relationColumn) = explode('.', $this->sortField, 2);
+            $modelInstance = new $this->model;
+            if (method_exists($modelInstance, $relationName)) {
+                $relationObj = $modelInstance->$relationName();
+                // For belongsTo relationships, we can get join keys
+                if (method_exists($relationObj, 'getForeignKeyName') && method_exists($relationObj, 'getOwnerKeyName')) {
+                    $foreignKey = $relationObj->getForeignKeyName();
+                    $ownerKey = $relationObj->getOwnerKeyName();
+                    $relatedTable = $relationObj->getRelated()->getTable();
+                    $query->join($relatedTable, "$table.$foreignKey", '=', "$relatedTable.$ownerKey")
+                        ->select("$table.*")
+                        ->orderBy("$relatedTable.$relationColumn", $this->sortDirection);
+                } else {
+                    // Fallback: if relation isn't a standard belongsTo, order by base table field
+                    $query->orderBy("$table.{$this->sortField}", $this->sortDirection);
+                }
+            } else {
+                // Fallback: if the relation method doesn't exist, order by base table field
+                $query->orderBy("$table.{$this->sortField}", $this->sortDirection);
+            }
+        } else if (isset($this->sortableRelations[$this->sortField])) {
             $relation = $this->sortableRelations[$this->sortField];
 
             if (isset($relation['table'])) {
@@ -334,7 +371,7 @@ class BaseTable extends Component
                 $relationKey = $relation['relation_key'] ?? 'id';
                 $foreignKey = $relation['foreign_key'] ?? $relation['relation'] . '_id';
 
-                $subQuery = $model->{$relation['relation']}()->getRelated()
+                $subQuery = $modelInstance->{$relation['relation']}()->getRelated()
                     ->select($relationKey)
                     ->orderBy($relation['column'], $this->sortDirection);
 
@@ -346,8 +383,10 @@ class BaseTable extends Component
             }
         }
 
+
         return $query;
     }
+
 
     // Helper method to get current page items
     protected function getCurrentPageItems()

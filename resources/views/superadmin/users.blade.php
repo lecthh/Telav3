@@ -38,7 +38,6 @@
     </div>
 
     @livewire('user-details-modal')
-    @livewire('edit-user-details-modal')
     @livewire('delete-confirmation-modal')
     @include('layout.footer')
 </body>

@@ -55,6 +55,13 @@ class Order extends Model
         return $this->belongsTo(OrderStatus::class, 'status_id', 'status_id');
     }
 
+    public function getDesignerNameAttribute()
+    {
+        return $this->designer && $this->designer->user
+            ? $this->designer->user->name
+            : 'N/A';
+    }
+
     public function apparelType()
     {
         return $this->belongsTo(ApparelType::class, 'apparel_type', 'id');
@@ -88,12 +95,12 @@ class Order extends Model
     {
         return $this->hasMany(Notification::class, 'order_id', 'order_id');
     }
-    
+
     public function balanceReceipts()
     {
         return $this->hasMany(BalanceReceipt::class, 'order_id', 'order_id');
     }
-    
+
     public function additionalPayments()
     {
         return $this->hasMany(AdditionalPayment::class, 'order_id', 'order_id');

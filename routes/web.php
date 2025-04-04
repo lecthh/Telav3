@@ -276,6 +276,7 @@ Route::middleware(['SuperAdminOnly'])->group(function () {
     Route::get('/super-admin/designer-companies', [SuperAdminController::class, 'designerManagement'])->name('superadmin.designers');
     Route::get('/super-admin/designer-companies/approve', [SuperAdminController::class, 'approveDesigners'])->name('superadmin.designers.approve');
     Route::get('/super-admin/reports', [SuperAdminController::class, 'reports'])->name('superadmin.reports');
+    Route::get('/super-admin/orders', [SuperAdminController::class, 'orders'])->name('superadmin.orders');
 });
 
 Route::get('/order/additional-payment/{order_id}', [App\Http\Controllers\AdditionalPaymentController::class, 'showPaymentDetails'])
