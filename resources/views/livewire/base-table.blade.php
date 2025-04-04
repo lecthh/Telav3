@@ -201,9 +201,10 @@
                                         <button
                                             wire:click="openDeleteModal('{{ $item->{$primaryKey} }}')"
                                             class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs rounded-md font-medium text-red-600 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
-                                            <svg width="14" height="14" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 101 101" id="block">
-                                                <path d="M50.5 16.4c-18.8 0-34.1 15.3-34.1 34.1 0 9.3 3.8 17.8 9.9 24 0 0 0 .1.1.1h.1c6.2 6.2 14.7 10 24.1 10 18.8 0 34.1-15.3 34.1-34.1S69.3 16.4 50.5 16.4zm0 4.8c7.2 0 13.8 2.6 18.9 6.9L28.2 69.4c-4.3-5.1-6.9-11.7-6.9-18.9-.1-16.1 13.1-29.3 29.2-29.3zm0 58.6c-7.2 0-13.8-2.6-18.9-7l41.2-41.2c4.4 5.1 7 11.7 7 18.9 0 16.1-13.2 29.3-29.3 29.3z"></path>
-                                            </svg>
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M4.93 4.93L19.07 19.07M19.0699 4.92999L4.92993 19.07M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
                                         </button>
                                     </x-slot>
                                     Block this item
