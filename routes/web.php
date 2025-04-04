@@ -285,3 +285,13 @@ Route::get('/order/additional-payment/{order_id}', [App\Http\Controllers\Additio
 Route::post('/order/process-additional-payment/{order_id}', [App\Http\Controllers\AdditionalPaymentController::class, 'processPayment'])
     ->name('order.process-additional-payment')
     ->middleware('CustomerOnly');
+
+Route::get('/pending-designers-count', function (Request $request) {
+    $count = Designer::where('is_verified', false)->count();
+    return response()->json($count);
+});
+
+Route::get('/pending-production-company-count', function (Request $request) {
+    $count = ProductionCompany::where('is_verified', false)->count();
+    return response()->json($count);
+});
