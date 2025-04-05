@@ -27,7 +27,13 @@
                             </svg>
                         </div>
                         <div>
-                            <h1 class="font-gilroy font-bold text-2xl text-gray-900">Additional Payment</h1>
+                            <h1 class="font-gilroy font-bold text-2xl text-gray-900">
+                                @if(isset($isBalancePayment) && $isBalancePayment)
+                                    Remaining Balance Payment
+                                @else
+                                    Additional Order Payment
+                                @endif
+                            </h1>
                             <p class="text-gray-500">Order No. <span class="font-medium text-gray-700">{{ $order->order_id }}</span></p>
                         </div>
                     </div>
@@ -59,24 +65,31 @@
                     <h2 class="font-gilroy font-bold text-xl mb-5">Order Summary</h2>
 
                     <div class="space-y-3 mb-6">
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Original Quantity:</span>
-                            <span class="font-medium">{{ $originalQuantity }} items</span>
-                        </div>
-                        <div class="flex justify-between items-center text-green-600">
-                            <span class="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1">
-                                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                                    <polyline points="19 12 12 19 5 12"></polyline>
-                                </svg>
-                                Additional Quantity:
-                            </span>
-                            <span class="font-medium">+ {{ $additionalQuantity }} items</span>
-                        </div>
-                        <div class="flex justify-between items-center font-medium border-t border-gray-200 pt-2">
-                            <span>New Total Quantity:</span>
-                            <span>{{ $newQuantity }} items</span>
-                        </div>
+                        @if(isset($isBalancePayment) && $isBalancePayment)
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Current Quantity:</span>
+                                <span class="font-medium">{{ $originalQuantity }} items</span>
+                            </div>
+                        @else
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Original Quantity:</span>
+                                <span class="font-medium">{{ $originalQuantity }} items</span>
+                            </div>
+                            <div class="flex justify-between items-center text-green-600">
+                                <span class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <polyline points="19 12 12 19 5 12"></polyline>
+                                    </svg>
+                                    Additional Quantity:
+                                </span>
+                                <span class="font-medium">+ {{ $additionalQuantity }} items</span>
+                            </div>
+                            <div class="flex justify-between items-center font-medium border-t border-gray-200 pt-2">
+                                <span>New Total Quantity:</span>
+                                <span>{{ $newQuantity }} items</span>
+                            </div>
+                        @endif
                     </div>
 
                     <div class="space-y-3 mb-6">
@@ -84,32 +97,70 @@
                             <span class="text-gray-600">Unit Price:</span>
                             <span class="font-medium">₱{{ number_format($unitPrice, 2) }}</span>
                         </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Original Price:</span>
-                            <span class="font-medium">₱{{ number_format($originalPrice, 2) }}</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Original Downpayment (Paid):</span>
-                            <span class="font-medium">₱{{ number_format($order->downpayment_amount, 2) }}</span>
-                        </div>
-                        <div class="flex justify-between items-center text-green-600">
-                            <span class="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1">
-                                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                                    <polyline points="19 12 12 19 5 12"></polyline>
-                                </svg>
-                                Additional Payment (Required):
-                            </span>
-                            <span class="font-medium">₱{{ number_format($amount, 2) }}</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Balance Due (Upon Completion):</span>
-                            <span class="font-medium">₱{{ number_format($balanceDue, 2) }}</span>
-                        </div>
-                        <div class="flex justify-between items-center font-medium text-lg border-t border-gray-200 pt-3 mt-1">
-                            <span>New Total Price:</span>
-                            <span class="text-cPrimary">₱{{ number_format($newTotalPrice, 2) }}</span>
-                        </div>
+                        
+                        @if(isset($isBalancePayment) && $isBalancePayment)
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Total Price:</span>
+                                <span class="font-medium">₱{{ number_format($originalPrice, 2) }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Downpayment (Paid):</span>
+                                <span class="font-medium">₱{{ number_format($order->downpayment_amount, 2) }}</span>
+                            </div>
+                            @if(isset($previousPayments) && $previousPayments > 0)
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Previous Additional Payments:</span>
+                                <span class="font-medium">₱{{ number_format($previousPayments, 2) }}</span>
+                            </div>
+                            @endif
+                            <div class="flex justify-between items-center text-green-600">
+                                <span class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <polyline points="19 12 12 19 5 12"></polyline>
+                                    </svg>
+                                    Remaining Balance (Due Now):
+                                </span>
+                                <span class="font-medium">₱{{ number_format($amount, 2) }}</span>
+                            </div>
+                            <div class="flex justify-between items-center font-medium text-lg border-t border-gray-200 pt-3 mt-1">
+                                <span>Total Amount Paid (After Payment):</span>
+                                <span class="text-cPrimary">₱{{ number_format($newTotalPrice, 2) }}</span>
+                            </div>
+                        @else
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Original Price:</span>
+                                <span class="font-medium">₱{{ number_format($originalPrice, 2) }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Original Downpayment (Paid):</span>
+                                <span class="font-medium">₱{{ number_format($order->downpayment_amount, 2) }}</span>
+                            </div>
+                            @if(isset($previousPayments) && $previousPayments > 0)
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Previous Additional Payments:</span>
+                                <span class="font-medium">₱{{ number_format($previousPayments, 2) }}</span>
+                            </div>
+                            @endif
+                            <div class="flex justify-between items-center text-green-600">
+                                <span class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <polyline points="19 12 12 19 5 12"></polyline>
+                                    </svg>
+                                    Additional Payment (Required):
+                                </span>
+                                <span class="font-medium">₱{{ number_format($amount, 2) }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Balance Due (Upon Completion):</span>
+                                <span class="font-medium">₱{{ number_format($balanceDue, 2) }}</span>
+                            </div>
+                            <div class="flex justify-between items-center font-medium text-lg border-t border-gray-200 pt-3 mt-1">
+                                <span>New Total Price:</span>
+                                <span class="text-cPrimary">₱{{ number_format($newTotalPrice, 2) }}</span>
+                            </div>
+                        @endif
                     </div>
 
                     <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
@@ -121,7 +172,11 @@
                             </div>
                             <div class="ml-3">
                                 <p class="text-sm text-yellow-700">
-                                    Please complete the payment for your additional quantity. After confirmation, you will be redirected to complete your order.
+                                    @if(request()->has('is_balance_payment') && request()->query('is_balance_payment') == 1)
+                                        Please complete the payment for your remaining balance. Your order is ready for collection after this payment is confirmed.
+                                    @else
+                                        Please complete the payment for your additional quantity. After confirmation, you will be redirected to complete your order.
+                                    @endif
                                 </p>
                             </div>
                         </div>
@@ -183,11 +238,15 @@
                 <form action="{{ route('order.process-additional-payment', ['order_id' => $order->order_id]) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="amount" value="{{ $amount }}">
-                    <input type="hidden" name="additional_quantity" value="{{ $additionalQuantity }}">
-                    <input type="hidden" name="new_total_quantity" value="{{ $newQuantity }}">
-
-                    <!-- Hidden input to store size data from the previous page -->
-                    <input type="hidden" id="size_data" name="size_data" value="{{ request()->query('size_data', '') }}">
+                    
+                    @if(request()->has('is_balance_payment') && request()->query('is_balance_payment') == 1)
+                        <input type="hidden" name="is_balance_payment" value="1">
+                    @else
+                        <input type="hidden" name="additional_quantity" value="{{ $additionalQuantity }}">
+                        <input type="hidden" name="new_total_quantity" value="{{ $newQuantity }}">
+                        <!-- Hidden input to store size data from the previous page -->
+                        <input type="hidden" id="size_data" name="size_data" value="{{ request()->query('size_data', '') }}">
+                    @endif
 
                     <div class="mb-6">
                         <label for="payment_proof" class="block text-sm font-medium text-gray-700 mb-2">Upload Proof of Payment</label>
@@ -249,7 +308,11 @@
                             Back
                         </a>
                         <button type="submit" id="confirm-button" class="inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-cPrimary hover:bg-cPrimary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
-                            Confirm Order & Submit Payment
+                            @if(request()->has('is_balance_payment') && request()->query('is_balance_payment') == 1)
+                                Submit Balance Payment
+                            @else
+                                Confirm Order & Submit Payment
+                            @endif
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
                             </svg>

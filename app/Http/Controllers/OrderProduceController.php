@@ -328,6 +328,69 @@ class OrderProduceController extends Controller {
         $order = Order::find($order_id);
         return view('partner.printer.ready.order', compact('order'));
     }
+    
+    /**
+     * Send a payment reminder to the customer
+     * 
+     * @param string $order_id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function sendPaymentReminder($order_id)
+    {
+        try {
+            $order = Order::findOrFail($order_id);
+            $user = $order->user;
+            
+            // Calculate total payments already made (downpayment + any additional payments)
+            $additionalPayments = $order->additionalPayments()->sum('amount');
+            $totalPaid = $order->downpayment_amount + $additionalPayments;
+            
+            // Calculate actual balance due
+            $balanceDue = $order->final_price - $totalPaid;
+            
+            if ($balanceDue <= 0) {
+                $this->toast('This order has no remaining balance to pay.', 'info');
+                return redirect()->back();
+            }
+            
+            // Generate payment link for balance payment
+            $paymentLink = route('order.additional-payment', [
+                'order_id' => $order->order_id, 
+                'amount' => $balanceDue,
+                'is_balance_payment' => 1
+            ]);
+            
+            // Send reminder email to customer
+            Mail::send('mail.paymentReminder', [
+                'name' => $user->name,
+                'orderNumber' => substr($order->order_id, -6),
+                'balanceDue' => $balanceDue,
+                'paymentLink' => $paymentLink,
+                'companyName' => $order->productionCompany->company_name
+            ], function ($message) use ($user, $order) {
+                $message->to($user->email);
+                $message->subject('Reminder: Complete Your Payment for Order #' . substr($order->order_id, -6));
+            });
+            
+            // Create notification for customer
+            Notification::create([
+                'user_id' => $user->user_id,
+                'message' => 'Payment reminder sent - Remaining balance: ' . number_format($balanceDue, 2) . ' PHP',
+                'is_read' => false,
+                'order_id' => $order->order_id,
+            ]);
+            
+            $this->toast('Payment reminder sent to ' . $user->email, 'success');
+            return redirect()->back();
+        } catch (\Exception $e) {
+            Log::error('Payment Reminder Error: ' . $e->getMessage(), [
+                'order_id' => $order_id,
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->toast('An error occurred while sending the payment reminder: ' . $e->getMessage(), 'error');
+            return redirect()->back();
+        }
+    }
 
     public function readyOrderPost($order_id)
     {

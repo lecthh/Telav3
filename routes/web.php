@@ -128,6 +128,7 @@ Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->g
         Route::get('/ready', [OrderProduceController::class, 'ready'])->name('ready');
         Route::get('/ready-x/{order_id}', [OrderProduceController::class, 'readyOrder'])->name('ready-x');
         Route::post('/ready-x/{order_id}/post', [OrderProduceController::class, 'readyOrderPost'])->name('ready-x-post');
+        Route::post('/ready-x/{order_id}/send-payment-reminder', [OrderProduceController::class, 'sendPaymentReminder'])->name('send-payment-reminder');
 
         Route::get('/completed', [OrderProduceController::class, 'completed'])->name('completed');
         Route::get('/completed-x/{order_id}', [OrderProduceController::class, 'completedOrder'])->name('completed-x');

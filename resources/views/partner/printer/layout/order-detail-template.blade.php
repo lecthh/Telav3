@@ -352,6 +352,10 @@
                         @else
                         {!! $pageSpecificContent ?? '' !!}
                         @endif
+                        
+                        @hasSection('additional-actions')
+                        @yield('additional-actions')
+                        @endif
                     </div>
                 </div>
             </div>
