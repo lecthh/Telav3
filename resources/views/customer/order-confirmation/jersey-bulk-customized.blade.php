@@ -358,12 +358,12 @@
                         </a>
                         
                         <!-- Additional payment button (hidden by default) -->
-                        <a id="pay-additional-btn" href="#" class="hidden inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                        <button type="submit" id="pay-additional-btn" name="require_payment" value="1" class="hidden inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
                             Pay Additional Payment
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                             </svg>
-                        </a>
+                        </button>
                         
                         <!-- Regular confirm button -->
                         <button type="submit" id="confirm-button" class="inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-cPrimary hover:bg-cPrimary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
@@ -567,19 +567,11 @@
             document.getElementById('new-quantity-input').value = totalQuantity;
             document.getElementById('additional-payment-input').value = additionalPaymentAmount.toFixed(2);
             
-            // Update Pay Additional button link with order ID, amount, and size data
-            const payAdditionalBtn = document.getElementById('pay-additional-btn');
-            if (payAdditionalBtn) {
-                // Collect form data for customizations
-                const formData = collectFormData();
-                
-                // Encode the form data as JSON and add to the URL
-                const formDataParam = encodeURIComponent(JSON.stringify(formData));
-                payAdditionalBtn.href = "{{ route('order.additional-payment', ['order_id' => $order->order_id]) }}?amount=" +
-                    additionalPaymentAmount.toFixed(2) +
-                    "&quantity=" + additionalQuantity +
-                    "&size_data=" + formDataParam;
-            }
+            // Update hidden inputs for the form when submitting for additional payment
+            document.getElementById('additional-payment-input').value = additionalPaymentAmount.toFixed(2);
+            
+            // The "Pay Additional Payment" is now a button within the same form, not a separate link
+            // The form data will be submitted with the form, and the controller will redirect to the payment page
         }
         
         document.addEventListener('DOMContentLoaded', function() {
@@ -608,6 +600,9 @@
                         alert('You must have at least 10 valid jersey entries before proceeding to payment.');
                         return;
                     }
+                    
+                    // Set a flag to indicate this is an additional payment submission
+                    document.getElementById('customizationForm').action = "{{ route('confirm-jerseybulk-custom-post') }}";
                 });
             }
         });

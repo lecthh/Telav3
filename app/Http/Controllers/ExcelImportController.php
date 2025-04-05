@@ -96,51 +96,22 @@ class ExcelImportController extends Controller
                 ];
             }
             
-            // Save the emergency jersey details directly to the database
+            // Just prepare sample jersey details without saving to database yet
             $order = Order::where('order_id', $request->order_id)
                 ->where('token', $request->token)
                 ->first();
             
             if ($order) {
-                // Clean up any existing entries before adding new ones
-                \App\Models\CustomizationDetails::where('order_ID', $order->order_id)->delete();
-                
-                // Add each jersey detail to the database
-                $savedCount = 0;
-                foreach ($jerseyDetails as $detail) {
-                    try {
-                        \App\Models\CustomizationDetails::create([
-                            'customization_details_ID' => uniqid(),
-                            'order_ID' => $order->order_id,
-                            'name' => $detail['name'],
-                            'jersey_number' => $detail['jerseyNo'],
-                            'number' => $detail['jerseyNo'], // Important: Set number field
-                            'sizes_ID' => $detail['topSize'],
-                            'short_size' => $detail['shortSize'],
-                            'has_pocket' => $detail['hasPocket'],
-                            'remarks' => $detail['remarks'] ?? null,
-                            'quantity' => 1,
-                        ]);
-                        $savedCount++;
-                    } catch (\Exception $e) {
-                        Log::error('Failed to save emergency jersey detail: ' . $e->getMessage(), [
-                            'detail' => $detail
-                        ]);
-                    }
-                }
-                
-                Log::info('Saved ' . $savedCount . ' emergency jersey details directly to database');
-                
-                // Finally, mark the order as confirmed
-                $order->token = null;
-                $order->save();
+                // Just store the jersey details in session for the form
+                // Don't save to database yet - this will happen when user confirms
+                session(['imported_jerseys' => $jerseyDetails]);
                 
                 // Show a success message
-                $this->toast('Jersey customization details submitted successfully! Your order is ready to be processed.', 'success');
+                $this->toast('Sample jersey details generated successfully. Please review and confirm your order.', 'success');
                 
-                // Redirect to home page instead of back to the confirmation page (which would fail due to missing token)
-                Log::info('Emergency bypass: Created and saved ' . count($jerseyDetails) . ' sample jersey details');
-                return redirect()->route('home');
+                // Redirect back to the form page to review and potentially make additional payment
+                Log::info('Emergency bypass: Created ' . count($jerseyDetails) . ' sample jersey details');
+                return redirect()->route('confirm-jerseybulk-custom', ['token' => $order->token]);
             }
             
             Log::info('Emergency bypass: Created ' . count($jerseyDetails) . ' sample jersey details');
@@ -231,46 +202,25 @@ class ExcelImportController extends Controller
                 ]);
             }
             
-            // Save the jersey details directly to the database before redirecting
+            // Just store jersey details in session, don't save to database yet
             $order = Order::where('order_id', $request->order_id)
                 ->where('token', $request->token)
                 ->first();
             
             if ($order) {
-                // Clean up any existing entries before adding new ones
-                \App\Models\CustomizationDetails::where('order_ID', $order->order_id)->delete();
+                // Store the imported jersey details in session
+                session(['imported_jerseys' => $jerseyDetails]);
                 
-                // Add each jersey detail to the database
-                $savedCount = 0;
-                foreach ($jerseyDetails as $detail) {
-                    try {
-                        \App\Models\CustomizationDetails::create([
-                            'customization_details_ID' => uniqid(),
-                            'order_ID' => $order->order_id,
-                            'name' => $detail['name'],
-                            'jersey_number' => $detail['jerseyNo'],
-                            'number' => $detail['jerseyNo'], // Important: Set number field
-                            'sizes_ID' => $detail['topSize'],
-                            'short_size' => $detail['shortSize'],
-                            'has_pocket' => $detail['hasPocket'],
-                            'remarks' => $detail['remarks'] ?? null,
-                            'quantity' => 1,
-                        ]);
-                        $savedCount++;
-                    } catch (\Exception $e) {
-                        Log::error('Failed to save jersey detail: ' . $e->getMessage(), [
-                            'detail' => $detail
-                        ]);
-                    }
-                }
+                Log::info('Excel import completed. Jersey details stored in session for review.');
+                Log::info('Total jerseys: ' . count($jerseyDetails));
                 
-                Log::info('Saved ' . $savedCount . ' jersey details directly from Excel import');
-                
-                // Finally, mark the order as confirmed
-                $order->token = null;
-                $order->save();
+                // Redirect to the confirmation form so user can review and submit/pay
+                $this->toast('Jersey details imported successfully. Please review and confirm your order.', 'success');
+                return redirect()->route('confirm-jerseybulk-custom', ['token' => $order->token]);
             }
             
+            // Only reach here if we didn't successfully save to the database yet
+            // Redirect to the form page with the imported data in session
             return redirect()->route('confirm-jerseybulk-custom', ['token' => $request->token])
                             ->with('imported_jerseys', $jerseyDetails);
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {

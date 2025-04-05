@@ -117,7 +117,25 @@ class ConfirmationLinkController extends Controller
             $order = Order::where('token', $token)->first();
 
             if (!$order) {
-                $this->toast('Invalid token or order.', 'error');
+                // Log the token validation failure
+                \Illuminate\Support\Facades\Log::info('Jersey form access - Invalid token', [
+                    'token' => $token,
+                    'user_ip' => $request->ip(),
+                    'user_agent' => $request->userAgent()
+                ]);
+                
+                // Check if this token was already used (find by order without token)
+                $completedOrder = Order::where(function($query) use ($token) {
+                    $query->whereNull('token')
+                          ->where('custom_design_info', 'like', '%Jersey order form completed%');
+                })->first();
+                
+                if ($completedOrder) {
+                    $this->toast('This jersey customization form has already been completed successfully.', 'info');
+                } else {
+                    $this->toast('Invalid token or order.', 'error');
+                }
+                
                 return redirect()->route('home');
             }
 
@@ -143,6 +161,10 @@ class ConfirmationLinkController extends Controller
 
             return view('customer.order-confirmation.jersey-bulk-customized', compact('order', 'rows', 'sizes'));
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Jersey form error: ' . $e->getMessage(), [
+                'token' => $token,
+                'exception' => $e->getTraceAsString()
+            ]);
             $this->toast('An error occurred while confirming the jersey customization: ' . $e->getMessage(), 'error');
             return redirect()->route('home');
         }
@@ -160,6 +182,9 @@ class ConfirmationLinkController extends Controller
                 'rows.*.shortSize' => 'required|integer',
                 'rows.*.hasPocket' => 'nullable|boolean',
                 'rows.*.remarks' => 'nullable|string',
+                'new_total_price' => 'nullable|numeric',
+                'new_quantity' => 'nullable|integer',
+                'additional_payment' => 'nullable|numeric',
             ]);
 
             $order = Order::where('order_id', $request->order_id)
@@ -178,6 +203,34 @@ class ConfirmationLinkController extends Controller
             if ($totalQuantity < 10) {
                 $this->toast('You must have at least 10 customization entries.', 'error');
                 return redirect()->back();
+            }
+            
+            // Check if additional payment is required (more jerseys than originally ordered)
+            if ($totalQuantity > $order->quantity) {
+                // Calculate additional payment amount
+                $unitPrice = $order->final_price / $order->quantity;
+                $additionalQuantity = $totalQuantity - $order->quantity;
+                $additionalPaymentAmount = ($additionalQuantity * $unitPrice) / 2; // 50% down payment
+                
+                \Illuminate\Support\Facades\Log::info('Additional payment required for jersey order', [
+                    'order_id' => $order->order_id,
+                    'original_quantity' => $order->quantity,
+                    'new_quantity' => $totalQuantity,
+                    'additional_quantity' => $additionalQuantity,
+                    'unit_price' => $unitPrice,
+                    'amount' => $additionalPaymentAmount
+                ]);
+                
+                // Save the jersey details to session temporarily
+                session(['temp_jersey_details' => $validatedData['rows']]);
+                
+                // Redirect to the additional payment page
+                $this->toast('Additional payment required for extra jerseys.', 'warning');
+                return redirect()->route('order.additional-payment', [
+                    'order_id' => $order->order_id,
+                    'amount' => $additionalPaymentAmount,
+                    'quantity' => $additionalQuantity
+                ]);
             }
 
             // Debug SQL Query
@@ -237,33 +290,80 @@ class ConfirmationLinkController extends Controller
             $count = \App\Models\CustomizationDetails::where('order_ID', $order->order_id)->count();
             \Illuminate\Support\Facades\Log::info('Final customization count: ' . $count . ' for order ' . $order->order_id);
 
+            // Store the production company user_id before nullifying the token
+            $productionCompanyUserId = $order->productionCompany->user_id;
+            $orderId = $order->order_id;
+            
+            // If quantity has changed, update the order quantity and price
+            if (!empty($request->new_quantity) && $request->new_quantity > $order->quantity) {
+                $originalQuantity = $order->quantity;
+                $newQuantity = $request->new_quantity;
+                
+                \Illuminate\Support\Facades\Log::info('Updating order quantity', [
+                    'order_id' => $orderId,
+                    'original_quantity' => $originalQuantity,
+                    'new_quantity' => $newQuantity
+                ]);
+                
+                // Update the order quantity and price
+                if (!empty($request->new_total_price)) {
+                    $order->final_price = $request->new_total_price;
+                }
+                $order->quantity = $newQuantity;
+            }
+            
+            // Mark the order as confirmed by nullifying the token
             $order->token = null;
+            $order->is_customized = true;
+            
+            // Add a note in custom_design_info
+            if ($order->custom_design_info) {
+                $order->custom_design_info .= ' [Jersey order form completed]';
+            } else {
+                $order->custom_design_info = '[Jersey order form completed]';
+            }
+            
             $order->save();
             
-            // Direct SQL update to ensure the order is marked as ready in all ways
-            \Illuminate\Support\Facades\DB::statement("
-                UPDATE orders 
-                SET 
-                    token = NULL,
-                    is_customized = 1,
-                    custom_design_info = CONCAT(IFNULL(custom_design_info, ''), ' [Jersey order form completed]')
-                WHERE order_id = ?
-            ", [$order->order_id]);
+            // Additional backup direct SQL update to ensure changes are saved
+            try {
+                \Illuminate\Support\Facades\DB::statement("
+                    UPDATE orders 
+                    SET 
+                        token = NULL,
+                        is_customized = 1,
+                        custom_design_info = CONCAT(IFNULL(custom_design_info, ''), ' [Jersey order form completed]')
+                    WHERE order_id = ?
+                ", [$orderId]);
+            } catch (\Exception $dbEx) {
+                \Illuminate\Support\Facades\Log::error('DB Update Error: ' . $dbEx->getMessage());
+                // Continue even if SQL update fails, since we already saved the model
+            }
             
-            \Illuminate\Support\Facades\Log::alert('CRITICAL JERSEY ORDER UPDATE', [
-                'order_id' => $order->order_id,
-                'action' => 'Form completed, token nullified, order ready for printing'
+            \Illuminate\Support\Facades\Log::alert('JERSEY ORDER FORM COMPLETED', [
+                'order_id' => $orderId,
+                'action' => 'Form completed, token nullified, order ready for processing',
+                'saved_entries' => $insertedCount,
+                'final_status' => 'Success'
             ]);
             
             // Notification for production company/printer
-            \App\Models\Notification::create([
-                'user_id' => $order->productionCompany->user_id,
-                'message' => 'Jersey customization details submitted for order #' . $order->order_id,
-                'is_read' => false,
-                'order_id' => $order->order_id,
-            ]);
+            try {
+                \App\Models\Notification::create([
+                    'user_id' => $productionCompanyUserId,
+                    'message' => 'Jersey customization details submitted for order #' . $orderId,
+                    'is_read' => false,
+                    'order_id' => $orderId,
+                ]);
+            } catch (\Exception $notifEx) {
+                \Illuminate\Support\Facades\Log::error('Notification Error: ' . $notifEx->getMessage());
+                // Continue even if notification creation fails
+            }
 
-            $this->toast('Jersey customization details submitted successfully!', 'success');
+            // Clear session data to avoid confusion on subsequent form submissions
+            session()->forget(['imported_jerseys', 'temp_jersey_details']);
+            
+            $this->toast('Jersey customization details submitted successfully! Your order is now ready to be processed.', 'success');
             return redirect()->route('home');
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Jersey form submit error: ' . $e->getMessage(), [

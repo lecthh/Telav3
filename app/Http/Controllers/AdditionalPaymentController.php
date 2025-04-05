@@ -138,6 +138,57 @@ class AdditionalPaymentController extends Controller
                 if ($request->has('size_data') && !empty($request->size_data)) {
                     $this->processCustomizationData($order, $request->size_data);
                 }
+                
+                // Check if we have jersey details stored in session from a form submission
+                if (session()->has('temp_jersey_details')) {
+                    $tempJerseyDetails = session('temp_jersey_details');
+                    \Illuminate\Support\Facades\Log::info('Processing jersey details from session', [
+                        'count' => count($tempJerseyDetails)
+                    ]);
+                    
+                    // First clean up any existing entries for this order
+                    try {
+                        \App\Models\CustomizationDetails::where('order_ID', $order->order_id)->delete();
+                    } catch (\Exception $e) {
+                        \Illuminate\Support\Facades\Log::error('Error cleaning up existing customization details: ' . $e->getMessage());
+                    }
+                    
+                    // Add jersey details from session
+                    foreach ($tempJerseyDetails as $row) {
+                        try {
+                            // Skip incomplete entries
+                            if (empty($row['name']) || empty($row['topSize']) || empty($row['shortSize'])) {
+                                continue;
+                            }
+                            
+                            \App\Models\CustomizationDetails::create([
+                                'customization_details_ID' => uniqid(),
+                                'order_ID' => $order->order_id,
+                                'name' => $row['name'],
+                                'jersey_number' => $row['jerseyNo'],
+                                'number' => $row['jerseyNo'], // Important: Set number field
+                                'sizes_ID' => $row['topSize'],
+                                'short_size' => $row['shortSize'],
+                                'has_pocket' => isset($row['hasPocket']) ? (bool) $row['hasPocket'] : false,
+                                'remarks' => $row['remarks'] ?? null,
+                                'quantity' => 1,
+                            ]);
+                        } catch (\Exception $rowEx) {
+                            \Illuminate\Support\Facades\Log::error('Error creating jersey detail: ' . $rowEx->getMessage());
+                        }
+                    }
+                    
+                    // Clear the session data
+                    session()->forget('temp_jersey_details');
+                    
+                    // Set order as customized
+                    $order->is_customized = true;
+                    if ($order->custom_design_info) {
+                        $order->custom_design_info .= ' [Jersey order form completed]';
+                    } else {
+                        $order->custom_design_info = '[Jersey order form completed]';
+                    }
+                }
             }
             
             // Invalidate token to indicate order is confirmed
@@ -312,6 +363,7 @@ class AdditionalPaymentController extends Controller
                     'order_ID' => $order->order_id,
                     'name' => $item['name'],
                     'jersey_number' => $item['jerseyNo'],
+                    'number' => $item['jerseyNo'], // Important: We need to set both fields
                     'sizes_ID' => $item['topSize'],
                     'short_size' => $item['shortSize'],
                     'has_pocket' => isset($item['hasPocket']) ? (bool) $item['hasPocket'] : false,
