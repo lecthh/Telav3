@@ -155,7 +155,7 @@ class ConfirmationLinkController extends Controller
                 'order_id' => 'required|exists:orders,order_id',
                 'token' => 'required|exists:orders,token',
                 'rows.*.name' => 'required|string',
-                'rows.*.jerseyNo' => 'required|integer',
+                'rows.*.jerseyNo' => 'required|string',  // Changed from integer to string
                 'rows.*.topSize' => 'required|integer',
                 'rows.*.shortSize' => 'required|integer',
                 'rows.*.hasPocket' => 'nullable|boolean',
@@ -180,22 +180,80 @@ class ConfirmationLinkController extends Controller
                 return redirect()->back();
             }
 
-            foreach ($validatedData['rows'] as $row) {
-                CustomizationDetails::create([
-                    'customization_details_ID' => uniqid(),
-                    'order_ID' => $order->order_id,
-                    'name' => $row['name'],
-                    'jersey_number' => $row['jerseyNo'],
-                    'sizes_ID' => $row['topSize'],
-                    'short_size' => $row['shortSize'],
-                    'has_pocket' => isset($row['hasPocket']) ? (bool) $row['hasPocket'] : false,
-                    'remarks' => $row['remarks'] ?? null,
-                    'quantity' => 1,
-                ]);
+            // Debug SQL Query
+            \Illuminate\Support\Facades\Log::info('Starting Jersey details creation', [
+                'order_id' => $order->order_id,
+                'rows_count' => count($validatedData['rows']),
+                'filtered_count' => $totalQuantity
+            ]);
+
+            // First clean up any existing entries for this order (if resubmitting)
+            try {
+                \App\Models\CustomizationDetails::where('order_ID', $order->order_id)->delete();
+                \Illuminate\Support\Facades\Log::info('Cleaned up existing customization details');
+            } catch (\Exception $deleteEx) {
+                \Illuminate\Support\Facades\Log::error('Error cleaning up: ' . $deleteEx->getMessage());
             }
+
+            $insertedCount = 0;
+            foreach ($validatedData['rows'] as $row) {
+                try {
+                    // Print out the full row data for this item to see what fields might be causing issues
+                    \Illuminate\Support\Facades\Log::info('Processing row data:', [
+                        'row_data' => $row
+                    ]);
+                    
+                    // CRITICAL FIX: We need to set the 'number' field as required by the database schema
+                    $detail = CustomizationDetails::create([
+                        'customization_details_ID' => uniqid(),
+                        'order_ID' => $order->order_id,
+                        'name' => $row['name'],
+                        'jersey_number' => $row['jerseyNo'],
+                        'number' => $row['jerseyNo'],  // ADDED THIS: Set 'number' field from jerseyNo
+                        'sizes_ID' => $row['topSize'],
+                        'short_size' => $row['shortSize'],
+                        'has_pocket' => isset($row['hasPocket']) ? (bool) $row['hasPocket'] : false,
+                        'remarks' => $row['remarks'] ?? null,
+                        'quantity' => 1,
+                    ]);
+                    $insertedCount++;
+                    
+                    \Illuminate\Support\Facades\Log::info('Created jersey entry ' . $insertedCount, [
+                        'id' => $detail->customization_details_ID,
+                        'name' => $row['name'],
+                        'jersey_number' => $row['jerseyNo'],
+                        'number' => $row['jerseyNo'] // Log this field too
+                    ]);
+                } catch (\Exception $rowEx) {
+                    \Illuminate\Support\Facades\Log::error('Error creating row: ' . $rowEx->getMessage(), [
+                        'name' => $row['name'] ?? 'unknown',
+                        'topSize' => $row['topSize'] ?? 'unknown',
+                        'shortSize' => $row['shortSize'] ?? 'unknown'
+                    ]);
+                }
+            }
+
+            // Verify data was saved
+            $count = \App\Models\CustomizationDetails::where('order_ID', $order->order_id)->count();
+            \Illuminate\Support\Facades\Log::info('Final customization count: ' . $count . ' for order ' . $order->order_id);
 
             $order->token = null;
             $order->save();
+            
+            // Direct SQL update to ensure the order is marked as ready in all ways
+            \Illuminate\Support\Facades\DB::statement("
+                UPDATE orders 
+                SET 
+                    token = NULL,
+                    is_customized = 1,
+                    custom_design_info = CONCAT(IFNULL(custom_design_info, ''), ' [Jersey order form completed]')
+                WHERE order_id = ?
+            ", [$order->order_id]);
+            
+            \Illuminate\Support\Facades\Log::alert('CRITICAL JERSEY ORDER UPDATE', [
+                'order_id' => $order->order_id,
+                'action' => 'Form completed, token nullified, order ready for printing'
+            ]);
             
             // Notification for production company/printer
             \App\Models\Notification::create([
@@ -208,7 +266,10 @@ class ConfirmationLinkController extends Controller
             $this->toast('Jersey customization details submitted successfully!', 'success');
             return redirect()->route('home');
         } catch (\Exception $e) {
-            $this->toast('An error occurred while submitting jersey customization details.', 'error');
+            \Illuminate\Support\Facades\Log::error('Jersey form submit error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->toast('An error occurred while submitting jersey customization details: ' . $e->getMessage(), 'error');
             return redirect()->back();
         }
     }

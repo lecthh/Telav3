@@ -83,7 +83,7 @@ class Order extends Model
 
     public function customizationDetails()
     {
-        return $this->hasMany(CustomizationDetails::class, 'order_id', 'order_id');
+        return $this->hasMany(CustomizationDetails::class, 'order_ID', 'order_id');
     }
 
     public function notifications()

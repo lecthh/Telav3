@@ -53,7 +53,7 @@
                 <td>{{ $order->apparelType->name }}</td>
                 <td>{{ $customization->size->name ?? 'N/A' }}</td>
                 @if ($order->apparelType->name == 'Jersey')
-                <td>{{ $customization->jersey_no }}</td>
+                <td>{{ $customization->jersey_number }}</td>
                 <td>{{ $customization->short_size }}</td>
                 <td>{{ $customization->has_pocket ? 'Yes' : 'No' }}</td>
                 @endif

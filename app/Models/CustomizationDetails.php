@@ -23,8 +23,12 @@ class CustomizationDetails extends Model
         'short_size',
         'quantity',
         'order_ID',
-        'has_pocket'
+        'has_pocket',
+        'number'  // Added this field which appears to be required
     ];
+    
+    // Add this to make sure the correct foreign key relationship is used
+    protected $with = ['size'];
 
     public function size()
     {
