@@ -15,16 +15,13 @@
     <div class="flex-grow flex items-center justify-center">
         <div class="flex flex-col gap-y-[60px] px-[200px] py-[100px] w-full max-w-[1500px]">
             <div class="flex flex-col gap-y-[50px] px-[50px] py-[60px]">
-                <div class="flex flex-col gap-y-10">
-                    <div class="flex flex-col gap-y-3">
-                        <h1 class="font-gilroy font-bold text-3xl">Thank you for signing up with us!</h1>
-                    </div>
-                    <hr class="border-t-2 border-cSecondary w-full my-4">
-                    <h2 class="font-inter text-lg">An email has been sent to you for confirmation and account setup.</h2>
+                <div class="flex flex-col gap-y-3">
+                    <h1 class="font-gilroy font-bold text-3xl">Thank you for signing up!</h1>
                 </div>
-                <div class="flex flex-col gap-y-2.5 px-6 py-3.5">
-                    @livewire('button', ['text' => 'Confirm'])
-                </div>
+                <hr class="border-t-2 border-cSecondary w-full my-4">
+                <h2 class="font-inter text-lg">
+                    Please wait around 1-2 days for our admins to process your request. Please keep an eye on your email! Thank you!
+                </h2>
             </div>
         </div>
     </div>

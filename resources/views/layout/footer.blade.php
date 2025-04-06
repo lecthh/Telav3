@@ -51,8 +51,8 @@
 @endif
 
 
-
-
 @livewireScripts
 @vite(['resources/js/app.js'])
+@if(!Auth::check() || Auth::user()->role_type_id != 4)
 @include('chat.chat-widget')
+@endif

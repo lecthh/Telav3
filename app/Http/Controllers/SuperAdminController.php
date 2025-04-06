@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Designer;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\ProductionCompany;
@@ -44,5 +45,11 @@ class SuperAdminController extends Controller
     {
         $designers = Designer::where('is_verified', false)->get();
         return view('superadmin.designers_approve', compact('designers'));
+    }
+
+    public function orders()
+    {
+        $orders = Order::all();
+        return view('superadmin.orders', compact('orders'));
     }
 }

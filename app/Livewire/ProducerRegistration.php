@@ -10,8 +10,7 @@ use App\Models\ProductionCompanyPricing;
 use App\Models\User;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\URL;
+
 
 class ProducerRegistration extends Component
 {
@@ -54,18 +53,28 @@ class ProducerRegistration extends Component
     public function submit()
     {
         $validatedData = $this->validate([
-            'production_type' => 'required|array',
-            'apparel_type' => 'required|array',
-            'company_name' => 'required|string|unique:production_companies,company_name',
-            'email' => 'required|email|unique:production_companies,email|unique:users,email',
-            'mobile' => 'required|string|unique:production_companies,phone',
-            'address' => 'required|string',
-            'state' => 'required|string',
-            'city' => 'required|string',
-            'zip_code' => 'required|string',
-            'documents.*.name' => 'required|string',
-            'documents.*.file' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'production_type'      => 'required|array',
+            'apparel_type'         => 'required|array',
+            'company_name'         => 'required|string|unique:production_companies,company_name',
+            'email'                => 'required|email|unique:production_companies,email|unique:users,email',
+            'mobile'               => 'required|string|unique:production_companies,phone',
+            'address'              => 'required|string',
+            'state'                => 'required|string',
+            'city'                 => 'required|string',
+            'zip_code'             => 'required|string',
+            'documents.*.name'     => 'required|string',
+            'documents.*.file'     => 'required|file|mimes:jpg,jpeg,png,pdf|max:5048',
+        ], [
+            'documents.*.name.required' => 'Please provide a name for the document.',
+            'documents.*.file.required' => 'Please upload a document.',
+            'documents.*.file.mimes'    => 'Accepted document formats are PDF, JPG, JPEG, PNG.',
+            'documents.*.file.max'      => 'The document may not be greater than 5 MB.',
+            'documents.*.file.uploaded' => 'The document may not be greater than 5 MB.',
+        ], [
+            'documents.*.name' => 'document name',
+            'documents.*.file' => 'document file',
         ]);
+
 
         $fullAddress = $validatedData['address'] . ', ' . $validatedData['city'] . ', ' . $validatedData['state'] . ', ' . $validatedData['zip_code'];
 
@@ -126,18 +135,7 @@ class ProducerRegistration extends Component
         }
 
         // Generate token and send email for setting password
-        $token = uniqid();
-        $url = URL::temporarySignedRoute(
-            'set-password',
-            now()->addMinutes(60),
-            ['token' => $token, 'email' => $user->email]
-        );
-        $name = $user->name;
-        $user->update(['passwordToken' => $token]);
-        Mail::send('mail.verify', ['url' => $url, 'name' => $name], function ($message) use ($user) {
-            $message->to($user->email);
-            $message->subject('Set Your Password');
-        });
+
 
         // Redirect to Confirmation Page
         return redirect()->route('partner-confirmation');

@@ -1,4 +1,5 @@
-@include('head')
+@include('head', ['title' => 'Transactions])
+
 <header class="bg-cPrimary text-white py-2 text-center font-gilroy font-bold text-sm">
     Production Hub
 </header>
