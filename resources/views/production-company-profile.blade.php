@@ -216,92 +216,59 @@
                             <p class="text-gray-600 text-sm mt-1">Based on {{ $productionCompany->review_count ?? 0 }} customer reviews</p>
                         </div>
                         <div class="divide-y divide-gray-200">
-                            <!-- Sample Review 1 -->
+                            @php
+                                $companyReviews = \App\Models\Review::where('production_company_id', $productionCompany->id)
+                                                ->where('is_visible', true)
+                                                ->orderBy('created_at', 'desc')
+                                                ->limit(3)
+                                                ->get();
+                            @endphp
+                            
+                            @forelse($companyReviews as $review)
                             <div class="p-6">
                                 <div class="flex justify-between items-start mb-4">
                                     <div>
                                         <div class="flex items-center">
                                             <div class="flex items-center">
                                                 @for($i = 1; $i <= 5; $i++)
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 {{ $i <= 5 ? 'text-yellow-400' : 'text-gray-300' }}" viewBox="0 0 20 20" fill="currentColor">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 {{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-300' }}" viewBox="0 0 20 20" fill="currentColor">
                                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z" />
                                                     </svg>
                                                     @endfor
                                             </div>
-                                            <span class="ml-2 text-sm font-medium text-gray-900">Excellent service!</span>
+                                            <span class="ml-2 text-sm font-medium text-gray-900">{{ Str::limit(strip_tags($review->comment), 30) }}</span>
                                         </div>
-                                        <p class="mt-1 text-sm text-gray-600">By John D. - <span class="text-gray-500">Jersey Printing</span></p>
-                                    </div>
-                                    <span class="text-sm text-gray-500">2 weeks ago</span>
-                                </div>
-                                <p class="text-gray-800 mt-2">The quality of the print exceeded my expectations! The colors are vibrant and the detail is incredible. Our team jerseys look amazing and the turnaround time was faster than promised.</p>
-                                <div class="mt-4 flex space-x-2">
-                                    <div class="h-16 w-16 rounded bg-gray-100 overflow-hidden">
-                                        <img src="/api/placeholder/64/64" alt="Review Image" class="w-full h-full object-cover">
-                                    </div>
-                                    <div class="h-16 w-16 rounded bg-gray-100 overflow-hidden">
-                                        <img src="/api/placeholder/64/64" alt="Review Image" class="w-full h-full object-cover">
+                                        <p class="mt-1 text-sm text-gray-600">By {{ $review->user->name }} - <span class="text-gray-500">{{ \Carbon\Carbon::parse($review->created_at)->diffForHumans() }}</span></p>
                                     </div>
                                 </div>
+                                <p class="text-gray-800 mt-2">{{ $review->comment }}</p>
                             </div>
-
-                            <!-- Sample Review 2 -->
+                            @empty
                             <div class="p-6">
-                                <div class="flex justify-between items-start mb-4">
-                                    <div>
-                                        <div class="flex items-center">
-                                            <div class="flex items-center">
-                                                @for($i = 1; $i <= 5; $i++)
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 {{ $i <= 4 ? 'text-yellow-400' : 'text-gray-300' }}" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z" />
-                                                    </svg>
-                                                    @endfor
-                                            </div>
-                                            <span class="ml-2 text-sm font-medium text-gray-900">Great quality, slight delay</span>
-                                        </div>
-                                        <p class="mt-1 text-sm text-gray-600">By Sarah M. - <span class="text-gray-500">T-Shirt Screen Printing</span></p>
-                                    </div>
-                                    <span class="text-sm text-gray-500">1 month ago</span>
-                                </div>
-                                <p class="text-gray-800 mt-2">The final product was excellent and our customers loved the design. There was a slight delay in production, but the company was communicative throughout the process. Would use their services again.</p>
+                                <p class="text-gray-600 text-center">No reviews yet. Be the first to review this production company!</p>
                             </div>
-
-                            <!-- Sample Review 3 -->
-                            <div class="p-6">
-                                <div class="flex justify-between items-start mb-4">
-                                    <div>
-                                        <div class="flex items-center">
-                                            <div class="flex items-center">
-                                                @for($i = 1; $i <= 5; $i++)
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 {{ $i <= 5 ? 'text-yellow-400' : 'text-gray-300' }}" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z" />
-                                                    </svg>
-                                                    @endfor
-                                            </div>
-                                            <span class="ml-2 text-sm font-medium text-gray-900">Amazing bulk order</span>
-                                        </div>
-                                        <p class="mt-1 text-sm text-gray-600">By Team Leaders Inc. - <span class="text-gray-500">Embroidery</span></p>
-                                    </div>
-                                    <span class="text-sm text-gray-500">2 months ago</span>
-                                </div>
-                                <p class="text-gray-800 mt-2">Ordered 50 embroidered polo shirts for our company event. The quality of embroidery was superb and consistent across all items. Pricing was competitive and the staff was very helpful with our custom design requirements.</p>
-                                <div class="mt-4 flex space-x-2">
-                                    <div class="h-16 w-16 rounded bg-gray-100 overflow-hidden">
-                                        <img src="/api/placeholder/64/64" alt="Review Image" class="w-full h-full object-cover">
-                                    </div>
-                                </div>
-                            </div>
+                            @endforelse
                         </div>
 
                         <div class="px-6 py-4 bg-gray-50 flex justify-between items-center">
                             <p class="text-sm text-gray-600">
-                                Showing 3 of {{ $productionCompany->review_count ?? 0 }} reviews
+                                @php
+                                    $reviewCount = $productionCompany->review_count ?? 0;
+                                    $displayCount = $companyReviews->count();
+                                @endphp
+                                @if($reviewCount > 0)
+                                    Showing {{ $displayCount }} of {{ $reviewCount }} reviews
+                                @else
+                                    No reviews available
+                                @endif
                             </p>
+                            @if($reviewCount > 3)
                             <div>
                                 <button class="px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
                                     Load More
                                 </button>
                             </div>
+                            @endif
                         </div>
                     </div>
                 </div>
