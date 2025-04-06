@@ -132,6 +132,7 @@ Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->g
         Route::get('/ready', [OrderProduceController::class, 'ready'])->name('ready');
         Route::get('/ready-x/{order_id}', [OrderProduceController::class, 'readyOrder'])->name('ready-x');
         Route::post('/ready-x/{order_id}/post', [OrderProduceController::class, 'readyOrderPost'])->name('ready-x-post');
+        Route::post('/ready-x/{order_id}/send-payment-reminder', [OrderProduceController::class, 'sendPaymentReminder'])->name('send-payment-reminder');
 
         Route::get('/completed', [OrderProduceController::class, 'completed'])->name('completed');
         Route::get('/completed-x/{order_id}', [OrderProduceController::class, 'completedOrder'])->name('completed-x');
@@ -152,6 +153,7 @@ Route::prefix('partner')->name('partner.')->middleware('DesignerOnly')->group(fu
         Route::get('/completed', [DesignerOrderController::class, 'complete'])->name('complete');
         Route::get('/complete-x/{order_id}', [DesignerOrderController::class, 'completeOrder'])->name('complete-x');
         Route::post('/cancel-design-assignment/{order_id}', [DesignerOrderController::class, 'cancelDesignAssignment'])->name('cancel-design-assignment');
+        Route::post('/cancel-order/{order_id}', [DesignerOrderController::class, 'cancelOrder'])->name('cancel-order');
 
         // Designer Profile Routes
         Route::prefix('profile')->name('profile.')->group(function () {

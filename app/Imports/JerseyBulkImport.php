@@ -100,7 +100,7 @@ class JerseyBulkImport extends BaseImport
                 if ($topSizeId && $shortSizeId) {
                     $this->jerseyDetails[] = [
                         'name' => $name,
-                        'jerseyNo' => $jerseyNumber,
+                        'jerseyNo' => $jerseyNumber, 
                         'topSize' => $topSizeId,
                         'shortSize' => $shortSizeId,
                         'hasPocket' => $hasPocket,

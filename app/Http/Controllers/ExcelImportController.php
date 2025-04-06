@@ -96,6 +96,24 @@ class ExcelImportController extends Controller
                 ];
             }
             
+            // Just prepare sample jersey details without saving to database yet
+            $order = Order::where('order_id', $request->order_id)
+                ->where('token', $request->token)
+                ->first();
+            
+            if ($order) {
+                // Just store the jersey details in session for the form
+                // Don't save to database yet - this will happen when user confirms
+                session(['imported_jerseys' => $jerseyDetails]);
+                
+                // Show a success message
+                $this->toast('Sample jersey details generated successfully. Please review and confirm your order.', 'success');
+                
+                // Redirect back to the form page to review and potentially make additional payment
+                Log::info('Emergency bypass: Created ' . count($jerseyDetails) . ' sample jersey details');
+                return redirect()->route('confirm-jerseybulk-custom', ['token' => $order->token]);
+            }
+            
             Log::info('Emergency bypass: Created ' . count($jerseyDetails) . ' sample jersey details');
             return redirect()->route('confirm-jerseybulk-custom', ['token' => $request->token])
                             ->with('imported_jerseys', $jerseyDetails);
@@ -184,6 +202,25 @@ class ExcelImportController extends Controller
                 ]);
             }
             
+            // Just store jersey details in session, don't save to database yet
+            $order = Order::where('order_id', $request->order_id)
+                ->where('token', $request->token)
+                ->first();
+            
+            if ($order) {
+                // Store the imported jersey details in session
+                session(['imported_jerseys' => $jerseyDetails]);
+                
+                Log::info('Excel import completed. Jersey details stored in session for review.');
+                Log::info('Total jerseys: ' . count($jerseyDetails));
+                
+                // Redirect to the confirmation form so user can review and submit/pay
+                $this->toast('Jersey details imported successfully. Please review and confirm your order.', 'success');
+                return redirect()->route('confirm-jerseybulk-custom', ['token' => $order->token]);
+            }
+            
+            // Only reach here if we didn't successfully save to the database yet
+            // Redirect to the form page with the imported data in session
             return redirect()->route('confirm-jerseybulk-custom', ['token' => $request->token])
                             ->with('imported_jerseys', $jerseyDetails);
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {

@@ -271,7 +271,8 @@
                         @endif
 
                         <!-- Job Order Information -->
-                        @if(isset($order->customizationDetails) && !empty($order->customizationDetails) && $order->customizationDetails->isNotEmpty())
+                        @if(isset($order->customizationDetails) && !empty($order->customizationDetails) && $order->customizationDetails->isNotEmpty() || 
+                           ($order->apparelType && $order->apparelType->name === 'Jersey' && $order->token === null))
                         <div class="bg-white rounded-lg shadow-sm">
                             <div class="bg-cPrimary px-4 py-3 rounded-t-lg">
                                 <h3 class="font-gilroy font-bold text-white text-base">Job Order Details</h3>
@@ -340,6 +341,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                     </svg>
                                 </div>
+                                
                                 <h4 class="font-gilroy font-bold text-lg text-gray-900 mb-2">Confirmation Form Not Filled Up</h4>
                                 <p class="text-gray-600 mb-4">The customer has not yet completed their order customization form.</p>
                             </div>
@@ -351,6 +353,10 @@
                         @yield('pageSpecificContent')
                         @else
                         {!! $pageSpecificContent ?? '' !!}
+                        @endif
+                        
+                        @hasSection('additional-actions')
+                        @yield('additional-actions')
                         @endif
                     </div>
                 </div>

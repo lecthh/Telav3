@@ -75,12 +75,12 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <h2 class="font-gilroy font-bold text-xl mb-4">Specify Size Quantities</h2>
                 <p class="text-gray-600 mb-4">Please indicate how many items of each size you would like to order.</p>
-                
+
                 <!-- Excel Upload Option -->
                 <div class="mb-6 p-4 bg-purple-50 rounded-lg border border-purple-100">
                     <h3 class="font-medium text-lg text-purple-900 mb-2">Use Excel Template (Optional)</h3>
                     <p class="text-purple-800 mb-3">You can use our Excel template to specify your order quantities.</p>
-                    
+
                     <div class="flex flex-col sm:flex-row gap-4">
                         <a href="{{ route('excel.template', ['type' => 'standard_bulk']) }}" class="inline-flex items-center px-4 py-2 border border-purple-300 rounded-md text-sm font-medium text-purple-700 bg-white hover:bg-purple-50">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -88,12 +88,12 @@
                             </svg>
                             Download Template
                         </a>
-                        
+
                         <form action="{{ route('excel.import.standard-bulk') }}" method="POST" enctype="multipart/form-data" class="flex-1">
                             @csrf
                             <input type="hidden" name="order_id" value="{{ $order->order_id }}">
                             <input type="hidden" name="token" value="{{ $order->token }}">
-                            
+
                             <div class="flex flex-col sm:flex-row gap-2">
                                 <div class="flex-1">
                                     <input type="file" name="excel_file" id="excel_file" class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
@@ -104,7 +104,7 @@
                             </div>
                         </form>
                     </div>
-                    
+
                     <p class="text-purple-600 text-sm mt-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-1" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd" />
@@ -112,7 +112,7 @@
                         Excel file must include "Size" and "Quantity" columns with proper headers.
                     </p>
                 </div>
-                
+
                 <p class="text-gray-600 mb-4">Or manually enter size quantities below:</p>
 
                 <form action="{{ route('confirm-bulk-post') }}" method="POST">
@@ -240,21 +240,24 @@
                             Back to Home
                         </a>
 
-                        <!-- Additional Payment Button (shown when quantity is increased) -->
-                        <a id="pay-additional-btn" href="#" class="hidden inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
-                            Pay Additional Payment
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-                            </svg>
-                        </a>
+                        <div class="flex flex-row gap-x-4">
+                            <!-- Additional Payment Button (shown when quantity is increased) -->
+                            <a id="pay-additional-btn" href="#" class="hidden inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                                Pay Additional Payment
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                </svg>
+                            </a>
 
-                        <!-- Regular Confirm Button -->
-                        <button type="submit" id="confirm-button" class="inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-cPrimary hover:bg-cPrimary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
-                            Confirm Order
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
+                            <!-- Regular Confirm Button -->
+                            <button type="submit" id="confirm-button" class="inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-cPrimary hover:bg-cPrimary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
+                                Confirm Order
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+
                     </div>
                 </form>
             </div>
@@ -274,7 +277,7 @@
             const additionalPaymentAlert = document.getElementById('additional-payment-alert');
             const quantityCounter = document.getElementById('quantity-counter');
             const originalQuantity = parseInt(document.getElementById('original-quantity-value').value);
-            
+
             // Debug log to make sure we found all elements
             console.log('Found elements:', {
                 sizeInputs: sizeInputs.length,
@@ -353,7 +356,7 @@
                     // If total is between 1-9, show warning but still allow submission
                     quantityCounter.classList.remove('text-green-600');
                     quantityCounter.classList.add('text-yellow-500');
-                    
+
                     // Enable regular confirm button if at least one size has quantity
                     if (hasQuantity) {
                         confirmButton.disabled = false;
@@ -364,7 +367,7 @@
                         confirmButton.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-400');
                         confirmButton.classList.remove('bg-cPrimary', 'hover:bg-cPrimary/90');
                     }
-                    
+
                     // Hide additional payment UI
                     additionalPaymentSection.classList.add('hidden');
                     additionalPaymentAlert.classList.add('hidden');
@@ -390,7 +393,7 @@
                 // Get values from hidden fields
                 const unitPrice = parseFloat(document.getElementById('unit-price').value);
                 const originalDownpayment = parseFloat(document.getElementById('original-downpayment').value);
-                
+
                 // Debug log the input values
                 console.log('Price calculation inputs:', {
                     unitPrice: unitPrice,
@@ -398,13 +401,13 @@
                     totalQuantity: totalQuantity,
                     originalQuantity: originalQuantity
                 });
-                
+
                 // Calculate new values
                 const totalPrice = unitPrice * totalQuantity;
                 const additionalQuantity = Math.max(0, totalQuantity - originalQuantity);
                 const additionalPaymentAmount = (additionalQuantity * unitPrice) / 2; // 50% down payment for additional items
                 const balanceDue = totalPrice - originalDownpayment - additionalPaymentAmount;
-                
+
                 // Debug log the calculated values
                 console.log('Price calculation results:', {
                     totalPrice: totalPrice,
@@ -448,19 +451,19 @@
 
             // Initialize the total quantity calculation
             updateTotalQuantity();
-            
+
             // Add event listeners to quantity inputs
             sizeInputs.forEach(input => {
                 console.log('Adding listeners to input:', input.id);
-                
+
                 // Remove any existing listeners first to avoid duplicates
                 input.removeEventListener('input', updateTotalQuantity);
                 input.removeEventListener('change', updateTotalQuantity);
-                
+
                 // Add the listeners
                 input.addEventListener('input', updateTotalQuantity);
                 input.addEventListener('change', updateTotalQuantity);
-                
+
                 // Add a direct input handler for debugging
                 input.addEventListener('input', function() {
                     console.log('Input changed:', this.id, 'Value:', this.value);

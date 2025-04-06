@@ -26,7 +26,7 @@ class AdditionalPaymentController extends Controller
     {
         $order = Order::where('order_id', $order_id)->firstOrFail();
         $amount = $request->query('amount', 0);
-        $additionalQuantity = $request->query('quantity', 0);
+        $isBalancePayment = $request->query('is_balance_payment', 0) == 1;
         
         // Get the production company information
         $productionCompany = $order->productionCompany;
@@ -35,9 +35,27 @@ class AdditionalPaymentController extends Controller
         $unitPrice = $order->final_price / $order->quantity;
         $originalQuantity = $order->quantity;
         $originalPrice = $order->final_price;
-        $newQuantity = $originalQuantity + $additionalQuantity;
-        $newTotalPrice = $unitPrice * $newQuantity;
-        $balanceDue = $newTotalPrice - $order->downpayment_amount - $amount;
+        
+        // Get total amount of previous additional payments
+        $previousPayments = $order->additionalPayments()->sum('amount');
+        
+        if ($isBalancePayment) {
+            // For balance payments, we keep the original quantity
+            $additionalQuantity = 0;
+            $newQuantity = $originalQuantity;
+            $newTotalPrice = $originalPrice;
+            // We still set balanceDue to 0, but the amount they pay is the actual balance
+            // which is calculated as the total price minus the downpayment and any previous additional payments
+            $amount = $originalPrice - $order->downpayment_amount - $previousPayments;
+            $balanceDue = 0; // Since they're paying the full balance
+        } else {
+            // For additional orders
+            $additionalQuantity = $request->query('quantity', 0);
+            $newQuantity = $originalQuantity + $additionalQuantity;
+            $newTotalPrice = $unitPrice * $newQuantity;
+            // Include previous payments in the balance calculation
+            $balanceDue = $newTotalPrice - $order->downpayment_amount - $previousPayments - $amount;
+        }
         
         // Create a fake account number
         $accountNumber = '1234' . str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT) . str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
@@ -53,7 +71,9 @@ class AdditionalPaymentController extends Controller
             'newQuantity',
             'newTotalPrice',
             'balanceDue',
-            'accountNumber'
+            'accountNumber',
+            'isBalancePayment',
+            'previousPayments'
         ));
     }
 
@@ -67,13 +87,25 @@ class AdditionalPaymentController extends Controller
     public function processPayment(Request $request, $order_id)
     {
         try {
-            $request->validate([
-                'payment_proof' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-                'amount' => 'required|numeric|min:0',
-                'additional_quantity' => 'required|integer|min:1',
-                'new_total_quantity' => 'required|integer|min:1',
-                'size_data' => 'nullable|string' // JSON string of previously entered size data
-            ]);
+            // Check if this is a balance payment or additional order
+            $isBalancePayment = $request->has('is_balance_payment') && $request->is_balance_payment === "1";
+            
+            if ($isBalancePayment) {
+                // Validation for balance payment only
+                $request->validate([
+                    'payment_proof' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+                    'amount' => 'required|numeric|min:0',
+                ]);
+            } else {
+                // Validation for additional items
+                $request->validate([
+                    'payment_proof' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+                    'amount' => 'required|numeric|min:0',
+                    'additional_quantity' => 'required|integer|min:1',
+                    'new_total_quantity' => 'required|integer|min:1',
+                    'size_data' => 'nullable|string' // JSON string of previously entered size data
+                ]);
+            }
 
             $order = Order::where('order_id', $order_id)->firstOrFail();
             
@@ -87,23 +119,76 @@ class AdditionalPaymentController extends Controller
             $additionalPayment = new AdditionalPayment([
                 'order_id' => $order->order_id,
                 'amount' => $request->amount,
-                'additional_quantity' => $request->additional_quantity,
+                'additional_quantity' => $isBalancePayment ? 0 : $request->additional_quantity,
                 'payment_proof' => $paymentProofPath,
                 'status' => 'completed',
             ]);
             
             $additionalPayment->save();
             
-            // Update order with new quantity and total price
-            $unitPrice = $order->final_price / $order->quantity;
-            $newTotalPrice = $unitPrice * $request->new_total_quantity;
-            
-            $order->quantity = $request->new_total_quantity;
-            $order->final_price = $newTotalPrice;
-            
-            // Process customization data from the form
-            if ($request->has('size_data') && !empty($request->size_data)) {
-                $this->processCustomizationData($order, $request->size_data);
+            if (!$isBalancePayment) {
+                // Only update quantity and price for additional orders, not for balance payments
+                $unitPrice = $order->final_price / $order->quantity;
+                $newTotalPrice = $unitPrice * $request->new_total_quantity;
+                
+                $order->quantity = $request->new_total_quantity;
+                $order->final_price = $newTotalPrice;
+                
+                // Process customization data from the form
+                if ($request->has('size_data') && !empty($request->size_data)) {
+                    $this->processCustomizationData($order, $request->size_data);
+                }
+                
+                // Check if we have jersey details stored in session from a form submission
+                if (session()->has('temp_jersey_details')) {
+                    $tempJerseyDetails = session('temp_jersey_details');
+                    \Illuminate\Support\Facades\Log::info('Processing jersey details from session', [
+                        'count' => count($tempJerseyDetails)
+                    ]);
+                    
+                    // First clean up any existing entries for this order
+                    try {
+                        \App\Models\CustomizationDetails::where('order_ID', $order->order_id)->delete();
+                    } catch (\Exception $e) {
+                        \Illuminate\Support\Facades\Log::error('Error cleaning up existing customization details: ' . $e->getMessage());
+                    }
+                    
+                    // Add jersey details from session
+                    foreach ($tempJerseyDetails as $row) {
+                        try {
+                            // Skip incomplete entries
+                            if (empty($row['name']) || empty($row['topSize']) || empty($row['shortSize'])) {
+                                continue;
+                            }
+                            
+                            \App\Models\CustomizationDetails::create([
+                                'customization_details_ID' => uniqid(),
+                                'order_ID' => $order->order_id,
+                                'name' => $row['name'],
+                                'jersey_number' => $row['jerseyNo'],
+                                'number' => $row['jerseyNo'], // Important: Set number field
+                                'sizes_ID' => $row['topSize'],
+                                'short_size' => $row['shortSize'],
+                                'has_pocket' => isset($row['hasPocket']) ? (bool) $row['hasPocket'] : false,
+                                'remarks' => $row['remarks'] ?? null,
+                                'quantity' => 1,
+                            ]);
+                        } catch (\Exception $rowEx) {
+                            \Illuminate\Support\Facades\Log::error('Error creating jersey detail: ' . $rowEx->getMessage());
+                        }
+                    }
+                    
+                    // Clear the session data
+                    session()->forget('temp_jersey_details');
+                    
+                    // Set order as customized
+                    $order->is_customized = true;
+                    if ($order->custom_design_info) {
+                        $order->custom_design_info .= ' [Jersey order form completed]';
+                    } else {
+                        $order->custom_design_info = '[Jersey order form completed]';
+                    }
+                }
             }
             
             // Invalidate token to indicate order is confirmed
@@ -151,6 +236,9 @@ class AdditionalPaymentController extends Controller
             $receiptNumber = 'RCP-' . date('Ymd') . '-' . uniqid();
             $unitPrice = $order->final_price / $order->quantity;
             
+            // Calculate total payment amount including all previous payments
+            $totalPayments = $order->downpayment_amount + $order->additionalPayments()->sum('amount');
+            
             $receiptData = [
                 'receipt_number' => $receiptNumber,
                 'date' => now()->format('F d, Y'),
@@ -165,7 +253,7 @@ class AdditionalPaymentController extends Controller
                 'additional_payment' => $payment->amount,
                 'payment_date' => $payment->created_at->format('F d, Y'),
                 'total_price' => $order->final_price,
-                'balance_due' => $order->final_price - $order->downpayment_amount - $payment->amount,
+                'balance_due' => $order->final_price - $totalPayments,
             ];
             
             // Send email with receipt
@@ -275,6 +363,7 @@ class AdditionalPaymentController extends Controller
                     'order_ID' => $order->order_id,
                     'name' => $item['name'],
                     'jersey_number' => $item['jerseyNo'],
+                    'number' => $item['jerseyNo'], // Important: We need to set both fields
                     'sizes_ID' => $item['topSize'],
                     'short_size' => $item['shortSize'],
                     'has_pocket' => isset($item['hasPocket']) ? (bool) $item['hasPocket'] : false,

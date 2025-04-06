@@ -111,6 +111,90 @@ class DesignerOrderController extends Controller
             return redirect()->back();
         }
     }
+    
+    public function cancelOrder(Request $request, $order_id)
+    {
+        try {
+            $request->validate([
+                'cancellation_reason' => 'required|string',
+                'cancellation_note' => 'nullable|string',
+            ]);
+
+            $designer = $this->getOrCreateDesignerSession();
+            if (!$designer) {
+                return redirect()->route('login')->with('error', 'Designer session not found');
+            }
+            
+            $order = Order::findOrFail($order_id);
+            
+            // Only allow cancellation if this designer is assigned to the order
+            if ($order->assigned_designer_id !== $designer->designer_id) {
+                $this->toast('You are not authorized to cancel this order.', 'error');
+                return redirect()->back();
+            }
+            
+            $order->update([
+                'status_id' => 8,
+                'cancellation_reason' => $request->cancellation_reason,
+                'cancellation_note' => $request->cancellation_note,
+            ]);
+
+            $cancellationMessage = 'Your Order Has Been Cancelled';
+            
+            if ($request->cancellation_reason) {
+                $cancellationMessage .= ' - Reason: ' . $request->cancellation_reason;
+                
+                if ($request->cancellation_reason === 'Other' && $request->cancellation_note) {
+                    $cancellationMessage .= ' (' . $request->cancellation_note . ')';
+                }
+            }
+
+            Notification::create([
+                'user_id' => $order->user->user_id,
+                'message' => $cancellationMessage,
+                'is_read' => false,
+                'order_id' => $order->order_id,
+            ]);
+            
+            // Notify production company
+            Notification::create([
+                'user_id' => $order->productionCompany->user_id,
+                'message' => 'Order #' . substr($order->order_id, -6) . ' has been cancelled by the designer',
+                'is_read' => false,
+                'order_id' => $order->order_id,
+            ]);
+            
+            // Send cancellation email to customer
+            try {
+                $user = $order->user;
+                $orderNumber = substr($order->order_id, -6);
+                $cancellationReason = $request->cancellation_reason;
+                $cancellationNote = $request->cancellation_note;
+                $designerName = $designer->user->name ?? 'Designer';
+                
+                Mail::send('mail.orderCancelled', [
+                    'name' => $user->name,
+                    'orderNumber' => $orderNumber,
+                    'reason' => $cancellationReason,
+                    'note' => $cancellationNote,
+                    'companyName' => $designerName
+                ], function ($message) use ($user) {
+                    $message->to($user->email);
+                    $message->subject('Order Cancellation Notice');
+                });
+            } catch (\Exception $emailError) {
+                Log::error('Failed to send cancellation email: ' . $emailError->getMessage());
+                // Continue with the process even if email fails
+            }
+
+            $this->toast('Order cancelled successfully!', 'success');
+            return redirect()->route('designer-dashboard');
+        } catch (\Exception $e) {
+            Log::error('Cancel Order Error: ' . $e->getMessage());
+            $this->toast('An error occurred while canceling the order.', 'error');
+            return redirect()->back();
+        }
+    }
 
 
 

@@ -13,7 +13,7 @@
 
 <body class="bg-gray-50 flex flex-col min-h-screen">
     @include('layout.nav')
-    
+
     <main class="flex-grow py-10 px-4 sm:px-6 lg:px-8">
         <div class="max-w-4xl mx-auto">
             <div class="mb-8">
@@ -24,7 +24,7 @@
                     </svg>
                     <span>Order Confirmation</span>
                 </div>
-                
+
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
                     <div class="flex items-center gap-4 mb-4">
                         <div class="w-12 h-12 rounded-full bg-cPrimary/10 flex items-center justify-center text-cPrimary">
@@ -39,7 +39,7 @@
                             <p class="text-gray-500">Order No. <span class="font-medium text-gray-700">{{ $order->order_id }}</span></p>
                         </div>
                     </div>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                         <div class="p-3 bg-gray-50 rounded-lg">
                             <p class="text-gray-500 mb-1">Customer</p>
@@ -60,7 +60,7 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <h2 class="font-gilroy font-bold text-xl mb-2">Personalized Customization Details</h2>
                 <p class="text-gray-600 mb-6">Please specify the details for each apparel to be printed. For single orders, you can provide between 1 and 9 customization entries.</p>
-                
+
                 <form action="{{ route('confirm-single-custom-post') }}" method="POST" id="customizationForm">
                     @csrf
                     <input type="hidden" name="order_id" value="{{ $order->order_id }}">
@@ -71,14 +71,14 @@
                         <div class="flex items-start">
                             <div class="flex-shrink-0">
                                 <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
                                 </svg>
                             </div>
                             <div class="ml-3">
                                 <h3 class="text-sm font-medium text-red-800">Please correct the following errors:</h3>
                                 <ul class="mt-1 text-sm text-red-700 list-disc list-inside">
                                     @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
+                                    <li>{{ $error }}</li>
                                     @endforeach
                                 </ul>
                             </div>
@@ -102,16 +102,16 @@
                                 <tr class="{{ $index % 2 === 0 ? 'bg-white' : 'bg-gray-50' }}">
                                     <td class="px-4 py-4 text-sm font-medium text-gray-900 align-top">{{ $index + 1 }}</td>
                                     <td class="px-4 py-4 text-sm text-gray-500">
-                                        <input type="text" name="rows[{{ $index }}][name]" 
-                                            class="w-full p-2 border border-gray-300 rounded-md focus:ring-cPrimary focus:border-cPrimary focus:outline-none" 
-                                            placeholder="Customer name" 
+                                        <input type="text" name="rows[{{ $index }}][name]"
+                                            class="w-full p-2 border border-gray-300 rounded-md focus:ring-cPrimary focus:border-cPrimary focus:outline-none"
+                                            placeholder="Customer name"
                                             value="{{ old('rows.'.$index.'.name') }}">
                                         @error("rows.$index.name")
-                                            <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
+                                        <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
                                         @enderror
                                     </td>
                                     <td class="px-4 py-4 text-sm text-gray-500">
-                                        <select name="rows[{{ $index }}][size]" 
+                                        <select name="rows[{{ $index }}][size]"
                                             class="w-full p-2 border border-gray-300 rounded-md focus:ring-cPrimary focus:border-cPrimary focus:outline-none">
                                             <option value="">Select Size</option>
                                             @foreach($sizes as $size)
@@ -121,16 +121,16 @@
                                             @endforeach
                                         </select>
                                         @error("rows.$index.size")
-                                            <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
+                                        <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
                                         @enderror
                                     </td>
                                     <td class="px-4 py-4 text-sm text-gray-500">
-                                        <input type="text" name="rows[{{ $index }}][remarks]" 
-                                            class="w-full p-2 border border-gray-300 rounded-md focus:ring-cPrimary focus:border-cPrimary focus:outline-none" 
-                                            placeholder="Optional notes" 
+                                        <input type="text" name="rows[{{ $index }}][remarks]"
+                                            class="w-full p-2 border border-gray-300 rounded-md focus:ring-cPrimary focus:border-cPrimary focus:outline-none"
+                                            placeholder="Optional notes"
                                             value="{{ old('rows.'.$index.'.remarks') }}">
                                         @error("rows.$index.remarks")
-                                            <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
+                                        <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
                                         @enderror
                                     </td>
                                     <td class="px-4 py-4 text-sm text-gray-500">
@@ -157,12 +157,12 @@
                         </div>
                         <div id="entry-counter" class="font-medium text-lg">Total Entries: <span id="total-entries">{{ count($rows) }}</span></div>
                     </div>
-                    
+
                     <!-- Hidden inputs for additional payment -->
                     <input type="hidden" name="new_total_price" id="new-total-price-input" value="0">
                     <input type="hidden" name="new_quantity" id="new-quantity-input" value="0">
                     <input type="hidden" name="additional_payment" id="additional-payment-input" value="0">
-                    
+
                     <!-- Alert message for additional payment -->
                     <div id="additional-payment-alert" class="hidden mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
                         <div class="flex items-start">
@@ -177,7 +177,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Additional payment summary section -->
                     <div id="additional-payment-section" class="hidden mb-6 bg-white border border-gray-200 rounded-lg p-4">
                         <h3 class="font-medium text-lg mb-3">Order Summary</h3>
@@ -227,28 +227,31 @@
                             </svg>
                             Back to Home
                         </a>
-                        
-                        <!-- Additional payment button (hidden by default) -->
-                        <a id="pay-additional-btn" href="#" class="hidden inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
-                            Pay Additional Payment
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-                            </svg>
-                        </a>
-                        
-                        <!-- Regular confirm button -->
-                        <button type="submit" id="confirm-button" class="inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-cPrimary hover:bg-cPrimary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
-                            Confirm Order
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
+
+                        <div class="flex flex-row gap x 4">
+                            <!-- Additional payment button (hidden by default) -->
+                            <a id="pay-additional-btn" href="#" class="hidden inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                                Pay Additional Payment
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                </svg>
+                            </a>
+
+                            <!-- Regular confirm button -->
+                            <button type="submit" id="confirm-button" class="inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-cPrimary hover:bg-cPrimary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
+                                Confirm Order
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+
                     </div>
                 </form>
             </div>
         </div>
     </main>
-    
+
     @include('layout.footer')
 
     <script>
@@ -257,7 +260,7 @@
             const rowCount = rowsTable.rows.length;
             const sizesOptions = `@foreach($sizes as $size)<option value="{{ $size->sizes_ID }}">{{ $size->name }}</option>@endforeach`;
             const isOdd = rowCount % 2;
-            
+
             const newRow = `
                 <tr class="${isOdd ? 'bg-gray-50' : 'bg-white'}">
                     <td class="px-4 py-4 text-sm font-medium text-gray-900 align-top">${rowCount + 1}</td>
@@ -284,7 +287,7 @@
                         </button>
                     </td>
                 </tr>`;
-                
+
             rowsTable.insertAdjacentHTML('beforeend', newRow);
             updateEntryCount();
         }
@@ -310,41 +313,45 @@
                 }
             });
         }
-        
+
         function updateEntryCount() {
             const totalEntriesElement = document.getElementById('total-entries');
             const entryCounterElement = document.getElementById('entry-counter');
             const rows = document.querySelectorAll('#rowsTable tr');
             const count = rows.length;
-            
+
             totalEntriesElement.textContent = count;
-            
+
             // Get references to UI elements
             const additionalPaymentSection = document.getElementById('additional-payment-section');
             const additionalPaymentAlert = document.getElementById('additional-payment-alert');
             const payAdditionalBtn = document.getElementById('pay-additional-btn');
             const confirmButton = document.getElementById('confirm-button');
-            
+
             // Get original quantity value from the server-side data
-            const originalQuantity = {{ $order->quantity }};
-            
+            const originalQuantity = {
+                {
+                    $order - > quantity
+                }
+            };
+
             // Update UI based on the count
             if (count >= 1 && count <= 9) {
                 entryCounterElement.classList.remove('text-red-500');
                 entryCounterElement.classList.add('text-green-600');
-                
+
                 // Check if quantity has increased compared to original order
                 if (count > originalQuantity) {
                     // Show additional payment UI
                     additionalPaymentSection.classList.remove('hidden');
                     additionalPaymentAlert.classList.remove('hidden');
                     payAdditionalBtn.classList.remove('hidden');
-                    
+
                     // Disable regular confirm button
                     confirmButton.disabled = true;
                     confirmButton.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-400');
                     confirmButton.classList.remove('bg-cPrimary', 'hover:bg-cPrimary/90');
-                    
+
                     // Calculate additional payment info
                     updateOrderSummary(count);
                 } else {
@@ -352,7 +359,7 @@
                     additionalPaymentSection.classList.add('hidden');
                     additionalPaymentAlert.classList.add('hidden');
                     payAdditionalBtn.classList.add('hidden');
-                    
+
                     // Enable regular confirm button
                     confirmButton.disabled = false;
                     confirmButton.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-gray-400');
@@ -361,31 +368,43 @@
             } else {
                 entryCounterElement.classList.remove('text-green-600');
                 entryCounterElement.classList.add('text-red-500');
-                
+
                 // Disable confirm button if count is invalid
                 confirmButton.disabled = true;
                 confirmButton.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-400');
                 confirmButton.classList.remove('bg-cPrimary', 'hover:bg-cPrimary/90');
-                
+
                 // Hide additional payment UI
                 additionalPaymentSection.classList.add('hidden');
                 additionalPaymentAlert.classList.add('hidden');
                 payAdditionalBtn.classList.add('hidden');
             }
         }
-        
+
         function updateOrderSummary(totalQuantity) {
             // Get original values from server-side data
-            const originalQuantity = {{ $order->quantity }};
-            const unitPrice = {{ $order->final_price / $order->quantity }};
-            const originalDownpayment = {{ $order->downpayment_amount }};
-            
+            const originalQuantity = {
+                {
+                    $order - > quantity
+                }
+            };
+            const unitPrice = {
+                {
+                    $order - > final_price / $order - > quantity
+                }
+            };
+            const originalDownpayment = {
+                {
+                    $order - > downpayment_amount
+                }
+            };
+
             // Calculate new values
             const totalPrice = unitPrice * totalQuantity;
             const additionalQuantity = Math.max(0, totalQuantity - originalQuantity);
             const additionalPaymentAmount = (additionalQuantity * unitPrice) / 2; // 50% down payment for additional items
             const balanceDue = totalPrice - originalDownpayment - additionalPaymentAmount;
-            
+
             // Update display
             document.getElementById('summary-quantity').textContent = totalQuantity + ' item' + (totalQuantity !== 1 ? 's' : '');
             document.getElementById('summary-total-price').textContent = '₱' + totalPrice.toLocaleString('en-US', {
@@ -396,25 +415,25 @@
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             });
-            
+
             if (additionalPaymentAmount > 0) {
                 document.getElementById('additional-payment').textContent = '₱' + additionalPaymentAmount.toLocaleString('en-US', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                 });
             }
-            
+
             // Update hidden inputs for form submission
             document.getElementById('new-total-price-input').value = totalPrice.toFixed(2);
             document.getElementById('new-quantity-input').value = totalQuantity;
             document.getElementById('additional-payment-input').value = additionalPaymentAmount.toFixed(2);
-            
+
             // Update Pay Additional button link with order ID, amount, and size data
             const payAdditionalBtn = document.getElementById('pay-additional-btn');
             if (payAdditionalBtn) {
                 // Collect form data for customizations
                 const formData = collectFormData();
-                
+
                 // Encode the form data as JSON and add to the URL
                 const formDataParam = encodeURIComponent(JSON.stringify(formData));
                 payAdditionalBtn.href = "{{ route('order.additional-payment', ['order_id' => $order->order_id]) }}?amount=" +
@@ -423,10 +442,10 @@
                     "&size_data=" + formDataParam;
             }
         }
-        
+
         document.addEventListener('DOMContentLoaded', function() {
             updateEntryCount();
-            
+
             // Add event listener for the pay additional button
             const payAdditionalBtn = document.getElementById('pay-additional-btn');
             if (payAdditionalBtn) {
@@ -503,4 +522,5 @@
         });
     </script>
 </body>
+
 </html>

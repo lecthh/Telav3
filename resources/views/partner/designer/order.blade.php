@@ -8,7 +8,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/pagedone@1.2.2/src/css/pagedone.css" rel="stylesheet" />
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @vite('resources/css/app.css')
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
 </head>
 
 <body class="flex flex-col min-h-screen bg-gray-50">
@@ -197,15 +201,27 @@
                                     <div class="flex flex-col sm:flex-row justify-between pt-6 border-t border-gray-100">
                                         <div class="flex flex-col sm:flex-row gap-3 mb-4 sm:mb-0">
                                             @if($order->status_id <= 3)
-                                                <form action="{{ route('partner.designer.cancel-design-assignment', ['order_id' => $order->order_id]) }}" method="post">
-                                                @csrf
-                                                <button type="submit" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                                    </svg>
-                                                    Cancel Assignment
-                                                </button>
-                            </form>
+                                                <div class="flex space-x-3">
+                                                    <div x-data="{ showCancelModal: false, otherReason: '' }">
+                                                        <button type="button" @click="showCancelModal = true" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                            </svg>
+                                                            Cancel Order
+                                                        </button>
+                                                        
+                                                        <!-- Cancel Order Modal -->
+                                                        @include('components.modals.cancel-order-modal', ['action' => route('partner.designer.cancel-order', ['order_id' => $order->order_id])])
+                                                    </div>
+                                                    
+                                                    <form action="{{ route('partner.designer.cancel-design-assignment', ['order_id' => $order->order_id]) }}" method="post">
+                                                        @csrf
+                                                        <button type="submit" class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cGreen">
+                                                            Unassign Only
+                                                        </button>
+                                                    </form>
+                                                </div>
+                            
                             @endif
 
                             <!-- <button type="button" class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cGreen">

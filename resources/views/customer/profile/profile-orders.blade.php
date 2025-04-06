@@ -73,7 +73,9 @@
                                 data-order-is-bulk="{{ $order->is_bulk_order ? 'Yes' : 'No' }}"
                                 data-order-price="{{ $order->final_price }}"
                                 data-order-downpayment="{{ $order->downpayment_amount }}"
-                                data-order-eta="{{ $order->eta }}">
+                                data-order-eta="{{ $order->eta }}"
+                                data-order-cancellation-reason="{{ $order->cancellation_reason }}"
+                                data-order-cancellation-note="{{ $order->cancellation_note }}">
                                 <div class="flex justify-between items-start">
                                     <div>
                                         <h3 class="font-inter font-bold text-gray-900 group-hover:text-cPrimary transition duration-150">
@@ -190,10 +192,38 @@
                                         </div>
                                     </div>
                                 </div>
+                                
+                                <!-- Cancellation information if available -->
+                                <div id="cancellation-container" class="border-t border-gray-200 pt-4 hidden">
+                                    <h3 class="font-inter font-bold text-lg mb-4">Cancellation Information</h3>
+                                    <div class="p-3 bg-red-50 rounded-lg">
+                                        <div class="flex items-start">
+                                            <div class="flex items-center justify-center w-10 h-10 rounded-full bg-red-100 mr-3 flex-shrink-0">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-700 text-sm font-medium">This order has been cancelled</p>
+                                                <p class="text-gray-600 text-sm mt-1">Reason: <span id="cancellation-reason" class="font-medium"></span></p>
+                                                <div id="cancellation-note-container" class="mt-2 text-sm bg-white p-3 rounded border border-red-200 hidden">
+                                                    <p class="text-gray-600 font-medium">Additional notes:</p>
+                                                    <p id="cancellation-note" class="text-gray-700 mt-1"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <div class="border-t border-gray-200 pt-4">
                                     <h3 class="font-inter font-bold text-lg mb-4">Order Status Timeline</h3>
-                                    <div id="order-notifications" class="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar"></div>
+                                    <div id="order-timeline" class="relative ml-2">
+                                        <!-- Timeline line -->
+                                        <div class="absolute left-3.5 top-0 h-full w-0.5 bg-gray-200"></div>
+                                        
+                                        <!-- Status stages -->
+                                        <div id="order-notifications" class="space-y-6 pb-4 relative max-h-[300px] overflow-y-auto pr-2 custom-scrollbar"></div>
+                                    </div>
                                 </div>
 
                                 <div id="order-actions" class="flex flex-wrap gap-4 border-t border-gray-200 pt-4">
@@ -281,6 +311,20 @@
             const orderDownpayment = document.getElementById('order-downpayment');
             const etaContainer = document.getElementById('eta-container');
             const orderEta = document.getElementById('order-eta');
+            
+            // Cancellation elements
+            const cancellationContainer = document.getElementById('cancellation-container');
+            const cancellationReason = document.getElementById('cancellation-reason');
+            const cancellationNoteContainer = document.getElementById('cancellation-note-container');
+            const cancellationNote = document.getElementById('cancellation-note');
+            
+            console.log('DOM elements loaded:', {
+                orderDetails,
+                orderNotifications,
+                cancellationContainer,
+                cancellationReason,
+                cancellationNoteContainer,
+            });
 
             orderDetails.classList.add('hidden');
             noOrderSelected.classList.remove('hidden');
@@ -344,13 +388,53 @@
                         etaContainer.classList.add('hidden');
                     }
                     
+                    // Handle cancellation information display
+                    console.log('Cancellation elements:', {
+                        container: cancellationContainer,
+                        reasonEl: cancellationReason,
+                        noteContainer: cancellationNoteContainer,
+                        noteEl: cancellationNote
+                    });
+                    
+                    const reason = this.getAttribute('data-order-cancellation-reason');
+                    const note = this.getAttribute('data-order-cancellation-note');
+                    
+                    const orderStatusId = this.getAttribute('data-order-status-id');
+                    console.log('Cancellation data:', {
+                        reason: reason,
+                        note: note,
+                        orderStatus: orderStatus,
+                        statusId: orderStatusId
+                    });
+                    
+                    if (orderStatus === 'Cancelled' || orderStatusId === '8') {
+                        console.log('Order is cancelled, showing cancellation info');
+                        if (reason) {
+                            cancellationReason.textContent = reason;
+                            cancellationContainer.classList.remove('hidden');
+                            
+                            if (reason === 'Other' && note) {
+                                cancellationNote.textContent = note;
+                                cancellationNoteContainer.classList.remove('hidden');
+                            } else {
+                                cancellationNoteContainer.classList.add('hidden');
+                            }
+                        } else {
+                            cancellationReason.textContent = 'Not specified';
+                            cancellationContainer.classList.remove('hidden');
+                            cancellationNoteContainer.classList.add('hidden');
+                        }
+                    } else {
+                        console.log('Order is not cancelled, hiding cancellation info');
+                        cancellationContainer.classList.add('hidden');
+                    }
+                    
                     // Show/hide review button based on order status
                     const reviewButton = document.getElementById('review-button');
-                    const statusId = this.getAttribute('data-order-status-id');
                     
                     // Check both status name and numeric ID (7 is completed)
-                    if (orderStatus === 'Completed' || statusId === '7') {
-                        console.log('Showing review button for completed order:', orderId, 'Status ID:', statusId);
+                    if (orderStatus === 'Completed' || orderStatusId === '7') {
+                        console.log('Showing review button for completed order:', orderId, 'Status ID:', orderStatusId);
                         reviewButton.classList.remove('hidden');
                         reviewButton.href = `/review/${orderId}`;
                     } else {
@@ -358,9 +442,9 @@
                     }
 
                     let statusColorClass = '';
-                    if (orderStatus === 'Completed' || statusId === '7') {
+                    if (orderStatus === 'Completed' || orderStatusId === '7') {
                         statusColorClass = 'bg-green-100 text-green-800';
-                    } else if (orderStatus === 'Cancelled' || statusId === '8') {
+                    } else if (orderStatus === 'Cancelled' || orderStatusId === '8') {
                         statusColorClass = 'bg-red-100 text-red-800';
                     } else {
                         statusColorClass = 'bg-blue-100 text-blue-800';
@@ -380,15 +464,165 @@
                         </div>
                     `;
 
-                    const notifications = JSON.parse(this.getAttribute('data-order-notifications'));
+                    // Debug order data
+                    console.log('Selected order:', {
+                        id: orderId,
+                        status: orderStatus,
+                        statusId: statusId,
+                        cancellationReason: reason,
+                        cancellationNote: note
+                    });
+                    
+                    // Make sure the notifications element exists
+                    if (!orderNotifications) {
+                        console.error('Order notifications element not found in the DOM');
+                    }
+                    
+                    // Parse notifications with error handling
+                    let notifications = [];
+                    try {
+                        const notificationsData = this.getAttribute('data-order-notifications');
+                        console.log('Notifications data:', notificationsData);
+                        
+                        // Check if the data is empty or invalid JSON
+                        if (notificationsData && notificationsData !== 'null' && notificationsData !== '[]') {
+                            notifications = JSON.parse(notificationsData);
+                        } else {
+                            console.log('Empty notifications data or invalid JSON');
+                            notifications = [];
+                        }
+                    } catch (error) {
+                        console.error('Error parsing notifications:', error);
+                        notifications = [];
+                    }
+                    
                     let notificationsHTML = '';
 
+                    // Create default status notification based on order status
+                    const defaultStatusHTML = `
+                        <div class="flex relative z-10">
+                            <div class="flex-shrink-0">
+                                <div class="flex items-center justify-center h-8 w-8 rounded-full bg-cPrimary border-2 border-white">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <div class="bg-white rounded-lg border border-gray-200 p-3 shadow-sm">
+                                    <p class="text-sm font-medium text-gray-900">Order ${orderStatus}</p>
+                                    <p class="text-xs text-gray-500 mt-1">${formattedDate} at ${formattedTime}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    // Add order created event to the timeline
+                    notificationsHTML = `
+                        <div class="flex relative z-10">
+                            <div class="flex-shrink-0">
+                                <div class="flex items-center justify-center h-8 w-8 rounded-full bg-green-500 border-2 border-white">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <div class="bg-white rounded-lg border border-gray-200 p-3 shadow-sm">
+                                    <p class="text-sm font-medium text-gray-900">Order Created</p>
+                                    <p class="text-xs text-gray-500 mt-1">${formattedDate} at ${formattedTime}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
                     if (notifications && notifications.length > 0) {
-                        // Sort notifications by created_at date in descending order (newest first)
+                        console.log('Notifications count:', notifications.length);
+                        // Sort notifications by created_at date in ascending order (oldest first)
                         const sortedNotifications = [...notifications].sort((a, b) => {
-                            return new Date(b.created_at) - new Date(a.created_at);
+                            return new Date(a.created_at) - new Date(b.created_at);
                         });
                         
+                        // Define status icons mapping
+                        const statusIcons = {
+                            'Order Received': `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>`,
+                            'Design in Progress': `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>`,
+                            'Finalize Order': `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>`,
+                            'Awaiting Printing': `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>`,
+                            'Printing in Progress': `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                            </svg>`,
+                            'Ready for Collection': `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                            </svg>`,
+                            'Completed': `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>`,
+                            'Cancelled': `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>`,
+                            'Default': `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>`
+                        };
+                        
+                        // Get color for status based on message
+                        const getStatusColor = (message) => {
+                            const lowercaseMsg = message.toLowerCase();
+                            if (lowercaseMsg.includes('order received') || lowercaseMsg.includes('order placed')) {
+                                return 'bg-blue-500';
+                            } else if (lowercaseMsg.includes('design')) {
+                                return 'bg-indigo-500';
+                            } else if (lowercaseMsg.includes('finalize')) {
+                                return 'bg-purple-500';
+                            } else if (lowercaseMsg.includes('awaiting printing')) {
+                                return 'bg-yellow-500';
+                            } else if (lowercaseMsg.includes('printing in progress')) {
+                                return 'bg-orange-500';
+                            } else if (lowercaseMsg.includes('ready for collection')) {
+                                return 'bg-green-500';
+                            } else if (lowercaseMsg.includes('complet')) {
+                                return 'bg-green-600';
+                            } else if (lowercaseMsg.includes('cancel')) {
+                                return 'bg-red-500';
+                            } else {
+                                return 'bg-gray-500';
+                            }
+                        };
+                        
+                        // Get icon for status based on message
+                        const getStatusIcon = (message) => {
+                            const lowercaseMsg = message.toLowerCase();
+                            if (lowercaseMsg.includes('order received') || lowercaseMsg.includes('order placed')) {
+                                return statusIcons['Order Received'];
+                            } else if (lowercaseMsg.includes('design')) {
+                                return statusIcons['Design in Progress'];
+                            } else if (lowercaseMsg.includes('finalize')) {
+                                return statusIcons['Finalize Order'];
+                            } else if (lowercaseMsg.includes('awaiting printing')) {
+                                return statusIcons['Awaiting Printing'];
+                            } else if (lowercaseMsg.includes('printing in progress')) {
+                                return statusIcons['Printing in Progress'];
+                            } else if (lowercaseMsg.includes('ready for collection')) {
+                                return statusIcons['Ready for Collection'];
+                            } else if (lowercaseMsg.includes('complet')) {
+                                return statusIcons['Completed'];
+                            } else if (lowercaseMsg.includes('cancel')) {
+                                return statusIcons['Cancelled'];
+                            } else {
+                                return statusIcons['Default'];
+                            }
+                        };
+                        
+                        // Add notifications to HTML
                         sortedNotifications.forEach((notification, index) => {
                             const notifDate = new Date(notification.created_at);
                             const formattedNotifDate = notifDate.toLocaleDateString('en-US', {
@@ -400,28 +634,64 @@
                                 hour: 'numeric',
                                 minute: 'numeric',
                             });
+                            
+                            const statusColor = getStatusColor(notification.message);
+                            const statusIcon = getStatusIcon(notification.message);
 
                             notificationsHTML += `
-                                <div class="flex">
+                                <div class="flex relative z-10">
                                     <div class="flex-shrink-0">
-                                        <div class="flex items-center justify-center h-8 w-8 rounded-full ${index === 0 ? 'bg-cPrimary' : 'bg-gray-200'}">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ${index === 0 ? 'text-white' : 'text-gray-600'}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                            </svg>
+                                        <div class="flex items-center justify-center h-8 w-8 rounded-full ${statusColor} border-2 border-white">
+                                            ${statusIcon}
                                         </div>
                                     </div>
-                                    <div class="ml-4 mb-6">
-                                        <p class="text-sm font-medium text-gray-900">${notification.message}</p>
-                                        <p class="text-xs text-gray-500 mt-1">${formattedNotifDate} at ${formattedNotifTime}</p>
+                                    <div class="ml-4">
+                                        <div class="bg-white rounded-lg border border-gray-200 p-3 shadow-sm">
+                                            <p class="text-sm font-medium text-gray-900">${notification.message}</p>
+                                            <p class="text-xs text-gray-500 mt-1">${formattedNotifDate} at ${formattedNotifTime}</p>
+                                        </div>
                                     </div>
                                 </div>
                             `;
                         });
+                        
+                        // Add current status if different from the latest notification
+                        if (orderStatus !== 'Cancelled' && sortedNotifications.length > 0) {
+                            // Check if the last notification doesn't match current status
+                            const lastNotifMsg = sortedNotifications[sortedNotifications.length - 1].message.toLowerCase();
+                            const currentStatus = orderStatus.toLowerCase();
+                            
+                            if (!lastNotifMsg.includes(currentStatus)) {
+                                notificationsHTML += `
+                                    <div class="flex relative z-10">
+                                        <div class="flex-shrink-0">
+                                            <div class="flex items-center justify-center h-8 w-8 rounded-full bg-cPrimary border-2 border-white">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="bg-white rounded-lg border border-gray-200 p-3 shadow-sm">
+                                                <p class="text-sm font-medium text-gray-900">Current Status: ${orderStatus}</p>
+                                                <p class="text-xs text-gray-500 mt-1">Last updated: ${formattedDate} at ${formattedTime}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        }
                     } else {
-                        notificationsHTML = '<p class="text-sm text-gray-500">No updates available for this order.</p>';
+                        // If no notifications, add current status notification
+                        notificationsHTML += defaultStatusHTML;
                     }
 
-                    orderNotifications.innerHTML = notificationsHTML;
+                    if (orderNotifications) {
+                        console.log('Setting notifications HTML');
+                        orderNotifications.innerHTML = notificationsHTML;
+                    } else {
+                        console.error('Cannot set notifications HTML - element not found');
+                    }
                 });
             });
 

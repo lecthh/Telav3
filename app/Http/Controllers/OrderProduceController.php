@@ -8,6 +8,7 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Traits\Toastable;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class OrderProduceController extends Controller {
     use Toastable;
@@ -132,10 +133,68 @@ class OrderProduceController extends Controller {
     {
         $order = Order::find($order_id);
 
-        $customizationDetails = $order->customizationDetails()->get();
+        // EXTREME DEBUG MODE
+        // 1. Check if order exists and get complete details
+        \Illuminate\Support\Facades\Log::info('FULL ORDER DEBUG', [
+            'order_id' => $order_id,
+            'order_object' => $order->toArray(),
+            'apparel_type' => $order->apparelType ? $order->apparelType->toArray() : null,
+            'is_customized' => $order->is_customized,
+            'is_bulk_order' => $order->is_bulk_order,
+            'is_jersey' => $order->apparelType && $order->apparelType->name === 'Jersey'
+        ]);
 
-        if ($customizationDetails->isEmpty()) {
-            $customizationDetails = null;
+        // 2. Check direct database query for customization details to see what's in the database
+        $directDetails = \Illuminate\Support\Facades\DB::table('customization_details')
+            ->where('order_ID', $order->order_id)
+            ->get();
+        
+        \Illuminate\Support\Facades\Log::info('DB DIRECT QUERY RESULTS', [
+            'order_id' => $order_id,
+            'results_count' => $directDetails->count(),
+            'first_result' => $directDetails->first() ? json_encode($directDetails->first()) : 'no results',
+            'all_results' => json_encode($directDetails)
+        ]);
+        
+        // 3. Attempt each possible way to get customization details
+        $viaRelationship = $order->customizationDetails()->get();
+        $viaDirectModel = \App\Models\CustomizationDetails::where('order_ID', $order->order_id)->get();
+        $viaCustomizedField = $order->is_customized ? 'Has customization flag' : 'No customization flag';
+        
+        \Illuminate\Support\Facades\Log::info('ALL POSSIBLE QUERY METHODS', [
+            'order_id' => $order_id,
+            'via_relationship_count' => $viaRelationship->count(),
+            'via_direct_model_count' => $viaDirectModel->count(),
+            'customization_flag' => $viaCustomizedField
+        ]);
+
+        // We'll still use the direct model query, which should be most reliable
+        $customizationDetails = $viaDirectModel;
+
+        // For jersey orders, force a non-null customization details if there are any jersey-specific fields
+        if ($order->apparelType && $order->apparelType->name === 'Jersey') {
+            // Look for any jersey-related details in direct DB query
+            $hasJerseyDetails = false;
+            foreach ($directDetails as $detail) {
+                if (!empty($detail->jersey_number) || !empty($detail->short_size)) {
+                    $hasJerseyDetails = true;
+                    break;
+                }
+            }
+            
+            \Illuminate\Support\Facades\Log::info('JERSEY SPECIFIC CHECK', [
+                'order_id' => $order_id,
+                'found_jersey_details' => $hasJerseyDetails
+            ]);
+            
+            // If we have jersey details in the database but no customization details came back, 
+            // something's wrong with the query - force a non-empty result
+            if ($hasJerseyDetails && $customizationDetails->isEmpty()) {
+                $customizationDetails = collect(['dummy_record' => true]);
+                \Illuminate\Support\Facades\Log::warning('FORCED NON-EMPTY CUSTOMIZATION DETAILS', [
+                    'reason' => 'Jersey details found in DB but not in model query'
+                ]);
+            }
         }
 
         return view('partner.printer.finalize.order', compact('order', 'customizationDetails'));
@@ -327,6 +386,69 @@ class OrderProduceController extends Controller {
         $order = Order::find($order_id);
         return view('partner.printer.ready.order', compact('order'));
     }
+    
+    /**
+     * Send a payment reminder to the customer
+     * 
+     * @param string $order_id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function sendPaymentReminder($order_id)
+    {
+        try {
+            $order = Order::findOrFail($order_id);
+            $user = $order->user;
+            
+            // Calculate total payments already made (downpayment + any additional payments)
+            $additionalPayments = $order->additionalPayments()->sum('amount');
+            $totalPaid = $order->downpayment_amount + $additionalPayments;
+            
+            // Calculate actual balance due
+            $balanceDue = $order->final_price - $totalPaid;
+            
+            if ($balanceDue <= 0) {
+                $this->toast('This order has no remaining balance to pay.', 'info');
+                return redirect()->back();
+            }
+            
+            // Generate payment link for balance payment
+            $paymentLink = route('order.additional-payment', [
+                'order_id' => $order->order_id, 
+                'amount' => $balanceDue,
+                'is_balance_payment' => 1
+            ]);
+            
+            // Send reminder email to customer
+            Mail::send('mail.paymentReminder', [
+                'name' => $user->name,
+                'orderNumber' => substr($order->order_id, -6),
+                'balanceDue' => $balanceDue,
+                'paymentLink' => $paymentLink,
+                'companyName' => $order->productionCompany->company_name
+            ], function ($message) use ($user, $order) {
+                $message->to($user->email);
+                $message->subject('Reminder: Complete Your Payment for Order #' . substr($order->order_id, -6));
+            });
+            
+            // Create notification for customer
+            Notification::create([
+                'user_id' => $user->user_id,
+                'message' => 'Payment reminder sent - Remaining balance: ' . number_format($balanceDue, 2) . ' PHP',
+                'is_read' => false,
+                'order_id' => $order->order_id,
+            ]);
+            
+            $this->toast('Payment reminder sent to ' . $user->email, 'success');
+            return redirect()->back();
+        } catch (\Exception $e) {
+            Log::error('Payment Reminder Error: ' . $e->getMessage(), [
+                'order_id' => $order_id,
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->toast('An error occurred while sending the payment reminder: ' . $e->getMessage(), 'error');
+            return redirect()->back();
+        }
+    }
 
     public function readyOrderPost($order_id)
     {
@@ -351,18 +473,61 @@ class OrderProduceController extends Controller {
     }
 
     //COMPLETE OR CANCEL
-    public function cancelOrder($order_id)
+    public function cancelOrder(Request $request, $order_id)
     {
         try {
+            $request->validate([
+                'cancellation_reason' => 'required|string',
+                'cancellation_note' => 'nullable|string',
+            ]);
+
             $order = Order::findOrFail($order_id);
-            $order->update(['status_id' => 8]);
+            
+            $order->update([
+                'status_id' => 8,
+                'cancellation_reason' => $request->cancellation_reason,
+                'cancellation_note' => $request->cancellation_note,
+            ]);
+
+            $cancellationMessage = 'Your Order Has Been Cancelled';
+            
+            if ($request->cancellation_reason) {
+                $cancellationMessage .= ' - Reason: ' . $request->cancellation_reason;
+                
+                if ($request->cancellation_reason === 'Other' && $request->cancellation_note) {
+                    $cancellationMessage .= ' (' . $request->cancellation_note . ')';
+                }
+            }
 
             Notification::create([
                 'user_id' => $order->user->user_id,
-                'message' => 'Your Order Has Been Cancelled',
+                'message' => $cancellationMessage,
                 'is_read' => false,
                 'order_id' => $order->order_id,
             ]);
+            
+            // Send cancellation email to customer
+            try {
+                $user = $order->user;
+                $orderNumber = substr($order->order_id, -6);
+                $cancellationReason = $request->cancellation_reason;
+                $cancellationNote = $request->cancellation_note;
+                $companyName = $order->productionCompany ? $order->productionCompany->company_name : 'Production Company';
+                
+                Mail::send('mail.orderCancelled', [
+                    'name' => $user->name,
+                    'orderNumber' => $orderNumber,
+                    'reason' => $cancellationReason,
+                    'note' => $cancellationNote,
+                    'companyName' => $companyName
+                ], function ($message) use ($user) {
+                    $message->to($user->email);
+                    $message->subject('Order Cancellation Notice');
+                });
+            } catch (\Exception $emailError) {
+                Log::error('Failed to send cancellation email: ' . $emailError->getMessage());
+                // Continue with the process even if email fails
+            }
 
             $this->toast('Order cancelled successfully!', 'success');
             return redirect()->route('printer-dashboard');

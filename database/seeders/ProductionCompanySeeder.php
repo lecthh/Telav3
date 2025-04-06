@@ -33,8 +33,8 @@ class ProductionCompanySeeder extends Seeder
                     'address' => '123 Printing Blvd, Houston, TX 77001',
                     'phone' => '555-111-2222',
                     'email' => 'contact@eliteprints.com',
-                    'avg_rating' => 4.7,
-                    'review_count' => 86,
+                    'avg_rating' => 0,
+                    'review_count' => 0,
                 ],
             ],
             [
@@ -53,8 +53,8 @@ class ProductionCompanySeeder extends Seeder
                     'address' => '456 Stitch Avenue, Portland, OR 97201',
                     'phone' => '555-333-4444',
                     'email' => 'contact@threadcraft.com',
-                    'avg_rating' => 4.9,
-                    'review_count' => 124,
+                    'avg_rating' => 0,
+                    'review_count' => 0,
                 ],
             ],
             [
@@ -73,8 +73,8 @@ class ProductionCompanySeeder extends Seeder
                     'address' => '789 Fashion Drive, Los Angeles, CA 90015',
                     'phone' => '555-555-6666',
                     'email' => 'contact@fusionapparel.com',
-                    'avg_rating' => 4.5,
-                    'review_count' => 211,
+                    'avg_rating' => 0,
+                    'review_count' => 0,
                 ],
             ],
         ];
