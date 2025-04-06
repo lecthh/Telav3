@@ -139,7 +139,7 @@ class BaseTable extends Component
 
     public function openDetails($id)
     {
-        $this->dispatch($this->onRowClick, $id);
+        $this->dispatch($this->onRowClick, $id, $this->type);
     }
 
     public function openApproveModal($id)

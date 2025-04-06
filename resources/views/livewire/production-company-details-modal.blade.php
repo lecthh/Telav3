@@ -20,12 +20,14 @@
                             <span class="px-2.5 py-0.5 rounded-full text-xs font-medium {{ $selectedItem->is_verified ? 'bg-blue-100 text-blue-800' : 'bg-amber-100 text-amber-800' }}">
                                 {{ $selectedItem->is_verified ? 'Verified Company' : 'Verification Pending' }}
                             </span>
+                            @if($type === 'manage')
                             <div class="flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                                 </svg>
                                 {{ $selectedItem->avg_rating }} ({{ $selectedItem->review_count }} reviews)
                             </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -40,6 +42,13 @@
                         aria-current="{{ $activeTab === 'general' ? 'page' : 'false' }}">
                         Company Details
                     </button>
+                    <button type="button"
+                        wire:click="$set('activeTab', 'documents')"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition duration-150 ease-in-out {{ $activeTab === 'documents' ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
+                        aria-current="{{ $activeTab === 'documents' ? 'page' : 'false' }}">
+                        Documents
+                    </button>
+                    @if($type === 'manage')
                     <button type="button"
                         wire:click="$set('activeTab', 'orders')"
                         class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition duration-150 ease-in-out {{ $activeTab === 'orders' ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
@@ -58,12 +67,7 @@
                         aria-current="{{ $activeTab === 'reviews' ? 'page' : 'false' }}">
                         Reviews
                     </button>
-                    <button type="button"
-                        wire:click="$set('activeTab', 'documents')"
-                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition duration-150 ease-in-out {{ $activeTab === 'documents' ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
-                        aria-current="{{ $activeTab === 'documents' ? 'page' : 'false' }}">
-                        Documents
-                    </button>
+                    @endif
                 </nav>
             </div>
 
@@ -96,29 +100,6 @@
                             </div>
                         </div>
 
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <h3 class="text-sm font-semibold text-gray-700 mb-3">Account Details</h3>
-                            <div class="space-y-3">
-                                <div>
-                                    <span class="block text-xs text-gray-500">Company Owner</span>
-                                    <span class="block text-sm font-medium text-gray-900">
-                                        {{ $selectedItem->user ? $selectedItem->user->name : 'N/A' }}
-                                    </span>
-                                </div>
-                                <div>
-                                    <span class="block text-xs text-gray-500">Verification Status</span>
-                                    <span class="block text-sm font-medium {{ $selectedItem->is_verified ? 'text-green-600' : 'text-amber-600' }}">
-                                        {{ $selectedItem->is_verified ? 'Verified Company' : 'Verification Pending' }}
-                                    </span>
-                                </div>
-                                <div>
-                                    <span class="block text-xs text-gray-500">Account Status</span>
-                                    <span class="block text-sm font-medium {{ $selectedItem->isActive() ? 'text-green-600' : 'text-red-600' }}">
-                                        {{ ucfirst($selectedItem->status) }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Right Column -->
@@ -148,7 +129,7 @@
                                 </div>
                             </div>
                         </div>
-
+                        @if($type === 'manage')
                         <div class="bg-gray-50 p-4 rounded-lg">
                             <h3 class="text-sm font-semibold text-gray-700 mb-3">Rating Information</h3>
                             <div class="space-y-3">
@@ -172,17 +153,18 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
                     </div>
                 </div>
 
                 @elseif($activeTab === 'orders')
                 <!-- Orders Associated with This Company -->
                 <div>
-                    @if(isset($companyOrders) && $companyOrders->count())
+                    @if(isset($selectedItem->orders) && $selectedItem->orders->count())
                     <div class="mb-4 flex justify-between items-center">
                         <h3 class="text-sm font-semibold text-gray-700">Production Orders</h3>
                         <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                            {{ $companyOrders->count() }} Orders
+                            {{ $selectedItem->orders->count() }} Orders
                         </span>
                     </div>
                     <div class="overflow-x-auto">
@@ -207,8 +189,8 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach($companyOrders as $order)
-                                <tr>
+                                @foreach($selectedItem->orders as $order)
+                                <tr class="hover:bg-gray-50 cursor-pointer" wire:click="onRowClick('{{ $order->order_id }}')">
                                     <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
                                         {{ $order->order_id }}
                                     </td>
@@ -217,7 +199,7 @@
                                     </td>
                                     <td class="px-4 py-3 whitespace-nowrap">
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ 
-                                            $order->status >= 1 && $order->status != 8 
+                                            $order->status_id >= 1 && $order->status_id != 8 
                                                 ? 'bg-green-100 text-green-800' 
                                                 : 'bg-red-100 text-red-800' 
                                             }}">
@@ -253,7 +235,7 @@
                     <div class="mb-4">
                         <h3 class="text-sm font-semibold text-gray-700">Production Pricing</h3>
                     </div>
-                    <div class="overflow-x-auto">
+                    <div class="overflow-x-auto max-h-64 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>

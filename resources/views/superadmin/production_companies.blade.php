@@ -30,6 +30,7 @@
     </div>
     @livewire('production-company-details-modal')
     @livewire('approve-modal')
+    @livewire('order-details-modal')
     @livewire('delete-confirmation-modal')
     @include('layout.footer')
 </body>

@@ -3,12 +3,15 @@
 namespace App\Livewire;
 
 use App\Models\Designer;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 
 class DesignerDetailsModal extends Component
 {
     public $showModal = false;
     public $selectedItem = null;
+    public $activeTab = 'general';
+    public $type = '';
 
     protected function getListeners()
     {
@@ -17,10 +20,18 @@ class DesignerDetailsModal extends Component
         ];
     }
 
-    public function showDetails($id)
+    public function onRowClick($orderId)
+    {
+        Log::info('Row clicked with orderId: ' . $orderId);
+        $this->dispatch('showOrderDetails', $orderId);
+    }
+
+    public function showDetails($id, $type)
     {
         $this->selectedItem = Designer::find($id);
         $this->showModal = true;
+        $this->activeTab = 'general';
+        $this->type = $type;
     }
 
     public function render()

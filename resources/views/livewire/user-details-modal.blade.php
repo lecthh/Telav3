@@ -26,9 +26,6 @@
                                 Unverified Email
                             </span>
                             @endif
-                            <span class="ml-2 px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                {{ $selectedItem->getRoleNameAttribute() }}
-                            </span>
                         </div>
                     </div>
                 </div>
@@ -171,7 +168,7 @@
                                         </span>
                                     </td>
                                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                                        ${{ number_format($order->final_price, 2) }}
+                                        ${{ number_format($order->final_price - $order->downpayment_amount, 2) }}
                                     </td>
                                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                                         {{ $order->created_at->format('M d, Y') }}

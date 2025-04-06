@@ -93,6 +93,11 @@ class ProductionCompany extends Model
         return $this->hasMany(ProductionCompanyPricing::class, 'production_company_id');
     }
 
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'production_company_id', 'id');
+    }
+
     public function getPriceFor($apparelTypeId, $productionTypeId, $isBulk = false)
     {
         $pricing = $this->pricing()

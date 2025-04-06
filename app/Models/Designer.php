@@ -43,7 +43,7 @@ class Designer extends Model
     }
     public function orders()
     {
-        return $this->hasMany(Order::class, 'designer_id', 'designer_id');
+        return $this->hasMany(Order::class,  'assigned_designer_id', 'designer_id');
     }
 
     public function reviews()
