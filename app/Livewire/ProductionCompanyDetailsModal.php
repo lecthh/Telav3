@@ -9,6 +9,7 @@ class ProductionCompanyDetailsModal extends Component
 {
     public $showModal = false;
     public $selectedItem = null;
+    public $activeTab = 'general';
 
     protected function getListeners()
     {
@@ -21,6 +22,7 @@ class ProductionCompanyDetailsModal extends Component
     {
         $this->selectedItem = ProductionCompany::find($id);
         $this->showModal = true;
+        $this->activeTab = 'general';
     }
 
     public function render()

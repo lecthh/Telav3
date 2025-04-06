@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Order;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 
 class OrderDetailsModal extends Component
@@ -13,6 +14,7 @@ class OrderDetailsModal extends Component
 
     protected function getListeners()
     {
+        Log::info('Listeners initialized for OrderDetailsModal');
         return [
             'showOrderDetails' => 'showDetails',
         ];
@@ -23,6 +25,7 @@ class OrderDetailsModal extends Component
         $this->selectedItem = Order::find($id);
         $this->showModal = true;
         $this->activeTab = 'general';
+        Log::info('Order details modal opened for order ID: ' . $id);
     }
 
     public function render()
