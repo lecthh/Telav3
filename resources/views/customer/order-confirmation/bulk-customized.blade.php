@@ -60,12 +60,12 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <h2 class="font-gilroy font-bold text-xl mb-2">Personalized Customization Details</h2>
                 <p class="text-gray-600 mb-4">Please specify the details for each apparel to be printed. You must provide at least 10 customization entries.</p>
-                
+
                 <!-- Excel Upload Option -->
                 <div class="mb-6 p-4 bg-purple-50 rounded-lg border border-purple-100">
                     <h3 class="font-medium text-lg text-purple-900 mb-2">Use Excel Template (Optional)</h3>
                     <p class="text-purple-800 mb-3">You can use our Excel template to specify your customizations.</p>
-                    
+
                     <div class="flex flex-col sm:flex-row gap-4 mb-4">
                         <a href="{{ route('excel.template', ['type' => 'bulk_customized']) }}" class="inline-flex items-center px-4 py-2 border border-purple-300 rounded-md text-sm font-medium text-purple-700 bg-white hover:bg-purple-50">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -74,7 +74,7 @@
                             Download Excel Template
                         </a>
                     </div>
-                    
+
                     @if(session('format_issue'))
                     <div class="bg-red-50 p-4 rounded-lg border border-red-200 mb-4">
                         <h4 class="font-medium text-red-700">Excel Format Issue Detected</h4>
@@ -84,7 +84,7 @@
                             <li>Ensure your Excel file has the exact required headers in row 1</li>
                             <li>Try entering the data manually below</li>
                         </ol>
-                        
+
                         @if(session('emergency_bypass_url'))
                         <a href="{{ session('emergency_bypass_url') }}" class="inline-flex items-center px-3 py-1.5 bg-orange-100 border border-orange-300 rounded text-sm font-medium text-orange-700">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
@@ -96,12 +96,12 @@
                         @endif
                     </div>
                     @endif
-                    
+
                     <form action="{{ route('excel.import.bulk-customized') }}" method="POST" enctype="multipart/form-data" class="mb-4">
                         @csrf
                         <input type="hidden" name="order_id" value="{{ $order->order_id }}">
                         <input type="hidden" name="token" value="{{ $order->token }}">
-                        
+
                         <div class="flex flex-col sm:flex-row gap-2">
                             <div class="flex-1">
                                 <input type="file" name="excel_file" id="excel_file" accept=".xlsx,.xls,.csv" class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
@@ -112,19 +112,19 @@
                             </button>
                         </div>
                     </form>
-                    
+
                     <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-100">
                         <p class="text-yellow-800 font-medium mb-2">Excel Import Requirements:</p>
                         <ul class="list-disc pl-6 text-yellow-700 text-sm space-y-1.5">
                             <li><strong>Headers must be in row 1:</strong> "description" (or "name"), "size", "quantity" (optional), and "remarks" (optional)</li>
-                            <li><strong>Size values:</strong> Must match one of these: 
+                            <li><strong>Size values:</strong> Must match one of these:
                                 @foreach($sizes as $size)
-                                    <span class="font-medium">{{ $size->name }}</span>@if(!$loop->last), @endif
+                                <span class="font-medium">{{ $size->name }}</span>@if(!$loop->last), @endif
                                 @endforeach
                             </li>
                             <li><strong>Required quantity:</strong> Minimum 10 rows of customization data</li>
                         </ul>
-                        
+
                         <div class="mt-3 p-2 bg-white rounded border border-yellow-200">
                             <p class="text-yellow-800 font-medium">Troubleshooting Tips:</p>
                             <ul class="list-decimal pl-5 text-yellow-700 text-sm mt-1 space-y-1">
@@ -136,9 +136,9 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <p class="text-gray-600 mb-4">Or manually enter customization details below:</p>
-                
+
                 <!-- Debug info - Remove in production -->
                 @if(env('APP_DEBUG'))
                 <div class="p-2 bg-gray-100 text-xs font-mono mb-4 rounded overflow-auto" style="max-height: 200px;">
@@ -243,12 +243,12 @@
                         </div>
                         <div id="entry-counter" class="font-medium text-lg">Total Entries: <span id="total-entries">{{ count($rows) }}</span></div>
                     </div>
-                    
+
                     <!-- Hidden inputs for additional payment -->
                     <input type="hidden" name="new_total_price" id="new-total-price-input" value="0">
                     <input type="hidden" name="new_quantity" id="new-quantity-input" value="0">
                     <input type="hidden" name="additional_payment" id="additional-payment-input" value="0">
-                    
+
                     <!-- Alert message for additional payment -->
                     <div id="additional-payment-alert" class="hidden mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
                         <div class="flex items-start">
@@ -263,7 +263,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Additional payment summary section -->
                     <div id="additional-payment-section" class="hidden mb-6 bg-white border border-gray-200 rounded-lg p-4">
                         <h3 class="font-medium text-lg mb-3">Order Summary</h3>
@@ -313,22 +313,25 @@
                             </svg>
                             Back to Home
                         </a>
-                        
-                        <!-- Additional payment button (hidden by default) -->
-                        <a id="pay-additional-btn" href="#" class="hidden inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
-                            Pay Additional Payment
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-                            </svg>
-                        </a>
-                        
-                        <!-- Regular confirm button -->
-                        <button type="submit" id="confirm-button" class="inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-cPrimary hover:bg-cPrimary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
-                            Confirm Order
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
+
+                        <div class="flex flex-row gap-x-4">
+                            <!-- Additional payment button (hidden by default) -->
+                            <a id="pay-additional-btn" href="#" class="hidden inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                                Pay Additional Payment
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                </svg>
+                            </a>
+
+                            <!-- Regular confirm button -->
+                            <button type="submit" id="confirm-button" class="inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-cPrimary hover:bg-cPrimary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
+                                Confirm Order
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+
                     </div>
                 </form>
             </div>
@@ -402,34 +405,38 @@
             const entryCounterElement = document.getElementById('entry-counter');
             const rows = document.querySelectorAll('#rowsTable tr');
             const count = rows.length;
-            
+
             // Get references to UI elements
             const additionalPaymentSection = document.getElementById('additional-payment-section');
             const additionalPaymentAlert = document.getElementById('additional-payment-alert');
             const payAdditionalBtn = document.getElementById('pay-additional-btn');
             const confirmButton = document.getElementById('confirm-button');
-            
+
             // Get original quantity value from the server-side data
-            const originalQuantity = {{ $order->quantity }};
+            const originalQuantity = {
+                {
+                    $order - > quantity
+                }
+            };
 
             totalEntriesElement.textContent = count;
 
             if (count >= 10) {
                 entryCounterElement.classList.remove('text-red-500');
                 entryCounterElement.classList.add('text-green-600');
-                
+
                 // Check if quantity has increased compared to original order
                 if (count > originalQuantity) {
                     // Show additional payment UI
                     additionalPaymentSection.classList.remove('hidden');
                     additionalPaymentAlert.classList.remove('hidden');
                     payAdditionalBtn.classList.remove('hidden');
-                    
+
                     // Disable regular confirm button
                     confirmButton.disabled = true;
                     confirmButton.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-400');
                     confirmButton.classList.remove('bg-cPrimary', 'hover:bg-cPrimary/90');
-                    
+
                     // Calculate additional payment info
                     updateOrderSummary(count);
                 } else {
@@ -437,7 +444,7 @@
                     additionalPaymentSection.classList.add('hidden');
                     additionalPaymentAlert.classList.add('hidden');
                     payAdditionalBtn.classList.add('hidden');
-                    
+
                     // Enable regular confirm button
                     confirmButton.disabled = false;
                     confirmButton.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-gray-400');
@@ -446,31 +453,43 @@
             } else {
                 entryCounterElement.classList.remove('text-green-600');
                 entryCounterElement.classList.add('text-red-500');
-                
+
                 // Disable confirm button if quantity is invalid
                 confirmButton.disabled = true;
                 confirmButton.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-400');
                 confirmButton.classList.remove('bg-cPrimary', 'hover:bg-cPrimary/90');
-                
+
                 // Hide additional payment UI
                 additionalPaymentSection.classList.add('hidden');
                 additionalPaymentAlert.classList.add('hidden');
                 payAdditionalBtn.classList.add('hidden');
             }
         }
-        
+
         function updateOrderSummary(totalQuantity) {
             // Get original values from server-side data
-            const originalQuantity = {{ $order->quantity }};
-            const unitPrice = {{ $order->final_price / $order->quantity }};
-            const originalDownpayment = {{ $order->downpayment_amount }};
-            
+            const originalQuantity = {
+                {
+                    $order - > quantity
+                }
+            };
+            const unitPrice = {
+                {
+                    $order - > final_price / $order - > quantity
+                }
+            };
+            const originalDownpayment = {
+                {
+                    $order - > downpayment_amount
+                }
+            };
+
             // Calculate new values
             const totalPrice = unitPrice * totalQuantity;
             const additionalQuantity = Math.max(0, totalQuantity - originalQuantity);
             const additionalPaymentAmount = (additionalQuantity * unitPrice) / 2; // 50% down payment for additional items
             const balanceDue = totalPrice - originalDownpayment - additionalPaymentAmount;
-            
+
             // Update display
             document.getElementById('summary-quantity').textContent = totalQuantity + ' item' + (totalQuantity !== 1 ? 's' : '');
             document.getElementById('summary-total-price').textContent = '₱' + totalPrice.toLocaleString('en-US', {
@@ -481,25 +500,25 @@
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             });
-            
+
             if (additionalPaymentAmount > 0) {
                 document.getElementById('additional-payment').textContent = '₱' + additionalPaymentAmount.toLocaleString('en-US', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                 });
             }
-            
+
             // Update hidden inputs for form submission
             document.getElementById('new-total-price-input').value = totalPrice.toFixed(2);
             document.getElementById('new-quantity-input').value = totalQuantity;
             document.getElementById('additional-payment-input').value = additionalPaymentAmount.toFixed(2);
-            
+
             // Update Pay Additional button link with order ID, amount, and size data
             const payAdditionalBtn = document.getElementById('pay-additional-btn');
             if (payAdditionalBtn) {
                 // Collect form data for customizations
                 const formData = collectFormData();
-                
+
                 // Encode the form data as JSON and add to the URL
                 const formDataParam = encodeURIComponent(JSON.stringify(formData));
                 payAdditionalBtn.href = "{{ route('order.additional-payment', ['order_id' => $order->order_id]) }}?amount=" +

@@ -87,19 +87,6 @@ $pageSpecificContent = '
     </div>
 </div>
 
-<!-- DEBUG SECTION FOR JERSEY ORDERS -->
-'.($order->apparelType && $order->apparelType->name === 'Jersey' ? '
-<div class="mt-4 p-4 bg-blue-100 border border-blue-300 rounded">
-    <h3 class="font-medium text-blue-800">Jersey Order Details</h3>
-    <div class="mt-2 text-sm">
-        <p><strong>Order ID:</strong> '.$order->order_id.'</p>
-        <p><strong>Customer:</strong> '.$order->user->name.'</p>
-        <p><strong>Token Present:</strong> '.($order->token ? 'Yes (Form not completed)' : 'No (Form completed)').'</p>
-        <p><strong>Customization Details:</strong> '.($customizationDetails->count() > 0 ? $customizationDetails->count().' items' : 'None found').'</p>
-        <p><strong>Order Date:</strong> '.$order->created_at->format('M d, Y').'</p>
-        <p><strong>Special Status:</strong> '.($order->token === null ? 'FORM COMPLETED - Proceed with printing' : 'WAITING FOR FORM').'</p>
-    </div>
-</div>' : '').'
 ';
 @endphp
 
