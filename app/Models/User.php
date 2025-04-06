@@ -11,9 +11,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
+    const STATUS_ACTIVE = 'active';
+    const STATUS_BLOCKED = 'blocked';
 
     protected $primaryKey = 'user_id';
-
     public $incrementing = false;
     protected $keyType = 'string';
 
@@ -25,7 +26,28 @@ class User extends Authenticatable implements MustVerifyEmail
         'role_type_id',
         'passwordToken',
         'avatar',
+        'status',
     ];
+
+    public function isActive(): bool
+    {
+        return $this->status === self::STATUS_ACTIVE;
+    }
+
+    public function isBlocked(): bool
+    {
+        return $this->status === self::STATUS_BLOCKED;
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', self::STATUS_ACTIVE);
+    }
+
+    public function scopeBlocked($query)
+    {
+        return $query->where('status', self::STATUS_BLOCKED);
+    }
 
     public function roleType()
     {

@@ -157,6 +157,7 @@
                 <h4 class="font-medium text-sm text-Colors/Text/text-secondary(700)">Password</h4>
                 <div class="relative">
                     <input :type="showPassword ? 'text' : 'password'"
+                        wire:keydown.enter="login"
                         class="border {{ $errors->has('login_error') ? 'border-red-500' : 'border-Colors/Border/border-primary' }} rounded-lg px-5 py-4 w-full"
                         placeholder="Create a password" wire:model="password">
                     <button type="button"

@@ -9,6 +9,7 @@
         rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/pagedone@1.2.2/src/css/pagedone.css " rel="stylesheet" />
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <title>{{ $title ?? 'Tel-A Printhub' }}</title>
     @vite('resources/css/app.css')
     <script>
         window.appConfig = {
