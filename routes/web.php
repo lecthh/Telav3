@@ -139,6 +139,10 @@ Route::prefix('partner')->name('partner.')->middleware('ProductionAdminOnly')->g
 
         // Order Cancellation
         Route::post('/cancel-order/{order_id}', [OrderProduceController::class, 'cancelOrder'])->name('cancel-order');
+
+        // Designer catalog
+        Route::get('/designers', [PrinterDashboardController::class, 'designerList'])->name('designers');
+        Route::get('/designers/{designer_id}', [PrinterDashboardController::class, 'designerDetail'])->name('designers.detail');
     });
 });
 
