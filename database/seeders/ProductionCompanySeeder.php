@@ -27,7 +27,7 @@ class ProductionCompanySeeder extends Seeder
                 ],
                 'company' => [
                     'company_name' => 'Elite Prints Inc.',
-                    'company_logo' => 'imgs/companyLogo/elite_print.jpeg',
+                    'company_logo' => 'company_logos/elite_print.jpeg',
                     'production_type' => json_encode([1, 2]), // Sublimation, Heat Transfer
                     'apparel_type' => json_encode([1, 2, 3]), // Jersey, Polo Shirt, T-shirt
                     'address' => '123 Printing Blvd, Houston, TX 77001',
@@ -47,7 +47,7 @@ class ProductionCompanySeeder extends Seeder
                 ],
                 'company' => [
                     'company_name' => 'ThreadCraft Studios',
-                    'company_logo' => 'imgs/companyLogo/threadcraft.webp',
+                    'company_logo' => 'company_logos/threadcraft.webp',
                     'production_type' => json_encode([3]), // Embroidery
                     'apparel_type' => json_encode([2, 3, 4]), // Polo Shirt, T-shirt, Hoodie
                     'address' => '456 Stitch Avenue, Portland, OR 97201',
@@ -67,7 +67,7 @@ class ProductionCompanySeeder extends Seeder
                 ],
                 'company' => [
                     'company_name' => 'Fusion Apparel Manufacturing',
-                    'company_logo' => 'imgs/companyLogo/fusion_apparel.webp',
+                    'company_logo' => 'company_logos/fusion_apparel.webp',
                     'production_type' => json_encode([1, 2, 3]), // All production types
                     'apparel_type' => json_encode([1, 2, 3, 4]), // All apparel types
                     'address' => '789 Fashion Drive, Los Angeles, CA 90015',
