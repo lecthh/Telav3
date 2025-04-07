@@ -55,7 +55,7 @@
                         <div class="bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center w-full h-full min-h-[200px]">
                             @if($productionCompany->company_logo && $productionCompany->company_logo != 'imgs/companyLogo/placeholder.jpg')
                             <div class="w-full h-full">
-                                <img src="{{ asset($productionCompany->company_logo) }}" alt="{{ $productionCompany->company_name }}" class="w-full h-full object-cover">
+                                <img src="{{ $productionCompany->logo_url }}" alt="{{ $productionCompany->company_name }}" class="w-full h-full object-cover">
                             </div>
                             @else
                             <div class="flex flex-col items-center justify-center text-gray-400">

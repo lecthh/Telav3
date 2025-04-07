@@ -1,3 +1,7 @@
+@php
+use Illuminate\Support\Facades\Storage;
+@endphp
+
 <html>
 
 <body class="flex flex-col h-full justify-between bg-gray-50">
@@ -44,11 +48,7 @@
                                     <h4 class="font-gilroy font-semibold text-gray-700 self-start mb-2">Company Logo</h4>
                                     <div class="relative group">
                                         <div class="w-40 h-40 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center bg-gray-50 overflow-hidden">
-                                            @if($productionCompany->company_logo && $productionCompany->company_logo != 'imgs/companyLogo/placeholder.jpg')
-                                                <img id="logo-preview" src="{{ asset('storage/' . $productionCompany->company_logo) }}" alt="Company Logo" class="w-full h-full object-cover">
-                                            @else
-                                                <img id="logo-preview" src="{{ asset('imgs/companyLogo/placeholder.jpg') }}" alt="Company Logo" class="w-32 h-32 object-contain opacity-70">
-                                            @endif
+                                            <img id="logo-preview" src="{{ $productionCompany->logo_url }}" alt="Company Logo" class="{{ $productionCompany->company_logo && $productionCompany->company_logo != 'imgs/companyLogo/placeholder.jpg' ? 'w-full h-full object-cover' : 'w-32 h-32 object-contain opacity-70' }}">
                                             
                                             <div class="absolute inset-0 bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                                 <span class="text-white text-sm font-medium">Change Logo</span>
@@ -149,6 +149,8 @@
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     document.getElementById('logo-preview').src = event.target.result;
+                    // When a new image is selected, make sure it fills the container properly
+                    document.getElementById('logo-preview').className = "w-full h-full object-cover";
                 }
                 reader.readAsDataURL(file);
             }
