@@ -81,4 +81,14 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->roleType ? $this->roleType->role_name : null;
     }
+
+    public function reportsMade()
+    {
+        return $this->morphMany(Report::class, 'reporter');
+    }
+
+    public function reportsReceived()
+    {
+        return $this->morphMany(Report::class, 'reported');
+    }
 }

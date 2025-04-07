@@ -92,4 +92,14 @@ class Designer extends Model
     {
         return $query->where('status', self::STATUS_BLOCKED);
     }
+
+    public function reportsMade()
+    {
+        return $this->morphMany(Report::class, 'reporter');
+    }
+
+    public function reportsReceived()
+    {
+        return $this->morphMany(Report::class, 'reported');
+    }
 }

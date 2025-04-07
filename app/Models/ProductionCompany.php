@@ -13,7 +13,7 @@ class ProductionCompany extends Model
     const STATUS_BLOCKED = 'blocked';
 
     protected $fillable = ['company_name', 'company_logo', 'production_type', 'address', 'phone', 'avg_rating', 'review_count', 'apparel_type', 'email', 'user_id', 'is_verified', 'status'];
-    
+
     /**
      * Get the logo URL attribute.
      *
@@ -24,16 +24,16 @@ class ProductionCompany extends Model
         if (!$this->company_logo) {
             return asset('imgs/companyLogo/placeholder.jpg');
         }
-        
+
         if (strpos($this->company_logo, 'imgs/') === 0) {
             return asset($this->company_logo);
         }
-        
+
         // Handle direct storage reference
         if (strpos($this->company_logo, 'company_logos/') === 0) {
             return asset('storage/' . $this->company_logo);
         }
-        
+
         return \Storage::disk('public')->url($this->company_logo);
     }
 
@@ -178,5 +178,15 @@ class ProductionCompany extends Model
     public function getBusinessPermits()
     {
         return $this->businessDocuments()->where('name', 'business permit')->get();
+    }
+
+    public function reportsMade()
+    {
+        return $this->morphMany(Report::class, 'reporter');
+    }
+
+    public function reportsReceived()
+    {
+        return $this->morphMany(Report::class, 'reported');
     }
 }
