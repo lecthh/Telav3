@@ -1,100 +1,169 @@
 <div>
     @if($selectedItem && $showModal)
     <x-view-details-modal wire:model="showModal" title="Order Details">
-        <div class="bg-white p-6 rounded-lg">
+        <div class="bg-white rounded-lg shadow-sm">
             <!-- Tabs Navigation -->
-            <div class="mb-4 border-b border-gray-200">
-                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+            <div class="border-b border-gray-200">
+                <nav class="flex space-x-6 px-6" aria-label="Order Details Tabs">
                     <button type="button"
                         wire:click="$set('activeTab', 'general')"
-                        class="whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm {{ $activeTab === 'general' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
-                        General Details
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition duration-150 ease-in-out {{ $activeTab === 'general' ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
+                        aria-current="{{ $activeTab === 'general' ? 'page' : 'false' }}">
+                        General Information
                     </button>
                     <button type="button"
                         wire:click="$set('activeTab', 'history')"
-                        class="whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm {{ $activeTab === 'history' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
-                        History
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition duration-150 ease-in-out {{ $activeTab === 'history' ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
+                        aria-current="{{ $activeTab === 'history' ? 'page' : 'false' }}">
+                        Activity History
                     </button>
                 </nav>
             </div>
 
             <!-- Tab Content -->
-            <div>
+            <div class="p-6">
                 @if($activeTab === 'general')
                 <!-- General Order Details -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Order ID -->
-                    <div class="space-y-2">
-                        <h3 class="text-sm font-medium text-gray-500">Order ID</h3>
-                        <p class="text-base font-semibold">{{ $selectedItem->order_id }}</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="col-span-1 md:col-span-2 mb-2">
+                        <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
+                            <div>
+                                <span class="text-xs uppercase tracking-wider font-semibold text-gray-500">Order ID</span>
+                                <h2 class="text-lg font-bold text-gray-900">{{ $selectedItem->order_id }}</h2>
+                            </div>
+                            <div class="px-3 py-1 rounded-full text-sm font-medium {{ 
+    $selectedItem->status->status_id >= 1 && $selectedItem->status->status_id != 8 
+        ? 'bg-green-100 text-green-800' 
+        : 'bg-red-100 text-red-800' 
+    }}">
+                                {{ $selectedItem->status->name ?? 'N/A' }}
+                            </div>
+                        </div>
                     </div>
-                    <!-- User -->
-                    <div class="space-y-2">
-                        <h3 class="text-sm font-medium text-gray-500">User</h3>
-                        <p class="text-base font-semibold">{{ $selectedItem->user->name ?? 'N/A' }}</p>
+
+                    <!-- Left Column -->
+                    <div class="space-y-6">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h3 class="text-sm font-semibold text-gray-700 mb-3">Customer Information</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <span class="block text-xs text-gray-500">Client Name</span>
+                                    <span class="block text-sm font-medium text-gray-900">{{ $selectedItem->user->name ?? 'N/A' }}</span>
+                                </div>
+                                <div>
+                                    <span class="block text-xs text-gray-500">Production Company</span>
+                                    <span class="block text-sm font-medium text-gray-900">{{ $selectedItem->productionCompany->company_name ?? 'N/A' }}</span>
+                                </div>
+                                <div>
+                                    <span class="block text-xs text-gray-500">Assigned Designer</span>
+                                    <span class="block text-sm font-medium text-gray-900">
+                                        {{ $selectedItem->designer ? $selectedItem->getDesignerNameAttribute() : 'Not Assigned' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h3 class="text-sm font-semibold text-gray-700 mb-3">Order Specifications</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <span class="block text-xs text-gray-500">Apparel Type</span>
+                                    <span class="block text-sm font-medium text-gray-900">{{ $selectedItem->apparelType->name ?? 'N/A' }}</span>
+                                </div>
+                                <div>
+                                    <span class="block text-xs text-gray-500">Production Type</span>
+                                    <span class="block text-sm font-medium text-gray-900">{{ $selectedItem->productionType->name ?? 'N/A' }}</span>
+                                </div>
+                                <div>
+                                    <span class="block text-xs text-gray-500">Quantity</span>
+                                    <span class="block text-sm font-medium text-gray-900">{{ $selectedItem->quantity }}</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <!-- Production Company -->
-                    <div class="space-y-2">
-                        <h3 class="text-sm font-medium text-gray-500">Production Company</h3>
-                        <p class="text-base font-semibold">{{ $selectedItem->productionCompany->company_name ?? 'N/A' }}</p>
-                    </div>
-                    <!-- Assigned Designer -->
-                    <div class="space-y-2">
-                        <h3 class="text-sm font-medium text-gray-500">Assigned Designer</h3>
-                        <p class="text-base font-semibold">
-                            {{ $selectedItem->designer ? $selectedItem->getDesignerNameAttribute() : 'N/A' }}
-                        </p>
-                    </div>
-                    <!-- Status -->
-                    <div class="space-y-2">
-                        <h3 class="text-sm font-medium text-gray-500">Status</h3>
-                        <p class="text-base font-semibold">{{ $selectedItem->status->name ?? 'N/A' }}</p>
-                    </div>
-                    <!-- Quantity -->
-                    <div class="space-y-2">
-                        <h3 class="text-sm font-medium text-gray-500">Quantity</h3>
-                        <p class="text-base font-semibold">{{ $selectedItem->quantity }}</p>
-                    </div>
-                    <!-- Apparel Type -->
-                    <div class="space-y-2">
-                        <h3 class="text-sm font-medium text-gray-500">Apparel Type</h3>
-                        <p class="text-base font-semibold">{{ $selectedItem->apparelType->name ?? 'N/A' }}</p>
-                    </div>
-                    <!-- Production Type -->
-                    <div class="space-y-2">
-                        <h3 class="text-sm font-medium text-gray-500">Production Type</h3>
-                        <p class="text-base font-semibold">{{ $selectedItem->productionType->name ?? 'N/A' }}</p>
-                    </div>
-                    <!-- Downpayment Amount -->
-                    <div class="space-y-2">
-                        <h3 class="text-sm font-medium text-gray-500">Downpayment Amount</h3>
-                        <p class="text-base font-semibold">${{ number_format($selectedItem->downpayment_amount, 2) }}</p>
-                    </div>
-                    <!-- Final Price -->
-                    <div class="space-y-2">
-                        <h3 class="text-sm font-medium text-gray-500">Final Price</h3>
-                        <p class="text-base font-semibold">${{ number_format($selectedItem->final_price, 2) }}</p>
-                    </div>
-                    <!-- Estimated Time of Arrival (ETA) -->
-                    <div class="space-y-2">
-                        <h3 class="text-sm font-medium text-gray-500">ETA</h3>
-                        <p class="text-base font-semibold">
-                            {{ \Carbon\Carbon::parse($selectedItem->eta)->format('M d, Y') }}
-                        </p>
+
+                    <!-- Right Column -->
+                    <div class="space-y-6">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h3 class="text-sm font-semibold text-gray-700 mb-3">Payment Details</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <span class="block text-xs text-gray-500">Downpayment</span>
+                                    <span class="block text-sm font-medium text-gray-900">${{ number_format($selectedItem->downpayment_amount, 2) }}</span>
+                                </div>
+                                <div>
+                                    <span class="block text-xs text-gray-500">Final Price</span>
+                                    <span class="block text-sm font-medium text-gray-900">${{ number_format($selectedItem->final_price, 2) }}</span>
+                                </div>
+                                <div>
+                                    <span class="block text-xs text-gray-500">Balance</span>
+                                    <span class="block text-sm font-medium text-gray-900">${{ number_format($selectedItem->final_price - $selectedItem->downpayment_amount, 2) }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h3 class="text-sm font-semibold text-gray-700 mb-3">Delivery Information</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <span class="block text-xs text-gray-500">Estimated Delivery Date</span>
+                                    <span class="block text-sm font-medium text-gray-900">
+                                        {{ $selectedItem->eta ? \Carbon\Carbon::parse($selectedItem->eta)->format('M d, Y') : 'Not set' }}
+                                    </span>
+                                </div>
+                                <div>
+                                    <span class="block text-xs text-gray-500">Days Remaining</span>
+                                    @if($selectedItem->eta)
+                                    <span class="block text-sm font-medium {{ \Carbon\Carbon::parse($selectedItem->eta)->isPast() ? 'text-red-600' : 'text-gray-900' }}">
+                                        {{ \Carbon\Carbon::parse($selectedItem->eta)->isPast()
+                        ? 'Overdue by ' . \Carbon\Carbon::parse($selectedItem->eta)->diffInDays() . ' days'
+                        : \Carbon\Carbon::parse($selectedItem->eta)->diffInDays() . ' days' }}
+                                    </span>
+                                    @else
+                                    <span class="block text-sm font-medium text-gray-500">Not set</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
                 @elseif($activeTab === 'history')
                 <!-- Order Notifications History -->
-                <div class="space-y-4">
-                    @forelse($selectedItem->notifications as $notification)
-                    <div class="p-4 bg-gray-50 rounded-lg">
-                        <p class="text-sm text-gray-700">{{ $notification->message }}</p>
-                        <p class="text-xs text-gray-400">
-                            {{ \Carbon\Carbon::parse($notification->created_at)->format('M d, Y h:i A') }}
-                        </p>
+                <div class="space-y-1">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-4">Activity Timeline</h3>
+
+                    @forelse($selectedItem->notifications->sortByDesc('created_at') as $notification)
+                    <div class="relative pb-6">
+                        @if(!$loop->last)
+                        <div class="absolute top-5 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></div>
+                        @endif
+                        <div class="relative flex items-start space-x-3">
+                            <div class="relative">
+                                <div class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center ring-8 ring-white">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
+                                    <p class="text-sm text-gray-700">{{ $notification->message }}</p>
+                                    <p class="mt-1 text-xs text-gray-500">
+                                        {{ \Carbon\Carbon::parse($notification->created_at)->format('M d, Y h:i A') }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     @empty
-                    <p class="text-base text-gray-500">No notifications found.</p>
+                    <div class="text-center py-8">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <p class="mt-2 text-sm font-medium text-gray-500">No activity history available</p>
+                        <p class="mt-1 text-xs text-gray-400">Updates will appear here when they occur</p>
+                    </div>
                     @endforelse
                 </div>
                 @endif

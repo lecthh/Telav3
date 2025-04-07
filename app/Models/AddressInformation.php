@@ -22,4 +22,15 @@ class AddressInformation extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function getFullAddressAttribute()
+    {
+        $parts = [
+            $this->address,
+            $this->city,
+            $this->state,
+            $this->zip_code,
+        ];
+        return implode(', ', array_filter($parts));
+    }
 }

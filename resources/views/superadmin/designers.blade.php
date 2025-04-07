@@ -29,6 +29,7 @@
     </div>
     @livewire('designer-edit-modal')
     @livewire('approve-modal')
+    @livewire('order-details-modal')
     @livewire('designer-details-modal')
     @livewire('delete-confirmation-modal')
     @include('layout.footer')
