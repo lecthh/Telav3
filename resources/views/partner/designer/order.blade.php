@@ -202,17 +202,7 @@
                                         <div class="flex flex-col sm:flex-row gap-3 mb-4 sm:mb-0">
                                             @if($order->status_id <= 3)
                                                 <div class="flex space-x-3">
-                                                    <div x-data="{ showCancelModal: false, otherReason: '' }">
-                                                        <button type="button" @click="showCancelModal = true" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                                            </svg>
-                                                            Cancel Order
-                                                        </button>
-                                                        
-                                                        <!-- Cancel Order Modal -->
-                                                        @include('components.modals.cancel-order-modal', ['action' => route('partner.designer.cancel-order', ['order_id' => $order->order_id])])
-                                                    </div>
+                                                    
                                                     
                                                     <form action="{{ route('partner.designer.cancel-design-assignment', ['order_id' => $order->order_id]) }}" method="post">
                                                         @csrf

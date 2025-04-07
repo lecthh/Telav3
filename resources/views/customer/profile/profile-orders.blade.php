@@ -468,7 +468,7 @@
                     console.log('Selected order:', {
                         id: orderId,
                         status: orderStatus,
-                        statusId: statusId,
+                        statusId: orderStatusId,
                         cancellationReason: reason,
                         cancellationNote: note
                     });
@@ -487,6 +487,7 @@
                         // Check if the data is empty or invalid JSON
                         if (notificationsData && notificationsData !== 'null' && notificationsData !== '[]') {
                             notifications = JSON.parse(notificationsData);
+                            console.log('Parsed notifications:', notifications);
                         } else {
                             console.log('Empty notifications data or invalid JSON');
                             notifications = [];
@@ -504,43 +505,26 @@
                             <div class="flex-shrink-0">
                                 <div class="flex items-center justify-center h-8 w-8 rounded-full bg-cPrimary border-2 border-white">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                 </div>
                             </div>
                             <div class="ml-4">
                                 <div class="bg-white rounded-lg border border-gray-200 p-3 shadow-sm">
-                                    <p class="text-sm font-medium text-gray-900">Order ${orderStatus}</p>
+                                    <p class="text-sm font-medium text-gray-900">Current Status: ${orderStatus}</p>
                                     <p class="text-xs text-gray-500 mt-1">${formattedDate} at ${formattedTime}</p>
                                 </div>
                             </div>
                         </div>
                     `;
 
-                    // Add order created event to the timeline
-                    notificationsHTML = `
-                        <div class="flex relative z-10">
-                            <div class="flex-shrink-0">
-                                <div class="flex items-center justify-center h-8 w-8 rounded-full bg-green-500 border-2 border-white">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="ml-4">
-                                <div class="bg-white rounded-lg border border-gray-200 p-3 shadow-sm">
-                                    <p class="text-sm font-medium text-gray-900">Order Created</p>
-                                    <p class="text-xs text-gray-500 mt-1">${formattedDate} at ${formattedTime}</p>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+                    // Initialize empty notificationsHTML
 
                     if (notifications && notifications.length > 0) {
                         console.log('Notifications count:', notifications.length);
-                        // Sort notifications by created_at date in ascending order (oldest first)
+                        // Sort notifications by created_at date in descending order (newest first)
                         const sortedNotifications = [...notifications].sort((a, b) => {
-                            return new Date(a.created_at) - new Date(b.created_at);
+                            return new Date(b.created_at) - new Date(a.created_at);
                         });
                         
                         // Define status icons mapping
@@ -655,32 +639,24 @@
                             `;
                         });
                         
-                        // Add current status if different from the latest notification
-                        if (orderStatus !== 'Cancelled' && sortedNotifications.length > 0) {
-                            // Check if the last notification doesn't match current status
-                            const lastNotifMsg = sortedNotifications[sortedNotifications.length - 1].message.toLowerCase();
-                            const currentStatus = orderStatus.toLowerCase();
-                            
-                            if (!lastNotifMsg.includes(currentStatus)) {
-                                notificationsHTML += `
-                                    <div class="flex relative z-10">
-                                        <div class="flex-shrink-0">
-                                            <div class="flex items-center justify-center h-8 w-8 rounded-full bg-cPrimary border-2 border-white">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                            </div>
-                                        </div>
-                                        <div class="ml-4">
-                                            <div class="bg-white rounded-lg border border-gray-200 p-3 shadow-sm">
-                                                <p class="text-sm font-medium text-gray-900">Current Status: ${orderStatus}</p>
-                                                <p class="text-xs text-gray-500 mt-1">Last updated: ${formattedDate} at ${formattedTime}</p>
-                                            </div>
-                                        </div>
+                        // Add current status at the top of the timeline (before all notifications)
+                        notificationsHTML = `
+                            <div class="flex relative z-10">
+                                <div class="flex-shrink-0">
+                                    <div class="flex items-center justify-center h-8 w-8 rounded-full bg-cPrimary border-2 border-white">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
                                     </div>
-                                `;
-                            }
-                        }
+                                </div>
+                                <div class="ml-4">
+                                    <div class="bg-white rounded-lg border border-gray-200 p-3 shadow-sm">
+                                        <p class="text-sm font-medium text-gray-900">Current Status: ${orderStatus}</p>
+                                        <p class="text-xs text-gray-500 mt-1">Last updated: ${formattedDate} at ${formattedTime}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ` + notificationsHTML;
                     } else {
                         // If no notifications, add current status notification
                         notificationsHTML += defaultStatusHTML;

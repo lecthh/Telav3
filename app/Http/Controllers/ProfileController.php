@@ -17,9 +17,11 @@ class ProfileController extends Controller
     public function profileOrders()
     {
         $user = Auth::user(); 
-        // Get orders and sort by latest created
-        $orders = $user->orders()->orderBy('created_at', 'desc')->get();
-        $notifications = $user->notifications;
+        // Get orders with relationships and sort by latest created
+        $orders = $user->orders()
+            ->with(['status', 'apparelType', 'productionType', 'productionCompany', 'notifications'])
+            ->orderBy('created_at', 'desc')
+            ->get();
     
         return view('customer.profile.profile-orders', compact('orders'));
     }
