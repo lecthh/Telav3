@@ -91,4 +91,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->morphMany(Report::class, 'reported');
     }
+
+    public function getMorphClassName()
+    {
+        return $this->getMorphClass();
+    }
 }

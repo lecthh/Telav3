@@ -13,13 +13,15 @@ return new class extends Migration
     {
         Schema::create('reports', function (Blueprint $table) {
             $table->id();
-            $table->morphs('reporter');
+            $table->string('reporter_type');
+            $table->string('reporter_id');
 
-            $table->morphs('reported');
+            $table->string('reported_type');
+            $table->string('reported_id');
 
             $table->string('reason');
             $table->text('description')->nullable();
-
+            $table->string('status')->default('pending'); // pending, resolved
             $table->timestamps();
         });
     }
