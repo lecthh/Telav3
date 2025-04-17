@@ -151,7 +151,8 @@
                                                     'reporterClass' => auth()->user()->getMorphClassName(),
                                                     'reporterId' => auth()->user()->user_id,
                                                     'reportedClass' => $order->productionCompany->getMorphClassName(),
-                                                    'reportedId' => $order->productionCompany->id
+                                                    'reportedId' => $order->productionCompany->id,
+                                                    'orderId' => $order->order_id,
                                                     ])
                                                 </span>
                                             </div>

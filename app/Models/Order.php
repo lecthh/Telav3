@@ -107,4 +107,9 @@ class Order extends Model
     {
         return $this->hasMany(AdditionalPayment::class, 'order_id', 'order_id');
     }
+
+    public function reports()
+    {
+        return $this->hasMany(Report::class, 'order_id', 'order_id');
+    }
 }

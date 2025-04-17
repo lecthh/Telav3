@@ -18,10 +18,12 @@ class ReportModal extends Component
     public $reporterId;
     public $reportedClass;
     public $reportedId;
+    public $orderId;
     public $selectedCommonReasons = [];
     public $reason;
     public $showModal = false;
     public $images = [];
+    public $description;
 
     protected function getListeners()
     {
@@ -35,6 +37,7 @@ class ReportModal extends Component
         $this->reporterId = $data['reporterId'];
         $this->reportedClass = $data['reportedClass'];
         $this->reportedId = $data['reportedId'];
+        $this->orderId = $data['orderId'] ?? null;
         $this->showModal = true;
     }
 
@@ -43,7 +46,6 @@ class ReportModal extends Component
      */
     protected function composeFinalReason()
     {
-        $customReason = trim($this->reason);
         $html = '';
 
         if (!empty($this->selectedCommonReasons)) {
@@ -52,10 +54,6 @@ class ReportModal extends Component
                 $html .= '<li>' . e($common) . '</li>';
             }
             $html .= '</ul>';
-        }
-
-        if (!empty($customReason)) {
-            $html .= '<p>' . e($customReason) . '</p>';
         }
 
         return $html;
@@ -93,8 +91,12 @@ class ReportModal extends Component
                 'reported_type' => $this->reportedClass,
                 'reported_id'   => $this->reportedId,
                 'reason'        => $finalReason,
-                'status'        => 'pending'
+                'status'        => 'pending',
+                'order_id'     => $this->orderId,
+                'description' => $this->reason,
             ]);
+
+            Log::info("Report created: ", ['report' => $report]);
 
             // Handle image uploads
             if (!empty($this->images)) {
@@ -113,7 +115,7 @@ class ReportModal extends Component
                 }
             }
 
-            // Dispatch a toast (you can listen to this event in your frontend JS)
+
             $this->dispatch('toast', [
                 'message' => 'Report submitted successfully.',
                 'type' => 'success'
@@ -140,6 +142,7 @@ class ReportModal extends Component
         $this->reportedClass = null;
         $this->reportedId = null;
         $this->images = [];
+        $this->orderId = null;
         $this->showModal = false;
     }
 

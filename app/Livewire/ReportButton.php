@@ -10,13 +10,15 @@ class ReportButton extends Component
     public $reporterId;
     public $reportedClass;
     public $reportedId;
+    public $orderId;
 
-    public function mount($reporterClass, $reporterId, $reportedClass, $reportedId)
+    public function mount($reporterClass, $reporterId, $reportedClass, $reportedId, $orderId)
     {
         $this->reporterClass = $reporterClass;
         $this->reporterId = $reporterId;
         $this->reportedClass = $reportedClass;
         $this->reportedId = $reportedId;
+        $this->orderId = $orderId;
     }
 
     public function triggerReport()
@@ -25,7 +27,8 @@ class ReportButton extends Component
             'reporterClass' => $this->reporterClass,
             'reporterId' => $this->reporterId,
             'reportedClass' => $this->reportedClass,
-            'reportedId' => $this->reportedId
+            'reportedId' => $this->reportedId,
+            'orderId' => $this->orderId,
         ]);
     }
 

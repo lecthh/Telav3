@@ -22,6 +22,9 @@ return new class extends Migration
             $table->string('reason');
             $table->text('description')->nullable();
             $table->string('status')->default('pending'); // pending, resolved
+            $table->string('order_id')->nullable();
+            $table->foreign('order_id')->references('order_id')->on('orders')->onDelete('cascade');
+
             $table->timestamps();
         });
     }

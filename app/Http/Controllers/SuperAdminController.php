@@ -7,6 +7,7 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\ProductionCompany;
+use App\Models\Report;
 
 class SuperAdminController extends Controller
 {
@@ -51,5 +52,11 @@ class SuperAdminController extends Controller
     {
         $orders = Order::all();
         return view('superadmin.orders', compact('orders'));
+    }
+
+    public function reports()
+    {
+        $report = Report::all();
+        return view('superadmin.reports', compact('report'));
     }
 }

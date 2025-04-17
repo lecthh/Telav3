@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Report extends Model
 {
@@ -13,6 +14,8 @@ class Report extends Model
         'reported_type',
         'reason',
         'description',
+        'status',
+        'order_id'
     ];
 
     /**
@@ -29,5 +32,23 @@ class Report extends Model
     public function reported()
     {
         return $this->morphTo();
+    }
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class, 'order_id', 'order_id');
+    }
+
+    public function images()
+    {
+        return $this->hasMany(ReportImage::class);
+    }
+
+    public function stripHtmlReason()
+    {
+        $stripped = strip_tags($this->reason);
+        $items = preg_split('/(?=[A-Z])/', $stripped, -1, PREG_SPLIT_NO_EMPTY);
+        $formatted = Str::limit(implode(', ', $items), 100, '...');
+        return $formatted;
     }
 }
