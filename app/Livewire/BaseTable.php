@@ -36,6 +36,7 @@ class BaseTable extends Component
     public $bulkAction;
     public $type;
     public $showActions;
+    public $entityName = '';
 
     protected $listeners = [
         'refreshTable' => 'handleRefreshTable'

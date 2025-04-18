@@ -48,6 +48,7 @@
             'bulkAction' => 'delete',
             'type' => 'manage',
             'showActions' => false,
+            'entityName' => 'Order',
             ])
         </main>
     </div>

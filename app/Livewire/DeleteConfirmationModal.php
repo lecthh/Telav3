@@ -85,9 +85,19 @@ class DeleteConfirmationModal extends Component
 
             foreach ($this->selectedItems as $item) {
                 $name = $item->company_name ?? $item->name;
+
                 $item->status = 'blocked';
                 $item->save();
                 $item->refresh();
+
+                $onHoldOrders = $item->orders()->where('status_id', '<=', 4)->get();
+                Log::info('On Hold Orders' . $onHoldOrders);
+                foreach ($onHoldOrders as $order) {
+                    $order->previous_status = $order->status_id;
+                    $order->status_id = 9;
+                    $order->save();
+                }
+
                 Mail::to($item->email)->queue(new BlockedEntityMail($name, $finalReason));
             }
 
@@ -111,6 +121,7 @@ class DeleteConfirmationModal extends Component
             $this->dispatch('action-error', "Failed to block {$this->entityType}: " . $e->getMessage());
         }
     }
+
 
     /**
      * Deny action: delete the item(s) and email the reason.

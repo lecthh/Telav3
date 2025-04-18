@@ -24,6 +24,7 @@
             'onApprove' => 'approveEntity',
             'bulkAction' => 'approve',
             'type' => 'approve'
+            'entityName' => 'Designer',
             ])
 
         </main>

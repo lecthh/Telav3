@@ -94,7 +94,7 @@
                                     <span class="block text-xs text-gray-500">Email Verification</span>
                                     <span class="block text-sm font-medium {{ $selectedItem->email_verified_at ? 'text-green-600' : 'text-amber-600' }}">
                                         @if($selectedItem->email_verified_at)
-                                        Verified on {{ $selectedItem->email_verified_at->format('M d, Y') }}
+                                        Verified on {{ \Carbon\Carbon::parse($selectedItem->email_verified_at)->format('M d, Y') }}
                                         @else
                                         Not verified
                                         @endif

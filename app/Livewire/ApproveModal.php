@@ -137,15 +137,30 @@ class ApproveModal extends Component
             $names = implode(', ', $this->displayNames);
             $count = count($this->displayNames);
 
-            // Update each item to set status to active
             foreach ($this->selectedItems as $item) {
+                // Set status to active
                 $item->update(['status' => 'active']);
+
+
+                $revertedOrders = $item->orders()
+                    ->where('status_id', 9)
+                    ->whereNotNull('previous_status')
+                    ->get();
+
+                foreach ($revertedOrders as $order) {
+                    $order->status_id = $order->previous_status;
+                    $order->previous_status = null;
+                    $order->save();
+                }
+
                 $name = $item->company_name ?? $item->name;
+
                 Log::info('Reactivating item', [
                     'item_id' => $item->id,
                     'email' => $item->email,
                     'name' => $name,
                 ]);
+
                 Mail::to($item->email)->queue(new ReactivatedEntityMail($name));
             }
 
@@ -170,6 +185,7 @@ class ApproveModal extends Component
             $this->dispatch('approve-error', "Failed to reactivate {$this->entityType}: " . $e->getMessage());
         }
     }
+
 
     public function cancelApprove()
     {

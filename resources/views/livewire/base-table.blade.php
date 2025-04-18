@@ -190,7 +190,7 @@
                                         </svg>
                                     </button>
                                     <div class="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap">
-                                        Approve this item
+                                        Approve this {{ $this->entityName }}
                                     </div>
                                 </div>
                                 
@@ -204,7 +204,7 @@
                                         </svg>
                                     </button>
                                     <div class="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap">
-                                        Deny this item
+                                        Deny this {{ $this->entityName }}
                                     </div>
                                 </div>
                                 @else
@@ -219,7 +219,7 @@
                                         </svg>
                                     </button>
                                     <div class="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap">
-                                        Block this item
+                                        Block this {{ $this->entityName }}
                                     </div>
                                 </div>
                                 @else
@@ -233,7 +233,7 @@
                                         </svg>
                                     </button>
                                     <div class="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap">
-                                        Activate this item
+                                        Activate this {{ $this->entityName }}
                                     </div>
                                 </div>
                                 @endif
@@ -249,7 +249,7 @@
                                         </svg>
                                     </a>
                                     <div class="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap">
-                                        Email this item
+                                        Email this {{ $this->entityName }}
                                     </div>
                                 </div>
                             </div>

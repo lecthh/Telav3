@@ -25,6 +25,7 @@
             'bulkAction' => 'delete',
             'onApprove' => 'approveEntity',
             'type' => 'manage',
+            'entityName' => 'Production Company',
             ])
         </main>
     </div>

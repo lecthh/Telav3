@@ -34,6 +34,7 @@ class Order extends Model
         'eta',
         'cancellation_reason',
         'cancellation_note',
+        'previous_status'
     ];
 
     public function user()
