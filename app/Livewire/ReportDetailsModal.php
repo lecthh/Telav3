@@ -63,16 +63,10 @@ class ReportDetailsModal extends Component
 
     public function viewEntity($type, $entityId, $entityType)
     {
-        $this->showModal = false;
-
         if (strpos($entityType, 'User') !== false) {
-            $this->emit('viewUserDetails', $entityId);
-        } elseif (strpos($entityType, 'Product') !== false) {
-            $this->emit('viewProductDetails', $entityId);
-        } elseif (strpos($entityType, 'Order') !== false) {
-            $this->emit('viewOrderDetails', $entityId);
-        } else {
-            $this->emit('viewEntityDetails', $entityType, $entityId);
+            $this->dispatch('showUserDetails', $entityId);
+        } elseif (strpos($entityType, 'ProductionCompany') !== false) {
+            $this->dispatch('showCompanyDetails', $entityId, 'manage');
         }
     }
 

@@ -85,15 +85,21 @@
                         {{ $report->stripHtmlReason() }}
                     </td>
                     <td class="px-6 py-4">
+                        @if($report->reporter)
                         <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                            {{ class_basename($report->reporter_type) }}
+                            {{ $report->reporter->display_name ?? 'N/A' }} ({{ class_basename($report->reporter_type) }})
                         </span>
+                        @endif
                     </td>
                     <td class="px-6 py-4">
+                        @if($report->reported)
                         <span class="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
-                            {{ class_basename($report->reported_type) }}
+                            {{ $report->reported->display_name ?? 'N/A' }} ({{ class_basename($report->reported_type) }})
                         </span>
+                        @endif
                     </td>
+
+
                     <td class="px-6 py-4">
                         <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $report->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800' }}">
                             {{ ucfirst($report->status) }}

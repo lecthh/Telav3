@@ -41,9 +41,9 @@ class GoogleAuth extends Controller
                 'role_type_id' => 1, // Default to customer role
             ]);
         }
-        
+
         Auth::login($user);
-        
+
         // Redirect based on user role
         if ($user->role_type_id == 2) {
             // Production company
@@ -60,7 +60,7 @@ class GoogleAuth extends Controller
                 return redirect()->route('designer-dashboard')->with('success', 'Logged in successfully');
             }
         }
-        
+
         // Default redirect to home for customers or if admin object not found
         return redirect()->route('home')->with('success', 'Logged in successfully');
     }

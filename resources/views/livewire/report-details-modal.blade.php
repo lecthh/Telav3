@@ -51,7 +51,7 @@
                         wire:click="$set('activeTab', 'entities')"
                         class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition duration-150 ease-in-out {{ $activeTab === 'entities' ? 'border-red-600 text-red-700' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
                         aria-current="{{ $activeTab === 'entities' ? 'page' : 'false' }}">
-                        Related Entities
+                        Reporter and Reported Information
                     </button>
                     <button type="button"
                         wire:click="$set('activeTab', 'images')"
@@ -216,7 +216,7 @@
                             </div>
                             <div>
                                 <h4 class="text-sm font-medium text-gray-900">
-                                    {{ $selectedReport->reporter->name ?? 'Unknown' }}
+                                    {{ $selectedReport->reported->name ?? $selectedReport->reported->company_name ?? 'Unknown' }}
                                 </h4>
                                 <p class="text-xs text-gray-500">{{ class_basename($selectedReport->reporter_type) }}</p>
                                 <button
@@ -253,7 +253,7 @@
                             </div>
                             <div>
                                 <h4 class="text-sm font-medium text-gray-900">
-                                    {{ $selectedReport->reported->name ?? $selectedReport->reported->title ?? 'Unknown' }}
+                                    {{ $selectedReport->reported->name ?? $selectedReport->reported->company_name ?? 'Unknown' }}
                                 </h4>
                                 <p class="text-xs text-gray-500">{{ class_basename($selectedReport->reported_type) }}</p>
                                 <button

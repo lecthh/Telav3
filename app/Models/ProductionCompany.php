@@ -194,4 +194,9 @@ class ProductionCompany extends Model
     {
         return $this->getMorphClass();
     }
+
+    public function getDisplayNameAttribute()
+    {
+        return  $this->company_name;
+    }
 }

@@ -27,6 +27,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'passwordToken',
         'avatar',
         'status',
+        'email_verified_at',
     ];
 
     public function isActive(): bool
@@ -95,5 +96,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getMorphClassName()
     {
         return $this->getMorphClass();
+    }
+
+    public function getDisplayNameAttribute()
+    {
+        return $this->name;
     }
 }
