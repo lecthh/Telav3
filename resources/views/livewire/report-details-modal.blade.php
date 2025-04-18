@@ -216,7 +216,7 @@
                             </div>
                             <div>
                                 <h4 class="text-sm font-medium text-gray-900">
-                                    {{ $selectedReport->reported->name ?? $selectedReport->reported->company_name ?? 'Unknown' }}
+                                    {{ $selectedReport->reporter->display_name  }}
                                 </h4>
                                 <p class="text-xs text-gray-500">{{ class_basename($selectedReport->reporter_type) }}</p>
                                 <button
@@ -253,7 +253,7 @@
                             </div>
                             <div>
                                 <h4 class="text-sm font-medium text-gray-900">
-                                    {{ $selectedReport->reported->name ?? $selectedReport->reported->company_name ?? 'Unknown' }}
+                                    {{ $selectedReport->reported->display_name }}
                                 </h4>
                                 <p class="text-xs text-gray-500">{{ class_basename($selectedReport->reported_type) }}</p>
                                 <button
@@ -354,13 +354,18 @@
     @endif
 
     @if($showImageModal)
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-        <div class="bg-white p-4 rounded-lg shadow-lg max-w-4xl w-full relative">
-            <button
-                class="absolute top-2 right-2 text-gray-600 hover:text-gray-900"
+    <div x-data="{ open: true }" x-show="open" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+
+        <!-- Background overlay that closes the modal on click -->
+        <div @click="$wire.set('showImageModal', false)" class="absolute inset-0 bg-black bg-opacity-60"></div>
+
+        <!-- Modal content -->
+        <div @click.stop class="bg-white p-4 rounded-lg shadow-lg max-w-4xl w-full relative z-10">
+            <button class="absolute top-2 right-2 text-gray-600 hover:text-gray-900"
                 wire:click="$set('showImageModal', false)">
                 &times;
             </button>
+
             @php
             $image = $selectedReport->images->firstWhere('id', $selectedImageId);
             @endphp
@@ -377,5 +382,6 @@
         </div>
     </div>
     @endif
+
 
 </div>

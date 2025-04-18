@@ -12,7 +12,9 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @vite('resources/css/app.css')
     <style>
-        [x-cloak] { display: none !important; }
+        [x-cloak] {
+            display: none !important;
+        }
     </style>
 </head>
 
@@ -47,6 +49,15 @@
                         </h1>
                         <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                             Pending Request
+                        </span>
+                        <span>
+                            @livewire('report-button', [
+                            'reporterClass' => $order->productionCompany->getMorphClassName(),
+                            'reporterId' => $order->productionCompany->id,
+                            'reportedClass' => $order->user->getMorphClassName(),
+                            'reportedId' => $order->user->user_id,
+                            'orderId' => $order->order_id,
+                            ])
                         </span>
                     </div>
                     <x-popover>
@@ -156,7 +167,7 @@
                                     </svg>
                                     Cancel Order
                                 </button>
-                                
+
                                 <!-- Cancel Order Modal -->
                                 @include('components.modals.cancel-order-modal', ['action' => route('partner.printer.cancel-order', ['order_id' => $order->order_id])])
                             </div>
@@ -266,7 +277,7 @@
             </div>
         </div>
     </div>
-
+    @livewire('report-modal')
     @include('layout.footer')
 
     <script>

@@ -26,7 +26,8 @@ class AppServiceProvider extends ServiceProvider
             $productionCompany = ProductionCompany::where('user_id', auth()->id())->firstOrFail();
             $view->with('productionCompany', $productionCompany);
         });
-
+        config(['javascript.pusher_app_key' => config('broadcasting.connections.pusher.key')]);
+        config(['javascript.pusher_app_cluster' => config('broadcasting.connections.pusher.options.cluster')]);
         View::composer('partner.designer.*', function ($view) {
             try {
                 $productionCompany = ProductionCompany::where('user_id', auth()->id())->first();
