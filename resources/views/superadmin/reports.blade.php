@@ -14,6 +14,7 @@
     </div>
 
     @livewire('delete-confirmation-modal')
+    @livewire('order-details-modal')
     @include('layout.footer')
 </body>
 

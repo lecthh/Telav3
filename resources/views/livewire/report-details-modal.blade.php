@@ -14,7 +14,7 @@
                     </div>
                     <div class="flex-1 min-w-0">
                         <h2 class="text-xl font-bold text-gray-900 truncate">Report #{{ $selectedReport->id }}</h2>
-                        <p class="text-sm text-gray-500 truncate">{{ $selectedReport->reason }}</p>
+                        <p class="text-sm text-gray-500 truncate">{{ $selectedReport->description }}</p>
                         <div class="flex items-center mt-2">
                             <span class="px-2.5 py-0.5 rounded-full text-xs font-medium {{ 
                         $selectedReport->status === 'resolved' ? 'bg-green-100 text-green-800' : 

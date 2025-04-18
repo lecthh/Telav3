@@ -21,12 +21,6 @@ class ReportDetailsModal extends Component
         ];
     }
 
-    public function onRowClick($orderId)
-    {
-        Log::info('Row clicked with orderId: ' . $orderId);
-        $this->dispatch('showOrderDetails', $orderId);
-    }
-
     public function showDetails($reportId)
     {
         $report = Report::with(['reporter', 'reported', 'order', 'order.status'])
@@ -64,8 +58,7 @@ class ReportDetailsModal extends Component
 
     public function viewOrder($orderId)
     {
-        $this->showModal = false;
-        $this->emit('viewOrderDetails', $orderId);
+        $this->dispatch('showOrderDetails', $orderId);
     }
 
     public function viewEntity($type, $entityId, $entityType)
