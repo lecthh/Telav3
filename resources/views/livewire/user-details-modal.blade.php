@@ -248,5 +248,7 @@
             </div>
         </div>
     </x-view-details-modal>
+    @livewire('approve-modal')
+    @livewire('delete-confirmation-modal')
     @endif
 </div>
