@@ -30,15 +30,18 @@
             'perPage' => 10,
             'onRowClick' => 'showUserDetails',
             'onEdit' => 'editUser',
+            'onApprove' => 'approveEntity',
             'nameColumn' => 'name',
             'bulkAction' => 'delete',
             'type' => 'manage',
+            'entityName' => 'User',
             ])
         </main>
     </div>
 
     @livewire('user-details-modal')
     @livewire('order-details-modal')
+    @livewire('approve-modal')
     @livewire('delete-confirmation-modal')
     @include('layout.footer')
 </body>

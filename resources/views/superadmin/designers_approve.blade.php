@@ -23,7 +23,8 @@
             'nameColumn' => 'user_name',
             'onApprove' => 'approveEntity',
             'bulkAction' => 'approve',
-            'type' => 'approve'
+            'type' => 'approve',
+            'entityName' => 'Designer',
             ])
 
         </main>

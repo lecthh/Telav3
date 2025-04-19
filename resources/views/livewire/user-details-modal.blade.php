@@ -94,7 +94,7 @@
                                     <span class="block text-xs text-gray-500">Email Verification</span>
                                     <span class="block text-sm font-medium {{ $selectedItem->email_verified_at ? 'text-green-600' : 'text-amber-600' }}">
                                         @if($selectedItem->email_verified_at)
-                                        Verified on {{ $selectedItem->email_verified_at->format('M d, Y') }}
+                                        Verified on {{ \Carbon\Carbon::parse($selectedItem->email_verified_at)->format('M d, Y') }}
                                         @else
                                         Not verified
                                         @endif
@@ -246,7 +246,30 @@
                 </div>
                 @endif
             </div>
+            <div class="px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                @if($selectedItem->isBlocked())
+                <button type="button"
+                    wire:click="showApproveModal"
+                    class="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-green-500 sm:ml-3 sm:w-auto">
+                    <span wire:loading wire:target="showApproveModal" class="mr-2">
+                        <x-spinner wire:loading />
+                    </span>
+                    <span wire:loading.remove wire:target="showApproveModal">Reactivate User</span>
+                </button>
+                @else
+                <button type="button"
+                    wire:click="showBlockModal"
+                    class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto">
+                    <span wire:loading wire:target="showBlockModal" class="mr-2">
+                        <x-spinner wire:loading />
+                    </span>
+                    <span wire:loading.remove wire:target="showBlockModal">Block User</span>
+                </button>
+                @endif
+            </div>
         </div>
     </x-view-details-modal>
+    @livewire('approve-modal')
+    @livewire('delete-confirmation-modal')
     @endif
 </div>

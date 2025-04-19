@@ -26,6 +26,16 @@ class ProductionCompanyDetailsModal extends Component
         $this->dispatch('showOrderDetails', $orderId);
     }
 
+    public function showApproveModal()
+    {
+        $this->dispatch('approveEntity', 'App\Models\ProductionCompany', $this->selectedItem->id, 'manage', 'company_name', 'id');
+    }
+
+    public function showBlockModal()
+    {
+        $this->dispatch('deleteEntity', 'App\Models\ProductionCompany', $this->selectedItem->id, 'manage', 'company_name', 'id');
+    }
+
     public function showDetails($id, $type)
     {
         $this->selectedItem = ProductionCompany::find($id);

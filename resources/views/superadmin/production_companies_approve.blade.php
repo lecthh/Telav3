@@ -23,6 +23,7 @@
             'nameColumn' => 'company_name',
             'bulkAction' => 'approve',
             'type' => 'approve',
+            'entityName' => 'Production Company',
             ])
         </main>
     </div>

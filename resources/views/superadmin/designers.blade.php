@@ -24,6 +24,7 @@
             'onApprove' => 'approveEntity',
             'bulkAction' => 'delete',
             'type' => 'manage',
+            'entityName' => 'Designer',
             ])
         </main>
     </div>

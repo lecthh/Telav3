@@ -13,8 +13,8 @@
     @vite('resources/css/app.css')
     <script>
         window.appConfig = {
-            PUSHER_APP_KEY: "{{ env('VITE_PUSHER_APP_KEY') }}",
-            PUSHER_APP_CLUSTER: "{{ env('VITE_PUSHER_APP_CLUSTER') }}"
+            PUSHER_APP_KEY: "{{ config('javascript.pusher_app_key') }}",
+            PUSHER_APP_CLUSTER: "{{ config('javascript.pusher_app_cluster') }}"
         };
     </script>
     @livewireStyles

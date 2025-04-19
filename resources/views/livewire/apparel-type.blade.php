@@ -11,9 +11,17 @@
         @endforeach
     </ul>
 
+    @php
+    $isBlocked = auth()->check() && auth()->user()->isBlocked();
+    @endphp
+
     <div class="mt-[60px]">
-        <button wire:click="submit" class="flex bg-cPrimary rounded-xl text-white text-[18px] gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]">
+        <button
+            wire:click="submit"
+            class="flex bg-cPrimary rounded-xl text-white text-[18px] gap-y-3 px-6 py-3 justify-center transition ease-in-out hover:shadow-md disabled:opacity-30 active:bg-[#6B10A8]"
+            @disabled($isBlocked)>
             Continue
         </button>
     </div>
+
 </div>

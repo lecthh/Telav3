@@ -376,6 +376,28 @@
                 </div>
                 @endif
             </div>
+
+            <div class="px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                @if($selectedItem->isBlocked())
+                <button type="button"
+                    wire:click="showApproveModal"
+                    class="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-green-500 sm:ml-3 sm:w-auto">
+                    <span wire:loading wire:target="showApproveModal" class="mr-2">
+                        <x-spinner wire:loading />
+                    </span>
+                    <span wire:loading.remove wire:target="showApproveModal">Reactivate Production Company</span>
+                </button>
+                @else
+                <button type="button"
+                    wire:click="showBlockModal"
+                    class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto">
+                    <span wire:loading wire:target="showBlockModal" class="mr-2">
+                        <x-spinner wire:loading />
+                    </span>
+                    <span wire:loading.remove wire:target="showBlockModal">Block Production Company</span>
+                </button>
+                @endif
+            </div>
         </div>
     </x-view-details-modal>
     @endif

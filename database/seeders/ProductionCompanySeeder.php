@@ -35,6 +35,7 @@ class ProductionCompanySeeder extends Seeder
                     'email' => 'contact@eliteprints.com',
                     'avg_rating' => 0,
                     'review_count' => 0,
+                    'is_verified' => 1,
                 ],
             ],
             [
@@ -55,6 +56,7 @@ class ProductionCompanySeeder extends Seeder
                     'email' => 'contact@threadcraft.com',
                     'avg_rating' => 0,
                     'review_count' => 0,
+                    'is_verified' => 1,
                 ],
             ],
             [
@@ -75,13 +77,14 @@ class ProductionCompanySeeder extends Seeder
                     'email' => 'contact@fusionapparel.com',
                     'avg_rating' => 0,
                     'review_count' => 0,
+                    'is_verified' => 1,
                 ],
             ],
         ];
 
         foreach ($productionCompanies as $company) {
             $user = User::create($company['user']);
-            
+
             $company['company']['user_id'] = $user->user_id;
             ProductionCompany::create($company['company']);
         }

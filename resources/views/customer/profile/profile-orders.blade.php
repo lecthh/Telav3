@@ -130,7 +130,7 @@
 
                             <div class="space-y-6">
                                 <div id="order-status-details" class="p-4 bg-gray-50 rounded-lg"></div>
-                                
+
                                 <!-- Added order specifications -->
                                 <div class="border-t border-gray-200 pt-4">
                                     <h3 class="font-inter font-bold text-lg mb-4">Order Specifications</h3>
@@ -144,7 +144,18 @@
                                             <p id="order-production-type" class="font-medium"></p>
                                         </div>
                                         <div class="p-3 bg-gray-50 rounded-lg">
-                                            <p class="text-gray-500 text-sm">Production Company</p>
+                                            <div class="flex gap-2 items-center">
+                                                <p class="text-gray-500 text-sm">Production Company</p>
+                                                <span>
+                                                    @livewire('report-button', [
+                                                    'reporterClass' => auth()->user()->getMorphClassName(),
+                                                    'reporterId' => auth()->user()->user_id,
+                                                    'reportedClass' => $order->productionCompany->getMorphClassName(),
+                                                    'reportedId' => $order->productionCompany->id,
+                                                    'orderId' => $order->order_id,
+                                                    ])
+                                                </span>
+                                            </div>
                                             <p id="order-company" class="font-medium"></p>
                                         </div>
                                         <div class="p-3 bg-gray-50 rounded-lg">
@@ -161,7 +172,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Payment information -->
                                 <div class="border-t border-gray-200 pt-4">
                                     <h3 class="font-inter font-bold text-lg mb-4">Payment Details</h3>
@@ -176,7 +187,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <!-- ETA information if available -->
                                 <div id="eta-container" class="border-t border-gray-200 pt-4 hidden">
                                     <h3 class="font-inter font-bold text-lg mb-4">Estimated Completion Date</h3>
@@ -192,7 +203,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Cancellation information if available -->
                                 <div id="cancellation-container" class="border-t border-gray-200 pt-4 hidden">
                                     <h3 class="font-inter font-bold text-lg mb-4">Cancellation Information</h3>
@@ -220,7 +231,7 @@
                                     <div id="order-timeline" class="relative ml-2">
                                         <!-- Timeline line -->
                                         <div class="absolute left-3.5 top-0 h-full w-0.5 bg-gray-200"></div>
-                                        
+
                                         <!-- Status stages -->
                                         <div id="order-notifications" class="space-y-6 pb-4 relative max-h-[300px] overflow-y-auto pr-2 custom-scrollbar"></div>
                                     </div>
@@ -248,6 +259,7 @@
                 </div>
             </div>
         </div>
+        @livewire('report-modal')
     </main>
 
     @include('layout.footer')
@@ -299,7 +311,7 @@
             const orderNotifications = document.getElementById('order-notifications');
             const closeDetails = document.getElementById('close-details');
             const orderSearch = document.getElementById('order-search');
-            
+
             // New elements for order details
             const orderApparelType = document.getElementById('order-apparel-type');
             const orderProductionType = document.getElementById('order-production-type');
@@ -311,13 +323,13 @@
             const orderDownpayment = document.getElementById('order-downpayment');
             const etaContainer = document.getElementById('eta-container');
             const orderEta = document.getElementById('order-eta');
-            
+
             // Cancellation elements
             const cancellationContainer = document.getElementById('cancellation-container');
             const cancellationReason = document.getElementById('cancellation-reason');
             const cancellationNoteContainer = document.getElementById('cancellation-note-container');
             const cancellationNote = document.getElementById('cancellation-note');
-            
+
             console.log('DOM elements loaded:', {
                 orderDetails,
                 orderNotifications,
@@ -337,7 +349,7 @@
                     const orderId = this.getAttribute('data-order-id');
                     const orderStatus = this.getAttribute('data-order-status');
                     const orderCreatedAt = new Date(this.getAttribute('data-order-created-at'));
-                    
+
                     // Get the additional order details
                     const quantity = this.getAttribute('data-order-quantity');
                     const productionType = this.getAttribute('data-order-production-type');
@@ -348,7 +360,7 @@
                     const price = this.getAttribute('data-order-price');
                     const downpayment = this.getAttribute('data-order-downpayment');
                     const eta = this.getAttribute('data-order-eta');
-                    
+
                     const formattedDate = orderCreatedAt.toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'short',
@@ -362,7 +374,7 @@
                     orderIdDisplay.textContent = orderId.substr(-6);
                     orderDetails.classList.remove('hidden');
                     noOrderSelected.classList.add('hidden');
-                    
+
                     // Set values for the additional fields
                     orderApparelType.textContent = apparelType;
                     orderProductionType.textContent = productionType;
@@ -370,9 +382,15 @@
                     orderQuantity.textContent = quantity + ' item(s)';
                     orderIsCustomized.textContent = isCustomized;
                     orderIsBulk.textContent = isBulk;
-                    orderPrice.textContent = parseFloat(price).toLocaleString('en-US', { style: 'currency', currency: 'PHP' });
-                    orderDownpayment.textContent = parseFloat(downpayment).toLocaleString('en-US', { style: 'currency', currency: 'PHP' });
-                    
+                    orderPrice.textContent = parseFloat(price).toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'PHP'
+                    });
+                    orderDownpayment.textContent = parseFloat(downpayment).toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'PHP'
+                    });
+
                     // Handle ETA display
                     if (eta && eta !== 'null') {
                         const etaDate = new Date(eta);
@@ -387,7 +405,7 @@
                     } else {
                         etaContainer.classList.add('hidden');
                     }
-                    
+
                     // Handle cancellation information display
                     console.log('Cancellation elements:', {
                         container: cancellationContainer,
@@ -395,10 +413,10 @@
                         noteContainer: cancellationNoteContainer,
                         noteEl: cancellationNote
                     });
-                    
+
                     const reason = this.getAttribute('data-order-cancellation-reason');
                     const note = this.getAttribute('data-order-cancellation-note');
-                    
+
                     const orderStatusId = this.getAttribute('data-order-status-id');
                     console.log('Cancellation data:', {
                         reason: reason,
@@ -406,13 +424,13 @@
                         orderStatus: orderStatus,
                         statusId: orderStatusId
                     });
-                    
+
                     if (orderStatus === 'Cancelled' || orderStatusId === '8') {
                         console.log('Order is cancelled, showing cancellation info');
                         if (reason) {
                             cancellationReason.textContent = reason;
                             cancellationContainer.classList.remove('hidden');
-                            
+
                             if (reason === 'Other' && note) {
                                 cancellationNote.textContent = note;
                                 cancellationNoteContainer.classList.remove('hidden');
@@ -428,10 +446,10 @@
                         console.log('Order is not cancelled, hiding cancellation info');
                         cancellationContainer.classList.add('hidden');
                     }
-                    
+
                     // Show/hide review button based on order status
                     const reviewButton = document.getElementById('review-button');
-                    
+
                     // Check both status name and numeric ID (7 is completed)
                     if (orderStatus === 'Completed' || orderStatusId === '7') {
                         console.log('Showing review button for completed order:', orderId, 'Status ID:', orderStatusId);
@@ -472,18 +490,18 @@
                         cancellationReason: reason,
                         cancellationNote: note
                     });
-                    
+
                     // Make sure the notifications element exists
                     if (!orderNotifications) {
                         console.error('Order notifications element not found in the DOM');
                     }
-                    
+
                     // Parse notifications with error handling
                     let notifications = [];
                     try {
                         const notificationsData = this.getAttribute('data-order-notifications');
                         console.log('Notifications data:', notificationsData);
-                        
+
                         // Check if the data is empty or invalid JSON
                         if (notificationsData && notificationsData !== 'null' && notificationsData !== '[]') {
                             notifications = JSON.parse(notificationsData);
@@ -496,7 +514,7 @@
                         console.error('Error parsing notifications:', error);
                         notifications = [];
                     }
-                    
+
                     let notificationsHTML = '';
 
                     // Create default status notification based on order status
@@ -526,7 +544,7 @@
                         const sortedNotifications = [...notifications].sort((a, b) => {
                             return new Date(b.created_at) - new Date(a.created_at);
                         });
-                        
+
                         // Define status icons mapping
                         const statusIcons = {
                             'Order Received': `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -557,7 +575,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>`
                         };
-                        
+
                         // Get color for status based on message
                         const getStatusColor = (message) => {
                             const lowercaseMsg = message.toLowerCase();
@@ -581,7 +599,7 @@
                                 return 'bg-gray-500';
                             }
                         };
-                        
+
                         // Get icon for status based on message
                         const getStatusIcon = (message) => {
                             const lowercaseMsg = message.toLowerCase();
@@ -605,7 +623,7 @@
                                 return statusIcons['Default'];
                             }
                         };
-                        
+
                         // Add notifications to HTML
                         sortedNotifications.forEach((notification, index) => {
                             const notifDate = new Date(notification.created_at);
@@ -618,7 +636,7 @@
                                 hour: 'numeric',
                                 minute: 'numeric',
                             });
-                            
+
                             const statusColor = getStatusColor(notification.message);
                             const statusIcon = getStatusIcon(notification.message);
 
@@ -638,7 +656,7 @@
                                 </div>
                             `;
                         });
-                        
+
                         // Add current status at the top of the timeline (before all notifications)
                         notificationsHTML = `
                             <div class="flex relative z-10">
@@ -692,8 +710,8 @@
                         const productionType = button.getAttribute('data-order-production-type').toLowerCase();
                         const company = button.getAttribute('data-order-company').toLowerCase();
 
-                        if (orderId.includes(searchTerm) || 
-                            orderStatus.includes(searchTerm) || 
+                        if (orderId.includes(searchTerm) ||
+                            orderStatus.includes(searchTerm) ||
                             apparelType.includes(searchTerm) ||
                             productionType.includes(searchTerm) ||
                             company.includes(searchTerm)) {
@@ -706,6 +724,9 @@
             }
         });
     </script>
+
 </body>
+
+
 
 </html>

@@ -34,6 +34,7 @@ class Order extends Model
         'eta',
         'cancellation_reason',
         'cancellation_note',
+        'previous_status'
     ];
 
     public function user()
@@ -106,5 +107,10 @@ class Order extends Model
     public function additionalPayments()
     {
         return $this->hasMany(AdditionalPayment::class, 'order_id', 'order_id');
+    }
+
+    public function reports()
+    {
+        return $this->hasMany(Report::class, 'order_id', 'order_id');
     }
 }

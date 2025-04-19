@@ -34,7 +34,7 @@ class DatabaseSeeder extends Seeder
                 'role_name' => 'Super Admin',
             ],
         ]);
-        
+
         DB::table('apparel_types')->insert([
             [
                 'name' => 'Jersey',
@@ -84,6 +84,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Ready for Collection'],
             ['name' => 'Order Completed'],
             ['name' => 'Order Cancelled'],
+            ['name' => 'Order On Hold'],
         ]);
         DB::table('order_image_statuses')->insert([
             ['name' => 'Initial Design'],

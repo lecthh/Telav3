@@ -15,7 +15,7 @@
                         <p class="text-sm text-gray-500">Designer ID: {{ $selectedItem->designer_id }}</p>
                         <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mt-2">
                             <span class="px-2.5 py-0.5 rounded-full text-xs font-medium {{ $selectedItem->is_freelancer ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                {{ $selectedItem->is_freelancer ? 'Freelancer' : 'In-house' }}
+                                {{ $selectedItem->is_freelancer ? 'Freelancer' : $selectedItem->productionCompany->company_name . ' Designer' }}
                             </span>
                             <span class="px-2.5 py-0.5 rounded-full text-xs font-medium {{ $selectedItem->is_available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                 {{ $selectedItem->is_available ? 'Available' : 'Not Available' }}
@@ -92,6 +92,19 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h3 class="text-sm font-semibold text-gray-700 mb-3">Ratings &amp; Reviews</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <span class="block text-xs text-gray-500">Average Rating</span>
+                                    <span class="block text-sm font-medium text-gray-900">{{ $selectedItem->average_rating }}</span>
+                                </div>
+                                <div>
+                                    <span class="block text-xs text-gray-500">Review Count</span>
+                                    <span class="block text-sm font-medium text-gray-900">{{ $selectedItem->review_count }}</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Right Column: Professional Details -->
@@ -121,19 +134,7 @@
                             <h3 class="text-sm font-semibold text-gray-700 mb-3">Description</h3>
                             <p class="text-sm text-gray-900">{{ $selectedItem->designer_description }}</p>
                         </div>
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <h3 class="text-sm font-semibold text-gray-700 mb-3">Ratings &amp; Reviews</h3>
-                            <div class="space-y-3">
-                                <div>
-                                    <span class="block text-xs text-gray-500">Average Rating</span>
-                                    <span class="block text-sm font-medium text-gray-900">{{ $selectedItem->average_rating }}</span>
-                                </div>
-                                <div>
-                                    <span class="block text-xs text-gray-500">Review Count</span>
-                                    <span class="block text-sm font-medium text-gray-900">{{ $selectedItem->review_count }}</span>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
 

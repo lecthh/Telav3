@@ -22,7 +22,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'CustomerOnly' => \App\Http\Middleware\Customer::class,
             'DesignerOnly' => \App\Http\Middleware\DesignerOnly::class,
             'SuperAdminOnly' => \App\Http\Middleware\SuperAdminOnly::class,
-            'CheckUserStatus' => CheckUserStatus::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
