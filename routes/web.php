@@ -23,6 +23,7 @@ use App\Http\Controllers\SuperAdminController;
 use App\Http\Middleware\PreventBackHistory;
 use App\Models\Designer;
 use App\Models\ProductionCompany;
+use App\Models\Report;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Auth;
@@ -289,12 +290,32 @@ Route::post('/order/process-additional-payment/{order_id}', [App\Http\Controller
     ->name('order.process-additional-payment')
     ->middleware('CustomerOnly');
 
-Route::get('/pending-designers-count', function (Request $request) {
-    $count = Designer::where('is_verified', false)->count();
-    return response()->json($count);
-});
+Route::get('/pending-counts', function (Request $request) {
+    $type = $request->query('type');
 
-Route::get('/pending-production-company-count', function (Request $request) {
-    $count = ProductionCompany::where('is_verified', false)->count();
-    return response()->json($count);
+    if ($type) {
+        switch ($type) {
+            case 'designers':
+                return response()->json([
+                    'designers' => Designer::where('is_verified', false)->count()
+                ]);
+            case 'production':
+                return response()->json([
+                    'production' => ProductionCompany::where('is_verified', false)->count()
+                ]);
+            case 'reports':
+                return response()->json([
+                    'reports' => Report::where('status', 'pending')->count()
+                ]);
+            default:
+                return response()->json(['error' => 'Invalid type'], 400);
+        }
+    }
+
+    // Return all counts if no specific type is requested
+    return response()->json([
+        'designers' => Designer::where('is_verified', false)->count(),
+        'production' => ProductionCompany::where('is_verified', false)->count(),
+        'reports' => Report::where('status', 'pending')->count()
+    ]);
 });
