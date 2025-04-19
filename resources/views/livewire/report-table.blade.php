@@ -1,25 +1,36 @@
 <div>
-    <div class="mb-6 flex flex-col sm:flex-row justify-between gap-4">
-        <div class="flex-grow">
-            <label for="search" class="sr-only">Search</label>
-            <div class="relative">
+    <div class="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center bg-white p-4 rounded-lg shadow-md gap-4">
+        <div class="flex items-center gap-4">
+            <div class="relative w-full sm:w-64">
                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
                     </svg>
                 </div>
-                <input wire:model.live.debounce.300ms="search" type="text" id="search" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5" placeholder="Search reports...">
+                <input
+                    wire:model.live.debounce.300ms="search"
+                    type="text"
+                    id="search"
+                    class="pl-10 pr-4 py-2 border border-gray-300 rounded-md block w-full sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 transition"
+                    placeholder="Search reports...">
             </div>
         </div>
-        <div>
-            <label for="status" class="sr-only">Filter by Status</label>
-            <select wire:model.live="status" id="status" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                <option value="">All Statuses</option>
-                <option value="pending">Pending</option>
-                <option value="resolved">Resolved</option>
-            </select>
+
+        <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2">
+                <label for="status" class="text-sm text-gray-600">Status</label>
+                <select
+                    wire:model.live="status"
+                    id="status"
+                    class="border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 w-32 text-sm">
+                    <option value="">All Statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="resolved">Resolved</option>
+                </select>
+            </div>
         </div>
     </div>
+
 
     <div class="overflow-x-auto rounded-lg shadow">
         <table class="w-full text-sm text-left text-gray-500">

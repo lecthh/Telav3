@@ -25,6 +25,16 @@ class UserDetailsModal extends Component
         $this->dispatch('showOrderDetails', $orderId);
     }
 
+    public function showApproveModal()
+    {
+        $this->dispatch('approveEntity', 'App\Models\User', $this->selectedItem->user_id, 'manage', 'name', 'user_id');
+    }
+
+    public function showBlockModal()
+    {
+        $this->dispatch('deleteEntity', 'App\Models\User', $this->selectedItem->user_id, 'manage', 'name', 'user_id');
+    }
+
     public function showDetails($userId)
     {
         $this->selectedItem = User::find($userId);
