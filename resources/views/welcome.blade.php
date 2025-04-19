@@ -1,5 +1,8 @@
 <!doctype html>
 <html>
+
+<x-blocked-banner-wrapper />
+
 @include('layout.nav')
 
 <body>

@@ -71,24 +71,12 @@ class ModalLogin extends ModalComponent
             // First check if the user exists and is blocked (before authentication)
             $user = User::where('email', $validatedData['email'])->first();
 
-            if ($user && $user->status === 'blocked') {
-                Log::warning('Blocked user attempted login', ['email' => $this->email]);
-                return redirect()->route('user.blocked');
-            }
-
             // Proceed with login attempt if user isn't blocked
             if (Auth::attempt(
                 ['email' => $validatedData['email'], 'password' => $validatedData['password']],
                 $this->rememberMe
             )) {
                 $user = Auth::user();
-
-                // Double-check status after authentication (in case it changed during login)
-                if ($user->status === 'blocked') {
-                    Auth::logout();
-                    Log::warning('Blocked user authenticated but was stopped', ['email' => $this->email]);
-                    return redirect()->route('user.blocked');
-                }
 
                 Log::info('User logged in successfully', [
                     'email'         => $user->email,

@@ -68,10 +68,6 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::get('/account/blocked', function () {
-    return view('auth.blocked');
-})->name('user.blocked');
-
 
 Route::get('/production-services', [App\Http\Controllers\ProductionCompanyController::class, 'index'])->name('production.services');
 Route::get('/production-company/{id}', [App\Http\Controllers\ProductionCompanyController::class, 'show'])->name('production.company.show');
