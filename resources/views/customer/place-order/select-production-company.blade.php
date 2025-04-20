@@ -13,6 +13,7 @@
     @vite('resources/css/app.css')
     @vite('resources/css/select.css')
 </head>
+<x-blocked-banner-wrapper />
 @include('layout.nav')
 
 <body class="flex flex-col h-screen justify-between">

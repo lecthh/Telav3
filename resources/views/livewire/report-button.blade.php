@@ -8,5 +8,5 @@
             </svg>
         </button>
     </x-slot>
-    Report this
+    Report this {{$this->entityName}}
 </x-popover>

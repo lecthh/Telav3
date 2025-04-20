@@ -13,6 +13,8 @@
     @vite('resources/css/app.css')
 </head>
 
+<x-blocked-banner-wrapper />
+
 <body class="flex flex-col h-screen justify-between">
     @include('layout.nav')
     <div class="font-inter bg-white flex flex-col px-[200px] py-[100px] gap-y-[60px] animate-fade-in">

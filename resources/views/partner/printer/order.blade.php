@@ -57,6 +57,7 @@
                             'reportedClass' => $order->user->getMorphClassName(),
                             'reportedId' => $order->user->user_id,
                             'orderId' => $order->order_id,
+                            'entityName' => 'User',
                             ])
                         </span>
                     </div>

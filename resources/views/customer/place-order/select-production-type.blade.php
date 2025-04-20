@@ -12,6 +12,7 @@
     <link href="https://cdn.jsdelivr.net/npm/pagedone@1.2.2/src/css/pagedone.css " rel="stylesheet" />
     @vite('resources/css/app.css')
 </head>
+<x-blocked-banner-wrapper />
 @include('layout.nav')
 
 <body class="flex flex-col h-screen justify-between">

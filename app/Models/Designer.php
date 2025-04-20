@@ -102,4 +102,14 @@ class Designer extends Model
     {
         return $this->morphMany(Report::class, 'reported');
     }
+
+    public function getMorphClassName()
+    {
+        return $this->getMorphClass();
+    }
+
+    public function getDisplayNameAttribute()
+    {
+        return $this->name;
+    }
 }
