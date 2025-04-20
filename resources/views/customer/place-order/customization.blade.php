@@ -11,13 +11,15 @@
     @vite('resources/js/customize.js')
 </head>
 
+<x-blocked-banner-wrapper />
+
 <body class="min-h-screen bg-gray-50">
     @include('layout.nav')
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         <form method="POST" action="{{ route('customer.place-order.customization-post', ['apparel' => $apparel, 'productionType' => $productionType, 'company' => $company]) }}" enctype="multipart/form-data" class="animate-fade-in">
             @csrf
-            
+
             <!-- Header Section -->
             <div class="mb-8 md:mb-12">
                 @include('customer.place-order.steps')
@@ -26,7 +28,7 @@
                     <p class="font-inter text-lg text-gray-600 max-w-3xl">Now it's time to get creative! Add your unique design, choose your colors, and make any other custom adjustments to create something truly one-of-a-kind.</p>
                 </div>
             </div>
-            
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <!-- Left Column: Canvas Editor -->
                 <div class="lg:col-span-2 space-y-6">
@@ -49,7 +51,7 @@
                                 </button>
                             </div> -->
                         </div>
-                        
+
                         <div class="p-6">
                             <div class="flex gap-x-4">
                                 <div class="flex flex-col justify-between gap-y-4">
@@ -78,7 +80,7 @@
                                             </svg>
                                         </div>
                                     </div>
-                                    
+
                                     <!-- Delete Button -->
                                     <div id="deleteObject" class="w-10 h-10 border border-gray-300 rounded-md cursor-pointer transition-all hover:bg-red-50 hover:border-red-500 flex justify-center items-center text-gray-700 hover:text-red-500">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -89,14 +91,14 @@
                                         </svg>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Canvas -->
                                 <div class="relative flex-1 bg-white border border-gray-200 rounded-lg overflow-hidden">
                                     <canvas id="fabricCanvas" width="1000" height="500" class="w-full"></canvas>
                                     <input type="file" id="canvasImgUpload" class="hidden" accept="image/*" />
                                 </div>
                             </div>
-                            
+
                             <!-- Canvas Hint -->
                             <div class="mt-4 text-sm text-gray-500 bg-gray-50 p-3 rounded-md flex items-start">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
@@ -106,36 +108,35 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Description Field -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                         <div class="px-6 py-4 border-b border-gray-100">
                             <h3 class="font-gilroy font-bold text-lg text-gray-900">Design Description</h3>
                         </div>
-                        
+
                         <div class="p-6">
                             <div x-data="{ charCount: 0, maxChars: 500 }">
-                                <textarea 
-                                    name="description" 
-                                    id="description" 
-                                    rows="4" 
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-cPrimary focus:ring focus:ring-cPrimary focus:ring-opacity-20 transition-all" 
+                                <textarea
+                                    name="description"
+                                    id="description"
+                                    rows="4"
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-cPrimary focus:ring focus:ring-cPrimary focus:ring-opacity-20 transition-all"
                                     placeholder="Please provide details about your design. Include any specific instructions, color preferences, placement details, or other important information..."
-                                    x-on:input="charCount = $event.target.value.length"
-                                ></textarea>
+                                    x-on:input="charCount = $event.target.value.length"></textarea>
                                 <div class="flex justify-end mt-2">
                                     <span class="text-sm text-gray-500"><span x-text="charCount"></span>/<span x-text="maxChars"></span> characters</span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Reference Images Upload -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                         <div class="px-6 py-4 border-b border-gray-100">
                             <h3 class="font-gilroy font-bold text-lg text-gray-900">Reference Images</h3>
                         </div>
-                        
+
                         <div class="p-6">
                             <label class="flex flex-col gap-y-4 p-6 border-2 border-dashed border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer bg-gray-50 text-center">
                                 <div class="mx-auto flex-shrink-0 flex items-center justify-center h-14 w-14 rounded-full bg-purple-50 text-cPrimary">
@@ -158,14 +159,14 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Right Column: Order Details -->
                 <div class="lg:col-span-1">
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden sticky top-24">
                         <div class="px-6 py-4 border-b border-gray-100">
                             <h3 class="font-gilroy font-bold text-lg text-gray-900">Order Details</h3>
                         </div>
-                        
+
                         <div class="p-6 space-y-6">
                             <!-- Order Type -->
                             <div>
@@ -178,7 +179,7 @@
                                             <span class="text-sm text-gray-500">Perfect for personal use or as a unique gift</span>
                                         </div>
                                     </label>
-                                    
+
                                     <label class="flex items-start p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-cPrimary transition-colors">
                                         <input id="bulk" type="radio" name="order_type" value="bulk" class="mt-0.5 form-radio border-gray-300 text-cPrimary focus:ring-cPrimary">
                                         <div class="ml-3">
@@ -188,7 +189,7 @@
                                     </label>
                                 </div>
                             </div>
-                            
+
                             <!-- Quantity -->
                             <div>
                                 <h4 class="font-medium text-gray-900 mb-3">Quantity</h4>
@@ -213,10 +214,10 @@
                                     </p>
                                 </div>
                                 @error('quantity')
-                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
-                            
+
                             <!-- Customization Type -->
                             <div>
                                 <h4 class="font-medium text-gray-900 mb-3">Customization Type</h4>
@@ -228,7 +229,7 @@
                                             <span class="text-sm text-gray-500">Same design for all items in your order</span>
                                         </div>
                                     </label>
-                                    
+
                                     <label class="flex items-start p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-cPrimary transition-colors">
                                         <input id="personalized" type="radio" name="custom_type" value="personalized" class="mt-0.5 form-radio border-gray-300 text-cPrimary focus:ring-cPrimary">
                                         <div class="ml-3">
@@ -238,7 +239,7 @@
                                     </label>
                                 </div>
                             </div>
-                            
+
                             <!-- Navigation Buttons -->
                             <div class="pt-4 border-t border-gray-200 space-y-3">
                                 <button type="submit" class="w-full bg-cPrimary hover:bg-purple-700 text-white text-base font-medium py-3 px-6 rounded-xl transition-all flex items-center justify-center">
@@ -260,9 +261,9 @@
             </div>
         </form>
     </div>
-    
+
     @include('layout.footer')
-    
+
     <script src="https://cdn.jsdelivr.net/npm/fabric@latest/dist/index.min.js"></script>
     <!-- Quantity control script only, fabric.js functionality is imported via customize.js -->
     <script>
@@ -274,7 +275,7 @@
             const bulkRadio = document.getElementById('bulk');
             const singleRadio = document.getElementById('single');
             const bulkMessage = document.getElementById('bulk-quantity-message');
-            
+
             function updateQuantityConstraints() {
                 if (bulkRadio.checked) {
                     quantityInput.min = 10;
@@ -287,10 +288,10 @@
                     bulkMessage.classList.add('hidden');
                 }
             }
-            
+
             // Initial setup
             updateQuantityConstraints();
-            
+
             // Decrease quantity
             decreaseBtn.addEventListener('click', function() {
                 let value = parseInt(quantityInput.value);
@@ -299,17 +300,17 @@
                     quantityInput.value = value - 1;
                 }
             });
-            
+
             // Increase quantity
             increaseBtn.addEventListener('click', function() {
                 let value = parseInt(quantityInput.value);
                 quantityInput.value = value + 1;
             });
-            
+
             // Update constraints when order type changes
             bulkRadio.addEventListener('change', updateQuantityConstraints);
             singleRadio.addEventListener('change', updateQuantityConstraints);
-            
+
             // Validate on input
             quantityInput.addEventListener('input', function() {
                 let value = parseInt(this.value);
@@ -318,12 +319,12 @@
                     this.value = min;
                 }
             });
-            
+
             // Preview uploaded reference images
             document.getElementById('media').addEventListener('change', function(e) {
                 const previewContainer = document.getElementById('previewContainer');
                 previewContainer.innerHTML = '';
-                
+
                 if (e.target.files && e.target.files.length > 0) {
                     Array.from(e.target.files).forEach(file => {
                         if (file.type.startsWith('image/')) {
@@ -331,11 +332,11 @@
                             reader.onload = function(event) {
                                 const previewWrapper = document.createElement('div');
                                 previewWrapper.className = 'relative group';
-                                
+
                                 const img = document.createElement('img');
                                 img.src = event.target.result;
                                 img.className = 'w-20 h-20 object-cover rounded-md border border-gray-200';
-                                
+
                                 previewWrapper.appendChild(img);
                                 previewContainer.appendChild(previewWrapper);
                             };
@@ -347,4 +348,5 @@
         });
     </script>
 </body>
+
 </html>

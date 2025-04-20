@@ -30,7 +30,7 @@
                     </svg>
                 </button>
             </div>
-            
+
             <!-- Main Chat Area -->
             <div class="flex flex-1 overflow-hidden">
                 <!-- Left sidebar - Contacts -->
@@ -46,7 +46,7 @@
                             </svg>
                         </div>
                     </div>
-                    
+
                     <!-- Contacts List -->
                     <div class="flex-1 overflow-y-auto">
                         <ul class="space-y-1 p-2">
@@ -75,7 +75,7 @@
                         </ul>
                     </div>
                 </div>
-                
+
                 <!-- Right side - Chat Content -->
                 <div class="flex flex-col w-full md:w-2/3 bg-gray-50">
                     <!-- Mobile view - show current chat user in header -->
@@ -88,7 +88,7 @@
                         <img :src="$store.chatSystem.currentChatUser?.avatar" class="w-8 h-8 rounded-full" alt="User Avatar">
                         <span class="font-medium text-gray-900" x-text="$store.chatSystem.currentChatUser?.name"></span>
                     </div>
-                    
+
                     <!-- Mobile view - show user list if no chat selected -->
                     <div x-show="!$store.chatSystem.currentChatUser" class="md:hidden flex flex-col h-full">
                         <div class="p-3 border-b">
@@ -137,7 +137,7 @@
                                 <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-cPrimary"></div>
                             </div>
                         </template>
-                        
+
                         <template x-if="!$store.chatSystem.loadingMessages && $store.chatSystem.messages.length === 0">
                             <div class="flex flex-col items-center justify-center h-full text-gray-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -146,7 +146,7 @@
                                 <p>No messages yet. Start the conversation!</p>
                             </div>
                         </template>
-                        
+
                         <template x-if="!$store.chatSystem.loadingMessages">
                             <template x-for="(message, index) in $store.chatSystem.messages" :key="message.id + '-' + index">
                                 <div :class="message.from_id == $store.chatSystem.currentUserId ? 'flex justify-end' : 'flex justify-start'" class="group">
@@ -155,12 +155,12 @@
                                             class="px-4 py-2 shadow-sm">
                                             <p x-text="message.body" class="break-words"></p>
                                         </div>
-                                        
+
                                         <!-- Time stamp shown on hover -->
                                         <div class="text-xs text-gray-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                             <span x-text="new Date(message.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})"></span>
                                         </div>
-                                        
+
                                         <!-- Attachment handling -->
                                         <template x-if="message.attachments && message.attachments.length">
                                             <div class="mt-2 space-y-2">
@@ -182,7 +182,7 @@
                                                                 </div>
                                                             </div>
                                                         </template>
-                                                        
+
                                                         <!-- If not image: display file icon and truncated file name -->
                                                         <template x-if="!/\.(jpe?g|png|gif)$/i.test(file)">
                                                             <a :href="`/storage/${file}`" target="_blank"
@@ -229,7 +229,7 @@
                                                 </button>
                                             </div>
                                         </template>
-                                        
+
                                         <!-- File preview for non-images -->
                                         <template x-if="!file.type || !file.type.match(/^image\//)">
                                             <div class="relative">
@@ -252,7 +252,7 @@
                                 </template>
                             </div>
                         </template>
-                        
+
                         <!-- Message Input Form -->
                         <form @submit.prevent="$store.chatSystem.sendMessage()" class="flex items-center space-x-2">
                             <input type="text"
@@ -341,6 +341,7 @@
             filePreviewUrls: [],
 
             init() {
+                console.log(this.current)
                 if (this.currentUserId) {
                     this.fetchUsers();
                     setInterval(() => {
@@ -348,6 +349,8 @@
                     }, 5000);
                 }
             },
+
+
 
             async fetchUsers() {
                 try {
@@ -421,7 +424,7 @@
                     })
                     .catch(error => console.error("Error marking message as seen", error));
             },
-            
+
             handleFileSelected(event) {
                 const files = Array.from(event.target.files);
                 if (files.length > 0) {
@@ -437,7 +440,7 @@
                     });
                 }
             },
-            
+
             removeSelectedFileAt(index) {
                 if (this.selectedFile && this.selectedFile.length > index) {
                     this.selectedFile.splice(index, 1);
@@ -460,11 +463,11 @@
                 if ((!this.newMessage || !this.newMessage.trim()) && (!this.selectedFile || this.selectedFile.length === 0)) {
                     return;
                 }
-                
+
                 const formData = new FormData();
                 formData.append('to_id', this.currentChatUser.id);
                 formData.append('body', this.newMessage);
-                
+
                 if (this.selectedFile && Array.isArray(this.selectedFile)) {
                     this.selectedFile.forEach(file => {
                         formData.append('attachment[]', file);
@@ -479,7 +482,7 @@
                         },
                         body: formData
                     });
-                    
+
                     if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
                     const message = await response.json();
@@ -493,7 +496,7 @@
                     console.error("Error sending message:", error);
                     // Could add visual error feedback here
                 }
-                
+
             },
             get filteredUsers() {
                 return this.searchQuery ?
@@ -501,7 +504,7 @@
                         user.name.toLowerCase().includes(this.searchQuery.toLowerCase())) :
                     this.users;
             },
-            
+
             get totalUnreadCount() {
                 return this.users.reduce((acc, user) => acc + (user.unreadCount || 0), 0);
             },
@@ -520,7 +523,7 @@
                 this.modalImage = src;
                 this.showModal = true;
             },
-            
+
             closeModal() {
                 this.showModal = false;
                 this.modalImage = null;
@@ -546,5 +549,5 @@
                 }, 100);
             },
         });
-    }); 
+    });
 </script>

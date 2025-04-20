@@ -1,5 +1,5 @@
 @include('head', ['title' => 'Transactions'])
-
+<x-blocked-banner-wrapper :entity="$productionCompany" />
 <header class="bg-cPrimary text-white py-2 text-center font-gilroy font-bold text-sm">
     Production Hub
 </header>
@@ -97,40 +97,40 @@
                                 <td class="px-4 py-3 text-sm">
                                     <div class="flex flex-col">
                                         @if($balanceDue > 0)
-                                            <span class="font-medium text-red-600">
-                                                ₱{{ number_format($balanceDue, 2) }}
-                                            </span>
+                                        <span class="font-medium text-red-600">
+                                            ₱{{ number_format($balanceDue, 2) }}
+                                        </span>
                                         @elseif($overpayment > 0)
-                                            <span class="font-medium text-green-600">
-                                                ₱0.00 <span class="text-xs">(Overpaid: ₱{{ number_format($overpayment, 2) }})</span>
-                                            </span>
+                                        <span class="font-medium text-green-600">
+                                            ₱0.00 <span class="text-xs">(Overpaid: ₱{{ number_format($overpayment, 2) }})</span>
+                                        </span>
                                         @else
-                                            <span class="font-medium text-green-600">
-                                                ₱0.00
-                                            </span>
+                                        <span class="font-medium text-green-600">
+                                            ₱0.00
+                                        </span>
                                         @endif
-                                        
+
                                         @if($order->balanceReceipts->isNotEmpty())
-                                            <div class="mt-1">
-                                                @foreach($order->balanceReceipts as $receipt)
-                                                <div class="mb-1 flex items-center">
-                                                    <span class="text-xs text-gray-500 mr-1">Paid ₱{{ number_format($receipt->amount, 2) }}</span>
-                                                    <a href="{{ asset('storage/'.$receipt->receipt_image_path) }}" target="_blank" class="text-cPrimary hover:underline text-xs">View Receipt</a>
-                                                </div>
-                                                @endforeach
+                                        <div class="mt-1">
+                                            @foreach($order->balanceReceipts as $receipt)
+                                            <div class="mb-1 flex items-center">
+                                                <span class="text-xs text-gray-500 mr-1">Paid ₱{{ number_format($receipt->amount, 2) }}</span>
+                                                <a href="{{ asset('storage/'.$receipt->receipt_image_path) }}" target="_blank" class="text-cPrimary hover:underline text-xs">View Receipt</a>
                                             </div>
+                                            @endforeach
+                                        </div>
                                         @endif
                                     </div>
                                 </td>
                                 <td class="px-4 py-3 text-sm">
                                     @if($balanceDue > 0)
-                                        <button
-                                            onclick="showUploadModal('{{ $order->order_id }}', '{{ number_format($balanceDue, 2) }}')"
-                                            class="text-cPrimary hover:text-cPrimary-dark focus:outline-none text-sm font-medium">
-                                            Upload Receipt
-                                        </button>
+                                    <button
+                                        onclick="showUploadModal('{{ $order->order_id }}', '{{ number_format($balanceDue, 2) }}')"
+                                        class="text-cPrimary hover:text-cPrimary-dark focus:outline-none text-sm font-medium">
+                                        Upload Receipt
+                                    </button>
                                     @else
-                                        <span class="text-green-600 text-sm font-medium">Fully Paid</span>
+                                    <span class="text-green-600 text-sm font-medium">Fully Paid</span>
                                     @endif
                                 </td>
                             </tr>

@@ -24,6 +24,7 @@ class ReportModal extends Component
     public $showModal = false;
     public $images = [];
     public $description;
+    public $entityName;
 
     protected function getListeners()
     {

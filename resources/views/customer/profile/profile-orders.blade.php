@@ -11,6 +11,7 @@
 </head>
 
 <body class="min-h-screen flex flex-col bg-gray-50">
+    <x-blocked-banner-wrapper />
     @include('layout.nav')
 
     <main class="flex-grow">
@@ -75,7 +76,8 @@
                                 data-order-downpayment="{{ $order->downpayment_amount }}"
                                 data-order-eta="{{ $order->eta }}"
                                 data-order-cancellation-reason="{{ $order->cancellation_reason }}"
-                                data-order-cancellation-note="{{ $order->cancellation_note }}">
+                                data-order-cancellation-note="{{ $order->cancellation_note }}"
+                                data-order-designer="{{ $order->designer ? $order->designer->user->name : 'Not yet assigned' }}">
                                 <div class="flex justify-between items-start">
                                     <div>
                                         <h3 class="font-inter font-bold text-gray-900 group-hover:text-cPrimary transition duration-150">
@@ -153,6 +155,7 @@
                                                     'reportedClass' => $order->productionCompany->getMorphClassName(),
                                                     'reportedId' => $order->productionCompany->id,
                                                     'orderId' => $order->order_id,
+                                                    'entityName' => 'Production Company'
                                                     ])
                                                 </span>
                                             </div>
@@ -169,6 +172,24 @@
                                         <div class="p-3 bg-gray-50 rounded-lg">
                                             <p class="text-gray-500 text-sm">Bulk Order</p>
                                             <p id="order-is-bulk" class="font-medium"></p>
+                                        </div>
+                                        <div class="p-3 bg-gray-50 rounded-lg">
+                                            <div class="flex gap-2 items-center">
+                                                <p class="text-gray-500 text-sm">Designer</p>
+                                                @if($order->designer)
+                                                <span>
+                                                    @livewire('report-button', [
+                                                    'reporterClass' => auth()->user()->getMorphClassName(),
+                                                    'reporterId' => auth()->user()->user_id,
+                                                    'reportedClass' => $order->designer->getMorphClassName(),
+                                                    'reportedId' => $order->designer->designer_id,
+                                                    'orderId' => $order->order_id,
+                                                    'entityName' => 'Designer'
+                                                    ])
+                                                </span>
+                                                @endif
+                                            </div>
+                                            <p id="order-designer" class="font-medium"></p>
                                         </div>
                                     </div>
                                 </div>
@@ -323,6 +344,7 @@
             const orderDownpayment = document.getElementById('order-downpayment');
             const etaContainer = document.getElementById('eta-container');
             const orderEta = document.getElementById('order-eta');
+            const orderDesigner = document.getElementById('order-designer');
 
             // Cancellation elements
             const cancellationContainer = document.getElementById('cancellation-container');
@@ -360,6 +382,7 @@
                     const price = this.getAttribute('data-order-price');
                     const downpayment = this.getAttribute('data-order-downpayment');
                     const eta = this.getAttribute('data-order-eta');
+                    const orderDesignerData = this.getAttribute('data-order-designer');
 
                     const formattedDate = orderCreatedAt.toLocaleDateString('en-US', {
                         year: 'numeric',
@@ -390,6 +413,7 @@
                         style: 'currency',
                         currency: 'PHP'
                     });
+                    orderDesigner.textContent = orderDesignerData;
 
                     // Handle ETA display
                     if (eta && eta !== 'null') {

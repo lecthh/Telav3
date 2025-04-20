@@ -9,9 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     @vite('resources/css/app.css')
 </head>
+<x-blocked-banner-wrapper />
 
 <body class="flex flex-col justify-between min-h-screen bg-gray-50">
-    <div class="flex flex-col">
+    <div class="flex flex-grow flex-col">
         @include('layout.nav')
 
         <div class="px-4 sm:px-6 lg:px-8 py-12 max-w-7xl mx-auto w-full">
@@ -137,8 +138,11 @@
 
                                 <p class="text-xs text-gray-500 mb-6">This amount represents the downpayment (50% of total price). The remaining balance will be due upon completion.</p>
 
+                                @php
+                                $isBlocked = auth()->check() && auth()->user()->isBlocked();
+                                @endphp
                                 <div class="border-t border-gray-200 pt-6">
-                                    <button type="submit" class="w-full bg-cPrimary text-white px-6 py-3 rounded-md font-medium hover:bg-cPrimary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary transition-colors">
+                                    <button type="submit" class="w-full bg-cPrimary text-white px-6 py-3 rounded-md font-medium hover:bg-cPrimary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary transition-colors disabled:opacity-30 active:bg-[#6B10A8]" @disabled($isBlocked)>
                                         Proceed to Checkout
                                     </button>
                                 </div>

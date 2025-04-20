@@ -42,12 +42,11 @@ class ReportDetailsModal extends Component
 
         $this->selectedReport = $report->fresh(['reporter', 'reported', 'order', 'order.status']);
 
-        $this->dispatchBrowserEvent('notify', [
+        $this->dispatch('toast', [
             'type' => 'success',
             'message' => "Report status updated to {$status}."
         ]);
-
-        $this->emit('refreshReports');
+        $this->dispatch('$refresh');
     }
 
     public function viewImage($imageId)
@@ -67,6 +66,8 @@ class ReportDetailsModal extends Component
             $this->dispatch('showUserDetails', $entityId);
         } elseif (strpos($entityType, 'ProductionCompany') !== false) {
             $this->dispatch('showCompanyDetails', $entityId, 'manage');
+        } elseif (strpos($entityType, 'Designer') !== false) {
+            $this->dispatch('showDesignerDetails', $entityId, 'manage');
         }
     }
 

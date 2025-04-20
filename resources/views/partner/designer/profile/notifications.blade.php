@@ -11,6 +11,7 @@
 </head>
 
 <body class="min-h-screen flex flex-col bg-gray-50">
+    <x-blocked-banner-wrapper :entity="$designer" />
     <div class="flex p-1.5 bg-cGreen font-gilroy font-bold text-white text-sm justify-center">
         Designer Hub
     </div>
@@ -29,7 +30,7 @@
                     <div class="bg-white shadow-sm rounded-lg overflow-hidden">
                         <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center">
                             <h2 class="font-gilroy font-semibold text-lg text-gray-900">Recent Notifications</h2>
-                            
+
                             @if($notifications->count() > 0)
                             <form action="{{ route('partner.designer.profile.notifications.mark-all-read') }}" method="POST" class="ml-auto">
                                 @csrf
@@ -63,37 +64,37 @@
                                     </span>
                                     @endif
                                 </div>
-                                
+
                                 <div class="flex-1">
                                     <div class="flex justify-between">
                                         <p class="text-sm font-medium text-gray-900">{{ $notification->message }}</p>
                                         <p class="text-xs text-gray-500">{{ $notification->created_at->diffForHumans() }}</p>
                                     </div>
-                                    
+
                                     @if($notification->order_id)
                                     <p class="text-xs text-gray-600 mt-1">
                                         Order #{{ substr($notification->order_id, -6) }}
-                                        
+
                                         @php
-                                            $order = \App\Models\Order::find($notification->order_id);
-                                            $route = null;
-                                            
-                                            if ($order && $order->assigned_designer_id == $designer->designer_id) {
-                                                if ($order->status_id == 7) {
-                                                    $route = route('partner.designer.complete-x', $order->order_id);
-                                                } else {
-                                                    $route = route('partner.designer.assigned-x', $order->order_id);
-                                                }
-                                            }
+                                        $order = \App\Models\Order::find($notification->order_id);
+                                        $route = null;
+
+                                        if ($order && $order->assigned_designer_id == $designer->designer_id) {
+                                        if ($order->status_id == 7) {
+                                        $route = route('partner.designer.complete-x', $order->order_id);
+                                        } else {
+                                        $route = route('partner.designer.assigned-x', $order->order_id);
+                                        }
+                                        }
                                         @endphp
-                                        
+
                                         @if($route)
                                         <a href="{{ $route }}" class="text-cGreen hover:underline ml-2">View Order</a>
                                         @endif
                                     </p>
                                     @endif
                                 </div>
-                                
+
                                 @if(!$notification->is_read)
                                 <div class="flex-shrink-0 ml-4 self-center">
                                     <form action="{{ route('partner.designer.profile.notifications.mark-read', $notification->id) }}" method="POST">
@@ -107,7 +108,7 @@
                             </div>
                             @endforeach
                         </div>
-                        
+
                         <div class="px-6 py-3 bg-gray-50 border-t border-gray-100">
                             {{ $notifications->links() }}
                         </div>

@@ -15,10 +15,11 @@
 
 <body class="flex flex-col h-screen justify-between">
     <div class="flex flex-col h-full">
+        <x-blocked-banner-wrapper :entity="$designer" />
         <div class="flex p-1 bg-cGreen font-gilroy font-bold text-black text-sm justify-center">Designer Hub</div>
         <div class="flex h-full">
             @php
-                $designer = session('admin');
+            $designer = session('admin');
             @endphp
             @include('layout.designer')
             <div class="flex flex-col gap-y-8 p-8 md:p-12 bg-[#F9F9F9] w-full overflow-auto">
@@ -26,14 +27,14 @@
                     <h2 class="font-gilroy font-bold text-3xl text-gray-900">Hello, {{ $designer->user->name ?? 'Designer' }}</h2>
                     <h4 class="font-inter text-base text-gray-600">View your completed orders</h4>
                 </div>
-                
+
                 <div class="bg-white rounded-lg shadow-sm overflow-hidden">
                     <div class="border-b border-gray-200 px-6 py-4">
                         <div class="flex justify-between items-center">
                             <h1 class="font-gilroy font-bold text-xl text-gray-900">Completed Orders</h1>
                             <div class="flex items-center gap-3">
                                 <div class="relative">
-                                    <input type="text" id="search-orders" placeholder="Search orders..." 
+                                    <input type="text" id="search-orders" placeholder="Search orders..."
                                         class="pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-cGreen focus:border-cGreen">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -49,10 +50,10 @@
                                 </button>
                             </div>
                         </div>
-                        
+
                         @include('partner.designer.order-nav')
                     </div>
-                    
+
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
@@ -78,7 +79,7 @@
                                     data-url="{{ route('partner.designer.complete-x', ['order_id' => $order->order_id]) }}">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <input type="checkbox" class="order-checkbox border border-gray-300 rounded w-4 h-4 focus:ring-cGreen text-cGreen"
-                                               onclick="event.stopPropagation();">
+                                            onclick="event.stopPropagation();">
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $order->created_at->format('M d, Y') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
@@ -114,7 +115,7 @@
                             </tbody>
                         </table>
                     </div>
-                    
+
                     <!-- Pagination (if needed) -->
                     <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
                         <div class="flex justify-between items-center">
@@ -125,7 +126,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Summary Cards -->
                 <!-- <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="bg-white rounded-lg shadow-sm p-6">
@@ -185,23 +186,23 @@
                     window.location.href = row.getAttribute('data-url');
                 });
             });
-            
+
             // Select all checkbox
             const selectAllCheckbox = document.getElementById('select_all');
             const orderCheckboxes = document.querySelectorAll('.order-checkbox');
-            
+
             selectAllCheckbox.addEventListener('change', function() {
                 orderCheckboxes.forEach(checkbox => {
                     checkbox.checked = selectAllCheckbox.checked;
                 });
             });
-            
+
             // Search functionality
             const searchInput = document.getElementById('search-orders');
             searchInput.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase();
                 const tableRows = document.querySelectorAll('#orders-table-body tr');
-                
+
                 tableRows.forEach(row => {
                     const text = row.textContent.toLowerCase();
                     if (text.includes(searchTerm)) {

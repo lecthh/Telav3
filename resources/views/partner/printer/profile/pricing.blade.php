@@ -14,12 +14,13 @@
 
 <body class="flex flex-col h-full justify-between bg-gray-50">
     <div class="flex flex-col h-full">
+        <x-blocked-banner-wrapper :entity="$productionCompany" />
         <div class="flex p-1.5 bg-cPrimary font-gilroy font-bold text-white text-sm justify-center">
             Production Hub
         </div>
         <div class="flex h-full">
             @include('layout.printer')
-            
+
             <div class="flex flex-col gap-y-6 p-8 bg-[#F9F9F9] h-full w-full animate-fade-in">
                 <div class="flex justify-between items-center">
                     <h2 class="font-gilroy font-bold text-3xl text-black">Company Profile</h2>
@@ -98,16 +99,15 @@
                                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                         <span class="text-gray-500 sm:text-sm">₱</span>
                                                     </div>
-                                                    <input type="number" 
-                                                        name="base_price[{{ $record->pricing_id }}]" 
-                                                        value="{{ old('base_price.' . $record->pricing_id, $record->base_price) }}" 
-                                                        step="0.01" 
-                                                        min="0" 
-                                                        class="pl-7 block w-32 sm:text-sm border-gray-300 rounded-md focus:ring-cPrimary focus:border-cPrimary"
-                                                    >
+                                                    <input type="number"
+                                                        name="base_price[{{ $record->pricing_id }}]"
+                                                        value="{{ old('base_price.' . $record->pricing_id, $record->base_price) }}"
+                                                        step="0.01"
+                                                        min="0"
+                                                        class="pl-7 block w-32 sm:text-sm border-gray-300 rounded-md focus:ring-cPrimary focus:border-cPrimary">
                                                 </div>
                                                 @error('base_price.' . $record->pricing_id)
-                                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                                 @enderror
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
@@ -115,16 +115,15 @@
                                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                         <span class="text-gray-500 sm:text-sm">₱</span>
                                                     </div>
-                                                    <input type="number" 
-                                                        name="bulk_price[{{ $record->pricing_id }}]" 
-                                                        value="{{ old('bulk_price.' . $record->pricing_id, $record->bulk_price) }}" 
-                                                        step="0.01" 
-                                                        min="0" 
-                                                        class="pl-7 block w-32 sm:text-sm border-gray-300 rounded-md focus:ring-cPrimary focus:border-cPrimary"
-                                                    >
+                                                    <input type="number"
+                                                        name="bulk_price[{{ $record->pricing_id }}]"
+                                                        value="{{ old('bulk_price.' . $record->pricing_id, $record->bulk_price) }}"
+                                                        step="0.01"
+                                                        min="0"
+                                                        class="pl-7 block w-32 sm:text-sm border-gray-300 rounded-md focus:ring-cPrimary focus:border-cPrimary">
                                                 </div>
                                                 @error('bulk_price.' . $record->pricing_id)
-                                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                                 @enderror
                                             </td>
                                         </tr>
@@ -134,10 +133,9 @@
                             </div>
 
                             <div class="pt-4 border-t border-gray-100 flex justify-end">
-                                <button 
-                                    type="submit" 
-                                    class="flex bg-cPrimary rounded-md text-white font-medium text-base px-6 py-3 justify-center transition duration-150 ease-in-out hover:bg-purple-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary"
-                                >
+                                <button
+                                    type="submit"
+                                    class="flex bg-cPrimary rounded-md text-white font-medium text-base px-6 py-3 justify-center transition duration-150 ease-in-out hover:bg-purple-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cPrimary">
                                     Update Pricing
                                 </button>
                             </div>
@@ -156,24 +154,24 @@
             const recordCheckboxes = document.querySelectorAll('.record-checkbox');
             const selectAllBtn = document.getElementById('selectAll');
             const deselectAllBtn = document.getElementById('deselectAll');
-            
+
             headerCheckbox.addEventListener('change', function() {
                 const isChecked = this.checked;
                 recordCheckboxes.forEach(checkbox => {
                     checkbox.checked = isChecked;
                 });
             });
-            
+
             function updateHeaderCheckbox() {
                 const checkedCount = document.querySelectorAll('.record-checkbox:checked').length;
                 headerCheckbox.checked = checkedCount === recordCheckboxes.length;
                 headerCheckbox.indeterminate = checkedCount > 0 && checkedCount < recordCheckboxes.length;
             }
-            
+
             recordCheckboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', updateHeaderCheckbox);
             });
-            
+
             selectAllBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 recordCheckboxes.forEach(checkbox => {
@@ -181,7 +179,7 @@
                 });
                 updateHeaderCheckbox();
             });
-            
+
             deselectAllBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 recordCheckboxes.forEach(checkbox => {
@@ -192,4 +190,5 @@
         });
     </script>
 </body>
+
 </html>

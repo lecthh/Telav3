@@ -11,6 +11,7 @@
 </head>
 
 <body class="bg-gray-50 flex flex-col min-h-screen">
+    <x-blocked-banner-wrapper :entity="$designer" />
     <header class="bg-cGreen text-black py-2 text-center font-gilroy font-bold text-sm">
         Designer Hub
     </header>
@@ -41,7 +42,7 @@
                             <h3 class="font-gilroy font-bold text-2xl text-cGreen">{{ $assignedOrdersCount }}</h3>
                             <p class="text-sm text-gray-500 mt-1">In-progress design work</p>
                         </a>
-                        
+
                         <a href="{{ route('partner.designer.complete') }}" class="bg-white shadow-sm rounded-lg p-5 border border-gray-200 hover:shadow-md transition-shadow duration-300">
                             <div class="flex items-center gap-x-3 mb-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-cGreen" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -52,7 +53,7 @@
                             <h3 class="font-gilroy font-bold text-2xl text-cGreen">{{ $completedOrdersCount }}</h3>
                             <p class="text-sm text-gray-500 mt-1">Successfully finished designs</p>
                         </a>
-                        
+
                         <div class="bg-white shadow-sm rounded-lg p-5 border border-gray-200">
                             <div class="flex items-center gap-x-3 mb-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-cGreen" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -64,7 +65,7 @@
                             <p class="text-sm text-gray-500 mt-1">All-time design work</p>
                         </div>
                     </div>
-                    
+
                     @if($recentOrders->count() > 0)
                     <div class="bg-white shadow-md rounded-lg border border-gray-200 mb-8 overflow-hidden">
                         <div class="border-b border-gray-200 p-4">
@@ -135,7 +136,7 @@
 
     <!-- Add Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const cards = document.querySelectorAll('[data-dashboard-card]');
@@ -147,21 +148,29 @@
                     card.classList.remove('transform', 'scale-105', 'transition', 'duration-300');
                 });
             });
-            
+
             // Initialize charts
             initializeWorkloadChart();
             initializeMonthlyActivityChart();
         });
-        
+
         function initializeWorkloadChart() {
             const ctx = document.getElementById('workloadChart').getContext('2d');
-            
+
             // Data visualization showing assigned vs completed work
             const workloadData = {
                 labels: ['Assigned', 'Completed'],
                 datasets: [{
                     label: 'Design Orders',
-                    data: [{{ $assignedOrdersCount }}, {{ $completedOrdersCount }}],
+                    data: [{
+                        {
+                            $assignedOrdersCount
+                        }
+                    }, {
+                        {
+                            $completedOrdersCount
+                        }
+                    }],
                     backgroundColor: [
                         'rgba(255, 193, 7, 0.6)',
                         'rgba(0, 200, 81, 0.6)'
@@ -173,7 +182,7 @@
                     borderWidth: 1
                 }]
             };
-            
+
             new Chart(ctx, {
                 type: 'pie',
                 data: workloadData,
@@ -193,7 +202,11 @@
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    const percentage = Math.round(context.raw / ({{ $assignedOrdersCount + $completedOrdersCount }}) * 100);
+                                    const percentage = Math.round(context.raw / ({
+                                        {
+                                            $assignedOrdersCount + $completedOrdersCount
+                                        }
+                                    }) * 100);
                                     return context.label + ': ' + context.raw + ' (' + percentage + '%)';
                                 }
                             }
@@ -202,19 +215,24 @@
                 }
             });
         }
-        
+
         function initializeMonthlyActivityChart() {
             const ctx = document.getElementById('monthlyActivityChart').getContext('2d');
-            
+
             // Use real data from controller
-            const months = {!! $monthlyLabelsJSON !!};
-            const assignedData = {!! $monthlyAssignedJSON !!};
-            const completedData = {!! $monthlyCompletedJSON !!};
-            
+            const months = {
+                !!$monthlyLabelsJSON!!
+            };
+            const assignedData = {
+                !!$monthlyAssignedJSON!!
+            };
+            const completedData = {
+                !!$monthlyCompletedJSON!!
+            };
+
             const activityData = {
                 labels: months,
-                datasets: [
-                    {
+                datasets: [{
                         label: 'Assigned',
                         data: assignedData,
                         backgroundColor: 'rgba(255, 193, 7, 0.5)',
@@ -230,7 +248,7 @@
                     }
                 ]
             };
-            
+
             new Chart(ctx, {
                 type: 'bar',
                 data: activityData,

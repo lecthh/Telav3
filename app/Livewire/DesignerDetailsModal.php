@@ -12,6 +12,7 @@ class DesignerDetailsModal extends Component
     public $selectedItem = null;
     public $activeTab = 'general';
     public $type = '';
+    public $name = '';
 
     protected function getListeners()
     {
@@ -32,6 +33,17 @@ class DesignerDetailsModal extends Component
         $this->showModal = true;
         $this->activeTab = 'general';
         $this->type = $type;
+        $this->name = $this->selectedItem->user->name;
+    }
+
+    public function showApproveModal()
+    {
+        $this->dispatch('approveEntity', 'App\Models\Designer', $this->selectedItem->id, 'manage', $this->name, 'designer_id');
+    }
+
+    public function showBlockModal()
+    {
+        $this->dispatch('deleteEntity', 'App\Models\Designer', $this->selectedItem->id, 'manage', $this->name, 'designer_id');
     }
 
     public function render()

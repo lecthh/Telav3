@@ -18,7 +18,7 @@ $pageSpecificContent = '
                 <div class="bg-cPrimary h-2.5 rounded-full" style="width: 70%"></div>
             </div>
         </div>
-        
+
         <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
             <div class="flex">
                 <div class="flex-shrink-0">
