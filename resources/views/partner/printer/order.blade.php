@@ -18,6 +18,7 @@
 </head>
 
 <body class="flex flex-col h-screen justify-between bg-gray-50">
+    <x-blocked-banner-wrapper :entity="$productionCompany" />
     <div class="flex flex-col">
         <div class="flex p-1.5 bg-cPrimary font-gilroy font-bold text-white text-sm justify-center">Production Hub</div>
         <div class="flex">

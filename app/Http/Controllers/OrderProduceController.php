@@ -10,7 +10,8 @@ use App\Traits\Toastable;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
-class OrderProduceController extends Controller {
+class OrderProduceController extends Controller
+{
     use Toastable;
 
     //PENDING
@@ -18,7 +19,7 @@ class OrderProduceController extends Controller {
     {
         $productionCompany = session('admin');
         $productionCompanyId = null;
-        
+
         if (is_object($productionCompany) && isset($productionCompany->id)) {
             $productionCompanyId = $productionCompany->id;
         } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
@@ -27,17 +28,17 @@ class OrderProduceController extends Controller {
             $pcData = $productionCompany->{'App\\Models\\ProductionCompany'};
             $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
         }
-        
+
         $pendingOrders = Order::where('status_id', '1')
             ->where('production_company_id', $productionCompanyId)
             ->orderBy('created_at', 'desc')
             ->get();
-            
+
         Log::info('Pending orders', [
             'count' => $pendingOrders->count(),
             'production_company_id' => $productionCompanyId
         ]);
-        
+
         return view('partner.printer.orders', compact('pendingOrders'));
     }
 
@@ -52,21 +53,21 @@ class OrderProduceController extends Controller {
     public function designInProgress()
     {
         $productionCompany = session('admin');
-        
+
         Log::info('Design In Progress - Session Admin Data', [
             'admin_session' => $productionCompany,
             'user_id' => auth()->id(),
             'auth_check' => auth()->check()
         ]);
-        
+
         $allInProgressOrders = Order::where('status_id', '2')->get();
         Log::info('All design in progress orders', [
             'count' => $allInProgressOrders->count(),
             'orders' => $allInProgressOrders->toArray()
         ]);
-        
+
         $productionCompanyId = null;
-        
+
         if (is_object($productionCompany) && isset($productionCompany->id)) {
             $productionCompanyId = $productionCompany->id;
         } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
@@ -75,21 +76,21 @@ class OrderProduceController extends Controller {
             $pcData = $productionCompany->{'App\\Models\\ProductionCompany'};
             $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
         }
-        
+
         Log::info('Extracted production company ID', [
             'id' => $productionCompanyId
         ]);
-        
+
         $orders = Order::where('status_id', '2')
             ->where('production_company_id', $productionCompanyId)
             ->orderBy('created_at', 'desc')
             ->get();
-            
+
         Log::info('Filtered design in progress orders', [
             'count' => $orders->count(),
             'production_company_id' => $productionCompanyId
         ]);
-        
+
         return view('partner.printer.design.orders-design', compact('orders'));
     }
 
@@ -104,7 +105,7 @@ class OrderProduceController extends Controller {
     {
         $productionCompany = session('admin');
         $productionCompanyId = null;
-        
+
         if (is_object($productionCompany) && isset($productionCompany->id)) {
             $productionCompanyId = $productionCompany->id;
         } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
@@ -113,19 +114,19 @@ class OrderProduceController extends Controller {
             $pcData = $productionCompany->{'App\\Models\\ProductionCompany'};
             $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
         }
-        
+
         $finalizeOrders = Order::where('status_id', '3')
             ->where('production_company_id', $productionCompanyId)
             ->orderBy('created_at', 'desc')
             ->get();
-            
+
         \Log::info('Finalize orders', [
             'count' => $finalizeOrders->count(),
             'production_company_id' => $productionCompanyId
         ]);
-        
+
         $orders = $finalizeOrders;
-        
+
         return view('partner.printer.finalize.orders-finalize', compact('orders'));
     }
 
@@ -148,19 +149,19 @@ class OrderProduceController extends Controller {
         $directDetails = \Illuminate\Support\Facades\DB::table('customization_details')
             ->where('order_ID', $order->order_id)
             ->get();
-        
+
         \Illuminate\Support\Facades\Log::info('DB DIRECT QUERY RESULTS', [
             'order_id' => $order_id,
             'results_count' => $directDetails->count(),
             'first_result' => $directDetails->first() ? json_encode($directDetails->first()) : 'no results',
             'all_results' => json_encode($directDetails)
         ]);
-        
+
         // 3. Attempt each possible way to get customization details
         $viaRelationship = $order->customizationDetails()->get();
         $viaDirectModel = \App\Models\CustomizationDetails::where('order_ID', $order->order_id)->get();
         $viaCustomizedField = $order->is_customized ? 'Has customization flag' : 'No customization flag';
-        
+
         \Illuminate\Support\Facades\Log::info('ALL POSSIBLE QUERY METHODS', [
             'order_id' => $order_id,
             'via_relationship_count' => $viaRelationship->count(),
@@ -181,12 +182,12 @@ class OrderProduceController extends Controller {
                     break;
                 }
             }
-            
+
             \Illuminate\Support\Facades\Log::info('JERSEY SPECIFIC CHECK', [
                 'order_id' => $order_id,
                 'found_jersey_details' => $hasJerseyDetails
             ]);
-            
+
             // If we have jersey details in the database but no customization details came back, 
             // something's wrong with the query - force a non-empty result
             if ($hasJerseyDetails && $customizationDetails->isEmpty()) {
@@ -232,7 +233,7 @@ class OrderProduceController extends Controller {
     {
         $productionCompany = session('admin');
         $productionCompanyId = null;
-        
+
         if (is_object($productionCompany) && isset($productionCompany->id)) {
             $productionCompanyId = $productionCompany->id;
         } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
@@ -241,19 +242,19 @@ class OrderProduceController extends Controller {
             $pcData = $productionCompany->{'App\\Models\\ProductionCompany'};
             $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
         }
-        
+
         $awaitingPrinting = Order::where('status_id', '4')
             ->where('production_company_id', $productionCompanyId)
             ->orderBy('created_at', 'desc')
             ->get();
-            
+
         \Log::info('Awaiting printing orders', [
             'count' => $awaitingPrinting->count(),
             'production_company_id' => $productionCompanyId
         ]);
-        
+
         $orders = $awaitingPrinting;
-        
+
         return view('partner.printer.awaiting.orders-awaiting', compact('orders'));
     }
 
@@ -299,7 +300,7 @@ class OrderProduceController extends Controller {
     {
         $productionCompany = session('admin');
         $productionCompanyId = null;
-        
+
         if (is_object($productionCompany) && isset($productionCompany->id)) {
             $productionCompanyId = $productionCompany->id;
         } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
@@ -308,19 +309,19 @@ class OrderProduceController extends Controller {
             $pcData = $productionCompany->{'App\\Models\\ProductionCompany'};
             $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
         }
-        
+
         $printingInProgress = Order::where('status_id', '5')
             ->where('production_company_id', $productionCompanyId)
             ->orderBy('created_at', 'desc')
             ->get();
-            
+
         \Log::info('Printing in progress orders', [
             'count' => $printingInProgress->count(),
             'production_company_id' => $productionCompanyId
         ]);
-        
+
         $orders = $printingInProgress;
-        
+
         return view('partner.printer.printing.orders-printing', compact('orders'));
     }
 
@@ -357,7 +358,7 @@ class OrderProduceController extends Controller {
     {
         $productionCompany = session('admin');
         $productionCompanyId = null;
-        
+
         if (is_object($productionCompany) && isset($productionCompany->id)) {
             $productionCompanyId = $productionCompany->id;
         } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
@@ -366,19 +367,19 @@ class OrderProduceController extends Controller {
             $pcData = $productionCompany->{'App\\Models\\ProductionCompany'};
             $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
         }
-        
+
         $readyOrders = Order::where('status_id', '6')
             ->where('production_company_id', $productionCompanyId)
             ->orderBy('created_at', 'desc')
             ->get();
-            
+
         \Log::info('Ready for collection orders', [
             'count' => $readyOrders->count(),
             'production_company_id' => $productionCompanyId
         ]);
-        
+
         $orders = $readyOrders;
-        
+
         return view('partner.printer.ready.orders-ready', compact('orders'));
     }
     public function readyOrder($order_id)
@@ -386,7 +387,7 @@ class OrderProduceController extends Controller {
         $order = Order::find($order_id);
         return view('partner.printer.ready.order', compact('order'));
     }
-    
+
     /**
      * Send a payment reminder to the customer
      * 
@@ -398,26 +399,26 @@ class OrderProduceController extends Controller {
         try {
             $order = Order::findOrFail($order_id);
             $user = $order->user;
-            
+
             // Calculate total payments already made (downpayment + any additional payments)
             $additionalPayments = $order->additionalPayments()->sum('amount');
             $totalPaid = $order->downpayment_amount + $additionalPayments;
-            
+
             // Calculate actual balance due
             $balanceDue = $order->final_price - $totalPaid;
-            
+
             if ($balanceDue <= 0) {
                 $this->toast('This order has no remaining balance to pay.', 'info');
                 return redirect()->back();
             }
-            
+
             // Generate payment link for balance payment
             $paymentLink = route('order.additional-payment', [
-                'order_id' => $order->order_id, 
+                'order_id' => $order->order_id,
                 'amount' => $balanceDue,
                 'is_balance_payment' => 1
             ]);
-            
+
             // Send reminder email to customer
             Mail::send('mail.paymentReminder', [
                 'name' => $user->name,
@@ -429,7 +430,7 @@ class OrderProduceController extends Controller {
                 $message->to($user->email);
                 $message->subject('Reminder: Complete Your Payment for Order #' . substr($order->order_id, -6));
             });
-            
+
             // Create notification for customer
             Notification::create([
                 'user_id' => $user->user_id,
@@ -437,7 +438,7 @@ class OrderProduceController extends Controller {
                 'is_read' => false,
                 'order_id' => $order->order_id,
             ]);
-            
+
             $this->toast('Payment reminder sent to ' . $user->email, 'success');
             return redirect()->back();
         } catch (\Exception $e) {
@@ -482,7 +483,7 @@ class OrderProduceController extends Controller {
             ]);
 
             $order = Order::findOrFail($order_id);
-            
+
             $order->update([
                 'status_id' => 8,
                 'cancellation_reason' => $request->cancellation_reason,
@@ -490,10 +491,10 @@ class OrderProduceController extends Controller {
             ]);
 
             $cancellationMessage = 'Your Order Has Been Cancelled';
-            
+
             if ($request->cancellation_reason) {
                 $cancellationMessage .= ' - Reason: ' . $request->cancellation_reason;
-                
+
                 if ($request->cancellation_reason === 'Other' && $request->cancellation_note) {
                     $cancellationMessage .= ' (' . $request->cancellation_note . ')';
                 }
@@ -505,7 +506,7 @@ class OrderProduceController extends Controller {
                 'is_read' => false,
                 'order_id' => $order->order_id,
             ]);
-            
+
             // Send cancellation email to customer
             try {
                 $user = $order->user;
@@ -513,7 +514,7 @@ class OrderProduceController extends Controller {
                 $cancellationReason = $request->cancellation_reason;
                 $cancellationNote = $request->cancellation_note;
                 $companyName = $order->productionCompany ? $order->productionCompany->company_name : 'Production Company';
-                
+
                 Mail::send('mail.orderCancelled', [
                     'name' => $user->name,
                     'orderNumber' => $orderNumber,
@@ -542,7 +543,7 @@ class OrderProduceController extends Controller {
     {
         $productionCompany = session('admin');
         $productionCompanyId = null;
-        
+
         if (is_object($productionCompany) && isset($productionCompany->id)) {
             $productionCompanyId = $productionCompany->id;
         } elseif (is_array($productionCompany) && isset($productionCompany['App\\Models\\ProductionCompany'])) {
@@ -551,19 +552,19 @@ class OrderProduceController extends Controller {
             $pcData = $productionCompany->{'App\\Models\\ProductionCompany'};
             $productionCompanyId = $pcData->id ?? ($pcData['id'] ?? null);
         }
-        
+
         $completedOrders = Order::where('status_id', '7')
             ->where('production_company_id', $productionCompanyId)
             ->orderBy('created_at', 'desc')
             ->get();
-            
+
         \Log::info('Completed orders', [
             'count' => $completedOrders->count(),
             'production_company_id' => $productionCompanyId
         ]);
-        
+
         $orders = $completedOrders;
-        
+
         return view('partner.printer.complete.orders-complete', compact('orders'));
     }
     public function completedOrder($order_id)
@@ -579,7 +580,7 @@ class OrderProduceController extends Controller {
             $validatedData = $request->validate([
                 'selected_designer_id' => 'required|integer|exists:designers,designer_id',
             ]);
-            
+
             $order = Order::findOrFail($order_id);
             $designerId = intval($validatedData['selected_designer_id']);
             $order->update([
@@ -594,7 +595,7 @@ class OrderProduceController extends Controller {
                 'is_read' => false,
                 'order_id' => $order->order_id,
             ]);
-            
+
             // Notify designer about the new job
             $designer = Designer::with('user')->find($designerId);
             if ($designer && $designer->user) {

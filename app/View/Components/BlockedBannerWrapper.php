@@ -8,19 +8,26 @@ use Illuminate\View\Component;
 
 class BlockedBannerWrapper extends Component
 {
-    /**
-     * Create a new component instance.
-     */
-    public function __construct()
+    public mixed $entity;
+
+    public function __construct(mixed $entity = null)
     {
-        //
+        $this->entity = $entity;
     }
 
-    /**
-     * Get the view / contents that represent the component.
-     */
+    public function shouldShowBanner(): bool
+    {
+        if (!$this->entity) {
+            return auth()->check() && auth()->user()->isBlocked();
+        }
+        return method_exists($this->entity, 'isBlocked') && $this->entity->isBlocked();
+    }
+
     public function render(): View|Closure|string
     {
-        return view('components.blocked-banner-wrapper');
+        return function (array $data) {
+            $data['showBanner'] = $this->shouldShowBanner();
+            return view('components.blocked-banner-wrapper', $data);
+        };
     }
 }

@@ -13,11 +13,13 @@
 </head>
 
 <body class="bg-gray-50 flex flex-col min-h-screen">
+    <x-blocked-banner-wrapper :entity="$productionCompany" />
     <header class="bg-cPrimary text-white py-2 text-center font-gilroy font-bold text-sm">
         Production Hub
     </header>
 
     <div class="flex flex-grow">
+
         @include('layout.printer')
 
         <main class="flex-grow bg-gray-50 p-8 lg:p-12">
@@ -95,7 +97,7 @@
 
     <!-- Add Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <script>
         // Optional: Add some interactivity
         document.addEventListener('DOMContentLoaded', () => {
@@ -108,28 +110,55 @@
                     card.classList.remove('transform', 'scale-105', 'transition', 'duration-300');
                 });
             });
-            
+
             // Initialize charts
             initializeOrderStatusChart();
             initializeMonthlyProductionChart();
         });
-        
+
         function initializeOrderStatusChart() {
             const ctx = document.getElementById('orderStatusChart').getContext('2d');
-            
+
             // Use the data from controller
             const statusData = {
                 labels: ['Pending', 'Design', 'Finalize', 'Awaiting', 'Printing', 'Ready', 'Completed'],
                 datasets: [{
                     label: 'Orders by Status',
-                    data: [
-                        {{ $pendingCount }}, 
-                        {{ $designInProgressCount }}, 
-                        {{ $finalizeOrderCount }}, 
-                        {{ $awaitingPrintingCount }}, 
-                        {{ $printingInProgressCount }}, 
-                        {{ $readyForCollectionCount }},
-                        {{ count($completedOrders) }}
+                    data: [{
+                            {
+                                $pendingCount
+                            }
+                        },
+                        {
+                            {
+                                $designInProgressCount
+                            }
+                        },
+                        {
+                            {
+                                $finalizeOrderCount
+                            }
+                        },
+                        {
+                            {
+                                $awaitingPrintingCount
+                            }
+                        },
+                        {
+                            {
+                                $printingInProgressCount
+                            }
+                        },
+                        {
+                            {
+                                $readyForCollectionCount
+                            }
+                        },
+                        {
+                            {
+                                count($completedOrders)
+                            }
+                        }
                     ],
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.6)',
@@ -152,7 +181,7 @@
                     borderWidth: 1
                 }]
             };
-            
+
             new Chart(ctx, {
                 type: 'doughnut',
                 data: statusData,
@@ -181,14 +210,18 @@
                 }
             });
         }
-        
+
         function initializeMonthlyProductionChart() {
             const ctx = document.getElementById('monthlyProductionChart').getContext('2d');
-            
+
             // Use real data from controller
-            const months = {!! $monthlyLabelsJSON !!};
-            const completedData = {!! $monthlyOrdersJSON !!};
-            
+            const months = {
+                !!$monthlyLabelsJSON!!
+            };
+            const completedData = {
+                !!$monthlyOrdersJSON!!
+            };
+
             const productionData = {
                 labels: months,
                 datasets: [{
@@ -200,7 +233,7 @@
                     tension: 0.4
                 }]
             };
-            
+
             new Chart(ctx, {
                 type: 'line',
                 data: productionData,

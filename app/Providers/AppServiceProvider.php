@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Designer;
 use App\Models\Order;
 use Illuminate\Support\Facades\View;
 use App\Models\ProductionCompany;
@@ -38,6 +39,20 @@ class AppServiceProvider extends ServiceProvider
                 // Don't add productionCompany to view if it doesn't exist
             }
         });
+
+        View::composer(['designer.*', 'partner.designer.*'], function ($view) {
+            try {
+
+                $designer = Designer::where('user_id', auth()->id())->first();
+
+                if ($designer) {
+                    $view->with('designer', $designer);
+                }
+            } catch (\Exception $e) {
+                // Don't add designer to view if it doesn't exist
+            }
+        });
+
 
         View::composer('partner.printer.dashboard', function ($view) {
 

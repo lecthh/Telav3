@@ -18,6 +18,7 @@
 
 <body class="flex flex-col min-h-screen bg-gray-50">
     <div class="flex flex-col flex-grow">
+        <x-blocked-banner-wrapper :entity="$designer" />
         <!-- Header Bar -->
         <div class="flex p-2 bg-cGreen font-gilroy font-bold text-black text-sm justify-center items-center shadow-sm">
             Designer Hub

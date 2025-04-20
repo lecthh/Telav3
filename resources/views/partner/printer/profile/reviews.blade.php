@@ -12,6 +12,7 @@
 
 
 <body class="min-h-screen flex flex-col bg-gray-50">
+    <x-blocked-banner-wrapper :entity="$productionCompany" />
     <header class="bg-cPrimary text-white py-2 text-center font-gilroy font-bold text-sm">
         Production Hub
     </header>

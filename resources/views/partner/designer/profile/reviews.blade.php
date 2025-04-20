@@ -12,6 +12,7 @@
 
 
 <body class="min-h-screen flex flex-col bg-gray-50">
+    <x-blocked-banner-wrapper :entity="$designer" />
     <div class="flex p-1.5 bg-cGreen font-gilroy font-bold text-white text-sm justify-center">
         Designer Hub
     </div>

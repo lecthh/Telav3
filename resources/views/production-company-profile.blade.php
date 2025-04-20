@@ -13,6 +13,7 @@
 </head>
 
 <body class="min-h-screen flex flex-col bg-gray-50">
+    <x-blocked-banner-wrapper />
     @include('layout.nav')
 
     <main class="flex-grow">
@@ -217,13 +218,13 @@
                         </div>
                         <div class="divide-y divide-gray-200">
                             @php
-                                $companyReviews = \App\Models\Review::where('production_company_id', $productionCompany->id)
-                                                ->where('is_visible', true)
-                                                ->orderBy('created_at', 'desc')
-                                                ->limit(3)
-                                                ->get();
+                            $companyReviews = \App\Models\Review::where('production_company_id', $productionCompany->id)
+                            ->where('is_visible', true)
+                            ->orderBy('created_at', 'desc')
+                            ->limit(3)
+                            ->get();
                             @endphp
-                            
+
                             @forelse($companyReviews as $review)
                             <div class="p-6">
                                 <div class="flex justify-between items-start mb-4">
@@ -253,13 +254,13 @@
                         <div class="px-6 py-4 bg-gray-50 flex justify-between items-center">
                             <p class="text-sm text-gray-600">
                                 @php
-                                    $reviewCount = $productionCompany->review_count ?? 0;
-                                    $displayCount = $companyReviews->count();
+                                $reviewCount = $productionCompany->review_count ?? 0;
+                                $displayCount = $companyReviews->count();
                                 @endphp
                                 @if($reviewCount > 0)
-                                    Showing {{ $displayCount }} of {{ $reviewCount }} reviews
+                                Showing {{ $displayCount }} of {{ $reviewCount }} reviews
                                 @else
-                                    No reviews available
+                                No reviews available
                                 @endif
                             </p>
                             @if($reviewCount > 3)

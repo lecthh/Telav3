@@ -11,6 +11,7 @@
 </head>
 
 <body class="min-h-screen flex flex-col bg-gray-50">
+    <x-blocked-banner-wrapper />
     @include('layout.nav')
 
     <main class="flex-grow">
