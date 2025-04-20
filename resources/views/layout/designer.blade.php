@@ -7,15 +7,15 @@
         </div>
         <div class="font-gilroy font-bold text-base truncate text-gray-900">
             @if(isset($productionCompany) && isset($productionCompany->company_name))
-                {{ $productionCompany->company_name }}
+            {{ $productionCompany->company_name }}
             @elseif(isset($designer) && isset($designer->user) && isset($designer->user->name))
-                {{ $designer->user->name }}'s Hub
+            {{ $designer->user->name }}'s Hub
             @else
-                Designer Hub
+            Designer Hub
             @endif
         </div>
     </div>
-    
+
     <div class="py-4 px-2 flex-grow overflow-y-auto">
         <nav class="flex flex-col space-y-1">
             <a href="{{ route('designer-dashboard') }}" class="flex items-center gap-x-3 px-3 py-2.5 rounded-md {{ request()->routeIs('designer-dashboard') ? 'bg-cGreen/20 text-cGreen font-medium' : 'text-gray-700 hover:bg-cGreen/10' }} transition-colors">
@@ -24,43 +24,43 @@
                 </svg>
                 <span>Dashboard</span>
             </a>
-            
+
             <a href="{{ route('partner.designer.orders') }}" class="flex items-center gap-x-3 px-3 py-2.5 rounded-md {{ request()->routeIs('partner.designer.orders') || request()->routeIs('partner.designer.assigned-x') ? 'bg-cGreen/20 text-cGreen font-medium' : 'text-gray-700 hover:bg-cGreen/10' }} transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd" />
                 </svg>
                 <span>Orders</span>
             </a>
-            
+
             <a href="{{ route('partner.designer.complete') }}" class="flex items-center gap-x-3 px-3 py-2.5 rounded-md {{ request()->routeIs('partner.designer.complete') ? 'bg-cGreen/20 text-cGreen font-medium' : 'text-gray-700 hover:bg-cGreen/10' }} transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                 </svg>
                 <span>Completed Work</span>
             </a>
-            
+
             @php
-                // Get the designer's user ID
-                $designerUserId = null;
-                if (isset($designer) && isset($designer->user_id)) {
-                    $designerUserId = $designer->user_id;
-                }
-                
-                // Get unread notification count
-                $unreadCount = 0;
-                if ($designerUserId) {
-                    $unreadCount = \App\Models\Notification::where('user_id', $designerUserId)
-                        ->where('is_read', false)
-                        ->count();
-                }
+            // Get the designer's user ID
+            $designerUserId = null;
+            if (isset($designer) && isset($designer->user_id)) {
+            $designerUserId = $designer->user_id;
+            }
+
+            // Get unread notification count
+            $unreadCount = 0;
+            if ($designerUserId) {
+            $unreadCount = \App\Models\Notification::where('user_id', $designerUserId)
+            ->where('is_read', false)
+            ->count();
+            }
             @endphp
-            
+
             <a href="{{ route('partner.designer.profile.notifications') }}" class="flex items-center gap-x-3 px-3 py-2.5 rounded-md {{ request()->routeIs('partner.designer.profile.notifications') ? 'bg-cGreen/20 text-cGreen font-medium' : 'text-gray-700 hover:bg-cGreen/10' }} transition-colors">
                 <div class="relative">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
                     </svg>
-                    
+
                     @if($unreadCount > 0)
                     <span class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs">
                         {{ $unreadCount > 9 ? '9+' : $unreadCount }}
@@ -69,14 +69,14 @@
                 </div>
                 <span>Notifications</span>
             </a>
-            
+
             <a href="{{ route('partner.designer.profile.reviews') }}" class="flex items-center gap-x-3 px-3 py-2.5 rounded-md {{ request()->routeIs('partner.designer.profile.reviews') ? 'bg-cGreen/20 text-cGreen font-medium' : 'text-gray-700 hover:bg-cGreen/10' }} transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd" />
                 </svg>
                 <span>Reviews</span>
             </a>
-            
+
             <div class="pt-4 mt-4 border-t border-gray-200">
                 <a href="{{ route('partner.designer.profile.basics') }}" class="flex items-center gap-x-3 px-3 py-2.5 rounded-md {{ request()->routeIs('partner.designer.profile.basics') ? 'bg-cGreen/20 text-cGreen font-medium' : 'text-gray-700 hover:bg-cGreen/10' }} transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -84,7 +84,7 @@
                     </svg>
                     <span>Account Settings</span>
                 </a>
-                
+
                 <a href="{{ route('logout') }}" class="flex items-center gap-x-3 px-3 py-2.5 mt-2 rounded-md text-red-600 hover:bg-red-50 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V7.414l-5-5H3zm7 2a1 1 0 00-1 1v1a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />

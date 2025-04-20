@@ -110,6 +110,6 @@ class Designer extends Model
 
     public function getDisplayNameAttribute()
     {
-        return $this->name;
+        return $this->user->name;
     }
 }

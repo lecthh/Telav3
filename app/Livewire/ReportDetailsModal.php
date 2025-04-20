@@ -66,6 +66,8 @@ class ReportDetailsModal extends Component
             $this->dispatch('showUserDetails', $entityId);
         } elseif (strpos($entityType, 'ProductionCompany') !== false) {
             $this->dispatch('showCompanyDetails', $entityId, 'manage');
+        } elseif (strpos($entityType, 'Designer') !== false) {
+            $this->dispatch('showDesignerDetails', $entityId, 'manage');
         }
     }
 

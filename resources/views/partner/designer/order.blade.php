@@ -8,10 +8,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/pagedone@1.2.2/src/css/pagedone.css" rel="stylesheet" />
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @vite('resources/css/app.css')
     <style>
-        [x-cloak] { display: none !important; }
+        [x-cloak] {
+            display: none !important;
+        }
     </style>
 </head>
 
@@ -57,13 +58,6 @@
                             <div class="px-6 py-4 border-b border-gray-100">
                                 <h2 class="font-gilroy font-bold text-lg text-gray-900">Order Information</h2>
                             </div>
-                            <x-popover>
-                                <x-slot name="trigger">
-                                    <x-start-chat :user="$order->user" />
-                                </x-slot>
-                                Start chatting with {{$order->user->name}}
-                            </x-popover>
-
                             <!-- Order Info List -->
                             <div class="divide-y divide-gray-100">
                                 <div class="px-6 py-4 flex items-start">
@@ -81,7 +75,15 @@
                                         @include('svgs.user-single')
                                     </div>
                                     <div>
-                                        <h3 class="text-sm font-medium text-gray-900">Customer</h3>
+                                        <div class="flex flex-row">
+                                            <h3 class="text-sm font-medium text-gray-900">Customer</h3>
+                                            <x-popover>
+                                                <x-slot name="trigger">
+                                                    <x-start-chat :user="$order->user" />
+                                                </x-slot>
+                                                Start chatting with {{ $order->user->name }}
+                                            </x-popover>
+                                        </div>
                                         <p class="mt-1 text-sm text-gray-600">{{ $order->user->name }}</p>
                                         <p class="text-sm text-gray-600">{{ $order->user->email }}</p>
                                     </div>
@@ -202,39 +204,39 @@
                                         <div class="flex flex-col sm:flex-row gap-3 mb-4 sm:mb-0">
                                             @if($order->status_id <= 3)
                                                 <div class="flex space-x-3">
-                                                    
-                                                    
-                                                    <form action="{{ route('partner.designer.cancel-design-assignment', ['order_id' => $order->order_id]) }}" method="post">
-                                                        @csrf
-                                                        <button type="submit" class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cGreen">
-                                                            Unassign Only
-                                                        </button>
-                                                    </form>
-                                                </div>
-                            
-                            @endif
 
-                            <!-- <button type="button" class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cGreen">
+
+                                                <form action="{{ route('partner.designer.cancel-design-assignment', ['order_id' => $order->order_id]) }}" method="post">
+                                                    @csrf
+                                                    <button type="submit" class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cGreen">
+                                                        Unassign Only
+                                                    </button>
+                                                </form>
+                                        </div>
+
+                                        @endif
+
+                                        <!-- <button type="button" class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cGreen">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                                 </svg>
                                 Message Client
                             </button> -->
-                        </div>
+                                    </div>
 
-                        <button id="confirm-design" type="submit" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-cGreen hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cGreen hidden">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            Submit Design
-                        </button>
+                                    <button id="confirm-design" type="submit" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-cGreen hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cGreen hidden">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Submit Design
+                                    </button>
+                                </div>
+                        </div>
+                        </form>
                     </div>
                 </div>
-                </form>
             </div>
         </div>
-    </div>
-    </div>
     </div>
     </div>
 

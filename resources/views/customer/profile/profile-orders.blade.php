@@ -76,7 +76,7 @@
                                 data-order-eta="{{ $order->eta }}"
                                 data-order-cancellation-reason="{{ $order->cancellation_reason }}"
                                 data-order-cancellation-note="{{ $order->cancellation_note }}"
-                                data-order-designer="{{ $order->designer ? $order->designer->name : 'Not yet assigned' }}">
+                                data-order-designer="{{ $order->designer ? $order->designer->user->name : 'Not yet assigned' }}">
                                 <div class="flex justify-between items-start">
                                     <div>
                                         <h3 class="font-inter font-bold text-gray-900 group-hover:text-cPrimary transition duration-150">

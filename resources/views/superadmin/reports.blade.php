@@ -15,10 +15,12 @@
 
 
     @livewire('production-company-details-modal')
-    @livewire('delete-confirmation-modal')
+    @livewire('designer-details-modal')
     @livewire('user-details-modal')
     @livewire('order-details-modal')
+    @livewire('delete-confirmation-modal')
     @include('layout.footer')
+
 </body>
 
 </html>
