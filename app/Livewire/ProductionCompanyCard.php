@@ -27,8 +27,8 @@ class ProductionCompanyCard extends Component
     {
         if ($this->selectedProductionCompany) {
             return redirect()->route('customer.place-order.customization', [
-                'apparel' => $this->apparel, 
-                'productionType' => $this->productionType, 
+                'apparel' => $this->apparel,
+                'productionType' => $this->productionType,
                 'company' => $this->selectedProductionCompany
             ]);
         } else {
@@ -45,16 +45,21 @@ class ProductionCompanyCard extends Component
     {
         $this->productionType = $productionType;
         $this->apparel = $apparel;
-        
-        $this->productionCompanies = ProductionCompany::whereHas('productionCompanyPricing', function($query) {
-            $query->where('apparel_type', $this->apparel)
-                  ->where('production_type', $this->productionType);
-        })->get();
-        
+
+        $this->productionCompanies = ProductionCompany::where('status', '!=', 'blocked')
+            ->where('is_verified', '!=', false) // Added this line
+            ->whereHas('productionCompanyPricing', function ($query) {
+                $query->where('apparel_type', $this->apparel)
+                    ->where('production_type', $this->productionType);
+            })
+            ->get();
+
+
+
         if ($this->productionCompanies->isEmpty()) {
             $this->productionCompanies = ProductionCompany::all();
         }
-        
+
         $this->loadPricingData();
     }
 
@@ -65,7 +70,7 @@ class ProductionCompanyCard extends Component
                 ->where('apparel_type', $this->apparel)
                 ->where('production_type', $this->productionType)
                 ->first();
-            
+
             if ($pricing) {
                 $this->pricingData[$company->id] = [
                     'base_price' => $pricing->base_price,

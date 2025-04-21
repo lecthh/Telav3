@@ -1,5 +1,6 @@
 <!doctype html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,13 +26,13 @@
                 <!-- Role Selection Cards -->
                 <div class="mb-10">
                     <h2 class="font-inter font-bold text-xl mb-6 text-gray-800">Choose your role</h2>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Producer Card -->
                         <label for="producer" class="group cursor-pointer">
                             <div class="flex items-start p-6 border-2 rounded-lg transition-all duration-200 producer-card hover:border-cPrimary hover:bg-purple-50">
                                 <input type="radio" id="producer" name="role" value="producer" class="mt-1 form-radio border border-gray-300 w-5 h-5 checked:bg-cPrimary checked:hover:bg-cPrimary focus:ring-2 focus:ring-cPrimary" checked>
-                                
+
                                 <div class="ml-4">
                                     <div class="flex items-center">
                                         <h3 class="font-gilroy font-bold text-xl text-gray-900">Production Company</h3>
@@ -66,7 +67,7 @@
                         <label for="designer" class="group cursor-pointer">
                             <div class="flex items-start p-6 border-2 rounded-lg transition-all duration-200 designer-card hover:border-cPrimary hover:bg-purple-50">
                                 <input type="radio" id="designer" name="role" value="designer" class="mt-1 form-radio border border-gray-300 w-5 h-5 checked:bg-cPrimary checked:hover:bg-cPrimary focus:ring-2 focus:ring-cPrimary">
-                                
+
                                 <div class="ml-4">
                                     <div class="flex items-center">
                                         <h3 class="font-gilroy font-bold text-xl text-gray-900">Designer</h3>
@@ -104,7 +105,7 @@
                     <div id="producer-registration" class="transition-all duration-300">
                         <livewire:producer-registration />
                     </div>
-                    
+
                     <div id="designer-registration" class="hidden transition-all duration-300">
                         <livewire:designer-registration />
                     </div>
@@ -114,7 +115,7 @@
             <!-- Testimonials Section (Optional) -->
             <div class="mt-16">
                 <h2 class="font-gilroy font-bold text-2xl text-gray-900 mb-8 text-center">Why Partner With Us?</h2>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <!-- Testimonial 1 -->
                     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
@@ -129,7 +130,7 @@
                         </div>
                         <p class="text-gray-700">"Partnering with this platform has increased our customer base by 40% in just six months. The streamlined order process makes it easy to manage production efficiently."</p>
                     </div>
-                    
+
                     <!-- Testimonial 2 -->
                     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                         <div class="flex items-center mb-4">
@@ -143,7 +144,7 @@
                         </div>
                         <p class="text-gray-700">"As a designer, I've been able to focus on what I love - creating - while the platform handles client acquisition and payment processing. It's been a game changer for my business."</p>
                     </div>
-                    
+
                     <!-- Testimonial 3 -->
                     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                         <div class="flex items-center mb-4">
@@ -185,7 +186,7 @@
             userTypeRadios.forEach(radio => {
                 radio.addEventListener('change', function() {
                     updateCardStyles();
-                    
+
                     if (this.value === 'producer') {
                         producerRegistration.classList.remove('hidden');
                         designerRegistration.classList.add('hidden');
@@ -201,4 +202,5 @@
         });
     </script>
 </body>
+
 </html>
