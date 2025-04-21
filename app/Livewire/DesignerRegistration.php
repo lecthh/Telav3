@@ -22,7 +22,7 @@ class DesignerRegistration extends Component
     public function mount()
     {
         $this->productionCompanies = ProductionCompany::all();
-        $this->affiliate = 'yes';
+        $this->affiliate = 'no';
     }
 
     public function submit()
