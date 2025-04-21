@@ -6,7 +6,7 @@
             <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-t-lg border-b border-gray-200">
                 <div class="flex flex-col md:flex-row md:items-center gap-6">
                     <div class="flex-shrink-0 flex justify-center">
-                        <img src="{{ $selectedItem->company_logo ? asset($selectedItem->company_logo) : asset('images/default.png') }}"
+                        <img src="{{ asset('imgs/companyLogo/placeholder.jpg') }}"
                             alt="{{ $selectedItem->company_name }}"
                             class="w-24 h-24 rounded-full object-cover border-4 border-white shadow">
                     </div>

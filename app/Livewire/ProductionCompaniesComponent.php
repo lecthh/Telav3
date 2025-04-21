@@ -17,7 +17,7 @@ class ProductionCompaniesComponent extends Component
     public $maxPriceLimit = 10000; // Maximum allowed price
     public $sortBy = ''; // Default sort option
     public $selectedProductionCompany = null;
-    
+
     public function mount()
     {
         // Find the highest price in the system to set a realistic max price limit
@@ -26,9 +26,10 @@ class ProductionCompaniesComponent extends Component
             $this->maxPriceLimit = ceil($highestPrice / 1000) * 1000; // Round up to the nearest thousand
             $this->priceRange = $this->maxPriceLimit; // Start with maximum range
         }
-        
-        // Debug: Log the structure of production_type and apparel_type fields for the first few companies
-        $companies = ProductionCompany::take(3)->get();
+
+        // Fetch first 3 non-blocked companies for logging
+        $companies = ProductionCompany::where('status', '!=', 'blocked')->take(3)->get();
+
         foreach ($companies as $index => $company) {
             \Illuminate\Support\Facades\Log::info("Company {$index} Data Structure", [
                 'company_name' => $company->company_name,
@@ -46,11 +47,12 @@ class ProductionCompaniesComponent extends Component
         }
     }
 
+
     public function selectProductionCompany($id)
     {
         $this->selectedProductionCompany = $id;
     }
-    
+
     public function resetFilters()
     {
         $this->selectedProductionType = [];
@@ -64,36 +66,38 @@ class ProductionCompaniesComponent extends Component
         // Get all apparel and production types for filters
         $apparelTypes = ApparelType::all();
         $productionTypes = ProductionType::all();
-        
+
         // Build a map of production type IDs to names for display
         $productionTypeNames = $productionTypes->pluck('name', 'id')->toArray();
-        
+
         // Start building the query
-        $query = ProductionCompany::query();
-        
+        $query = ProductionCompany::query()
+            ->where('status', '!=', 'blocked')
+            ->where('is_verified', '!=', 0);
+
         // Join with pricing table to get price information and to filter by price
         $query->leftJoin('production_company_pricing', 'production_companies.id', '=', 'production_company_pricing.production_company_id')
-              ->select('production_companies.*')
-              ->groupBy('production_companies.id');
-        
+            ->select('production_companies.*')
+            ->groupBy('production_companies.id');
+
         // Apply filters
         // Modified filtering approach for JSON arrays
         if (!empty($this->selectedProductionType)) {
-            $query->where(function($subQuery) {
+            $query->where(function ($subQuery) {
                 foreach ($this->selectedProductionType as $productionTypeId) {
                     // Handle both possible JSON formats: integer and string
                     $subQuery->orWhere('production_companies.production_type', 'LIKE', '%' . $productionTypeId . '%')
-                            ->orWhere('production_companies.production_type', 'LIKE', '%"' . $productionTypeId . '"%');
+                        ->orWhere('production_companies.production_type', 'LIKE', '%"' . $productionTypeId . '"%');
                 }
             });
         }
 
         if (!empty($this->selectedApparelType)) {
-            $query->where(function($subQuery) {
+            $query->where(function ($subQuery) {
                 foreach ($this->selectedApparelType as $apparelTypeId) {
                     // Handle both possible JSON formats: integer and string
                     $subQuery->orWhere('production_companies.apparel_type', 'LIKE', '%' . $apparelTypeId . '%')
-                            ->orWhere('production_companies.apparel_type', 'LIKE', '%"' . $apparelTypeId . '"%');
+                        ->orWhere('production_companies.apparel_type', 'LIKE', '%"' . $apparelTypeId . '"%');
                 }
             });
         }
@@ -106,7 +110,7 @@ class ProductionCompaniesComponent extends Component
                     ->where('production_company_pricing.base_price', '<=', $this->priceRange);
             });
         }
-        
+
         // Apply sorting
         switch ($this->sortBy) {
             case 'name_asc':
@@ -134,10 +138,10 @@ class ProductionCompaniesComponent extends Component
             default:
                 $query->orderBy('production_companies.company_name', 'asc');
         }
-        
+
         // Get the production companies
         $productionCompanies = $query->get();
-        
+
         // Debug: Log the structure of production_type and apparel_type for the first company
         if ($productionCompanies->isNotEmpty()) {
             $firstCompany = $productionCompanies->first();
@@ -149,7 +153,7 @@ class ProductionCompaniesComponent extends Component
                 'apparel_type_type' => gettype($firstCompany->apparel_type),
             ]);
         }
-        
+
         // Add price information to each production company for display
         foreach ($productionCompanies as $company) {
             $pricingQuery = ProductionCompanyPricing::where('production_company_id', $company->id);
