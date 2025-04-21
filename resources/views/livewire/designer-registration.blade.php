@@ -141,7 +141,7 @@
 
             <div class="mb-5">
                 <label for="design_experience" class="block text-sm font-medium text-gray-700 mb-1">Design Experience</label>
-                <select id="design_experience" class="block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-cPrimary focus:border-cPrimary rounded-md">
+                <select id="design_experience" wire:model="design_experience" class="block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-cPrimary focus:border-cPrimary rounded-md">
                     <option value="">Select your experience level</option>
                     <option value="beginner">Beginner (0-2 years)</option>
                     <option value="intermediate">Intermediate (2-5 years)</option>
@@ -151,7 +151,7 @@
 
             <div>
                 <label for="bio" class="block text-sm font-medium text-gray-700 mb-1">Designer Bio</label>
-                <textarea id="bio" rows="3" class="block w-full shadow-sm border-gray-300 rounded-md focus:ring-cPrimary focus:border-cPrimary"
+                <textarea id="bio" wire:model="bio" rows="3" class="block w-full shadow-sm border-gray-300 rounded-md focus:ring-cPrimary focus:border-cPrimary"
                     placeholder="Tell clients about your design experience and specialties..."></textarea>
                 <p class="mt-1 text-xs text-gray-500">This will be displayed on your public profile (optional)</p>
             </div>

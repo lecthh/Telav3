@@ -7,10 +7,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\Controller;
+use App\Traits\Toastable;
 use Illuminate\Support\Facades\Log;
 
 class GoogleAuth extends Controller
 {
+    use Toastable;
+
     public function redirectToGoogle()
     {
         return Socialite::driver('google')->redirect();
@@ -61,6 +64,7 @@ class GoogleAuth extends Controller
                 'email' => $user->email,
                 'role_type_id' => $user->role_type_id
             ]);
+            $this->toast('Registration Succesful! Welcome to Tel-A!', 'success');
         } else {
             Log::info('Existing user found', [
                 'user_id' => $user->user_id,

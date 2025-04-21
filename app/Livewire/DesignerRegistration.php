@@ -18,6 +18,8 @@ class DesignerRegistration extends Component
     public $email;
     public $productionCompanies;
     public $affiliate;
+    public $bio;
+    public $design_experience;
 
     public function mount()
     {
@@ -34,11 +36,11 @@ class DesignerRegistration extends Component
             'first_name' => 'required|string',
             'last_name' => 'required|string',
             'email' => 'required|email|unique:users,email',
+            'bio' => 'nullable|string',
+            'design_experience' => 'nullable|string',
         ]);
 
-
         $fullname = $validatedData['first_name'] . ' ' . $validatedData['last_name'];
-
 
         $user = User::create([
             'user_id' => uniqid(),
@@ -49,11 +51,20 @@ class DesignerRegistration extends Component
 
         $isFreelancer = $validatedData['affiliate'] === 'no';
 
+        // Format the designer description to include experience level
+        $description = '';
+        if (!empty($validatedData['design_experience'])) {
+            $description .= 'Experience: ' . ucfirst($validatedData['design_experience']) . "\n\n";
+        }
+        if (!empty($validatedData['bio'])) {
+            $description .= $validatedData['bio'];
+        }
+
         Designer::create([
             'user_id' => $user->user_id,
             'is_freelancer' => $isFreelancer,
             'production_company_id' => $isFreelancer ? null : $validatedData['affiliated_producer'],
-            'designer_description' => $isFreelancer ? $validatedData['display_name'] : null,
+            'designer_description' => $description,
             'talent_fee' => 0,
             'max_free_revisions' => 3,
             'addtl_revision_fee' => 50.00,
