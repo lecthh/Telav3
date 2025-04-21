@@ -38,12 +38,12 @@ class DesignerDetailsModal extends Component
 
     public function showApproveModal()
     {
-        $this->dispatch('approveEntity', 'App\Models\Designer', $this->selectedItem->id, 'manage', $this->name, 'designer_id');
+        $this->dispatch('approveEntity', 'App\Models\Designer', $this->selectedItem->designer_id, $this->type, $this->name, 'designer_id');
     }
 
     public function showBlockModal()
     {
-        $this->dispatch('deleteEntity', 'App\Models\Designer', $this->selectedItem->id, 'manage', $this->name, 'designer_id');
+        $this->dispatch('deleteEntity', 'App\Models\Designer', $this->selectedItem->designer_id,  $this->type, $this->name, 'designer_id');
     }
 
     public function render()

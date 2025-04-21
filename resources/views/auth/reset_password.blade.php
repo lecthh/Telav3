@@ -68,12 +68,6 @@
                     </button>
                 </div>
             </form>
-
-            <div class="text-center">
-                <a href="{{ route('login') }}" class="text-cPrimary underline hover:text-purple-500">
-                    Remembered your password? Log in
-                </a>
-            </div>
         </div>
     </main>
 

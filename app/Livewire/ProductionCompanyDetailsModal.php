@@ -11,7 +11,7 @@ class ProductionCompanyDetailsModal extends Component
     public $showModal = false;
     public $selectedItem = null;
     public $activeTab = 'general';
-    public $type = '';
+    public $modalType = '';
 
     protected function getListeners()
     {
@@ -28,12 +28,12 @@ class ProductionCompanyDetailsModal extends Component
 
     public function showApproveModal()
     {
-        $this->dispatch('approveEntity', 'App\Models\ProductionCompany', $this->selectedItem->id, 'manage', 'company_name', 'id');
+        $this->dispatch('approveEntity', 'App\Models\ProductionCompany', $this->selectedItem->id, $this->modalType, 'company_name', 'id');
     }
 
     public function showBlockModal()
     {
-        $this->dispatch('deleteEntity', 'App\Models\ProductionCompany', $this->selectedItem->id, 'manage', 'company_name', 'id');
+        $this->dispatch('deleteEntity', 'App\Models\ProductionCompany', $this->selectedItem->id, $this->modalType, 'company_name', 'id');
     }
 
     public function showDetails($id, $type)
@@ -41,7 +41,7 @@ class ProductionCompanyDetailsModal extends Component
         $this->selectedItem = ProductionCompany::find($id);
         $this->showModal = true;
         $this->activeTab = 'general';
-        $this->type = $type;
+        $this->modalType = $type;
     }
 
     public function render()

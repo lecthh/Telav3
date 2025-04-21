@@ -205,7 +205,6 @@
         </div>
 
         @include('layout.footer')
-        @livewire('wire-elements-modal')
     </body>
 </form>
 

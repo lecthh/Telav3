@@ -92,19 +92,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <h3 class="text-sm font-semibold text-gray-700 mb-3">Ratings &amp; Reviews</h3>
-                            <div class="space-y-3">
-                                <div>
-                                    <span class="block text-xs text-gray-500">Average Rating</span>
-                                    <span class="block text-sm font-medium text-gray-900">{{ $selectedItem->average_rating }}</span>
-                                </div>
-                                <div>
-                                    <span class="block text-xs text-gray-500">Review Count</span>
-                                    <span class="block text-sm font-medium text-gray-900">{{ $selectedItem->review_count }}</span>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Right Column: Professional Details -->
@@ -130,11 +117,14 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <h3 class="text-sm font-semibold text-gray-700 mb-3">Description</h3>
-                            <p class="text-sm text-gray-900">{{ $selectedItem->designer_description }}</p>
-                        </div>
+                    </div>
+                </div>
 
+                <!-- Description section - Full width when type is approve -->
+                <div class="mt-6">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h3 class="text-sm font-semibold text-gray-700 mb-3">Description</h3>
+                        <p class="text-sm text-gray-900">{!! nl2br(e($selectedItem->designer_description)) !!}</p>
                     </div>
                 </div>
 
@@ -313,7 +303,24 @@
 
             </div>
             <div class="px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                @if($selectedItem->isBlocked())
+                @if($type === 'approve')
+                <button type="button"
+                    wire:click="showApproveModal"
+                    class="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-green-500 sm:ml-3 sm:w-auto">
+                    <span wire:loading wire:target="showApproveModal" class="mr-2">
+                        <x-spinner wire:loading />
+                    </span>
+                    <span wire:loading.remove wire:target="showApproveModal">Approve Designer</span>
+                </button>
+                <button type="button"
+                    wire:click="showBlockModal"
+                    class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto">
+                    <span wire:loading wire:target="showBlockModal" class="mr-2">
+                        <x-spinner wire:loading />
+                    </span>
+                    <span wire:loading.remove wire:target="showBlockModal">Deny Designer</span>
+                </button>
+                @elseif($selectedItem->isBlocked() && $type === 'manage')
                 <button type="button"
                     wire:click="showApproveModal"
                     class="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-green-500 sm:ml-3 sm:w-auto">
