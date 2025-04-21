@@ -22,13 +22,16 @@
             <img class="absolute h-[632px] left-2/4 top-[1px]" src="{{ asset('imgs/hero/hero1.png') }}" alt="">
         </div>
     </div>
-    <div class="flex gap-x-20 p-[200px] bg-cSecondary items-center animate-fade-in-up">
+    <div class="flex gap-x-20 p-[200px] bg-cSecondary items-center animate-fade-in-up justify-end">
         <div class="flex flex-col gap-y-6 p-10 bg-white rounded-2xl">
             <div class="flex flex-col gap-y-3">
-                <h1 class="font-gilroy font-bold text-5xl w-[447px]">Bring Your Apparel Designs to Life</h1>
+                <h1 class="font-gilroy font-bold text-5xl w-[447px]">Apparel Design and Production</h1>
                 <p class="font-inter text-base w-[447px]">Custom printing made easy – from design to production, we've
                     got you covered</p>
             </div>
+        </div>
+        <div class="flex flex-col gap-y-6">
+            <img class="absolute h-[600px] left-[150px] bottom-[-360px]" src="{{ asset('imgs/hero/hero2.png') }}" alt="">
         </div>
     </div>
 
